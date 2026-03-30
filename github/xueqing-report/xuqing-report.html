@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>学情报告</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a2744;
+    --ink-light: #3d4f6e;
+    --cream: #f7f4ef;
+    --paper: #fdfcfa;
+    --coral: #e8614a;
+    --coral-light: #fde8e4;
+    --teal: #2a7f6f;
+    --teal-light: #d4ede9;
+    --gold: #c9922a;
+    --gold-light: #fdf0d8;
+    --muted: #8a95a8;
+    --border: #e8e4dc;
+  }
+  * { -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'Noto Sans SC', sans-serif; background: var(--cream); color: var(--ink); }
+  .serif { font-family: 'Noto Serif SC', serif; }
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+  .card { background: var(--paper); border-radius: 16px; box-shadow: 0 2px 12px rgba(26,39,68,0.07); }
+  .tag-positive { background: var(--teal-light); color: var(--teal); }
+  .tag-warn { background: var(--coral-light); color: var(--coral); }
+  .tag-neutral { background: var(--gold-light); color: var(--gold); }
+  .progress-bar { height: 8px; border-radius: 4px; background: var(--border); overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width 0.8s cubic-bezier(.4,0,.2,1); }
+  .tab-btn { transition: all 0.2s; }
+  .tab-btn.active { background: var(--ink); color: white; }
+  .subject-card { transition: transform 0.15s, box-shadow 0.15s; }
+  .subject-card:active { transform: scale(0.97); }
+  .back-btn { transition: opacity 0.2s; }
+  .back-btn:active { opacity: 0.6; }
+  .conclusion-item { animation: slideUp 0.4s ease both; }
+  .conclusion-item:nth-child(2) { animation-delay: 0.1s; }
+  .conclusion-item:nth-child(3) { animation-delay: 0.2s; }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .chart-bar { transition: height 0.7s cubic-bezier(.4,0,.2,1); }
+  .dot-indicator { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
+  .nav-dot.active { background: var(--ink); }
+  .toggle-btn { transition: all 0.2s; }
+  .toggle-btn.active { background: var(--ink); color: white; border-color: var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- PAGE 0: 封面/入口 -->
+<div id="page-cover" class="page active">
+  <div class="max-w-sm mx-auto px-4 flex flex-col" style="min-height:100vh">
+    <div class="flex-1 flex flex-col justify-center">
+      <div class="mb-8">
+        <p class="text-xs tracking-widest uppercase mb-3" style="color:var(--muted)">Learning Report</p>
+        <h1 class="serif text-4xl font-bold leading-tight mb-2" style="color:var(--ink)">小明的<br>学情报告</h1>
+        <p class="text-sm" style="color:var(--muted)">2025年第12周 · 3月18日—3月24日</p>
+      </div>
+      <div class="card p-5 mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <span class="text-sm font-medium" style="color:var(--ink)">本周概览</span>
+          <span class="text-xs tag-positive px-3 py-1 rounded-full">表现优秀</span>
+        </div>
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div>
+            <div class="serif text-2xl font-bold" style="color:var(--ink)">5</div>
+            <div class="text-xs mt-1" style="color:var(--muted)">学习天数</div>
+          </div>
+          <div style="border-left:1px solid var(--border);border-right:1px solid var(--border)">
+            <div class="serif text-2xl font-bold" style="color:var(--teal)">4.2h</div>
+            <div class="text-xs mt-1" style="color:var(--muted)">总时长</div>
+          </div>
+          <div>
+            <div class="serif text-2xl font-bold" style="color:var(--coral)">87</div>
+            <div class="text-xs mt-1" style="color:var(--muted)">综合分</div>
+          </div>
+        </div>
+      </div>
+      <div class="space-y-3">
+        <button onclick="showPage('page-daily')" class="w-full card p-4 flex items-center justify-between" style="text-align:left">
+          <div>
+            <div class="text-sm font-medium" style="color:var(--ink)">今日学情</div>
+            <div class="text-xs mt-1" style="color:var(--muted)">3月24日 · 周一</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs tag-positive px-2 py-1 rounded-full">已完成</span>
+            <span style="color:var(--muted)">→</span>
+          </div>
+        </button>
+        <button onclick="showPage('page-weekly')" class="w-full card p-4 flex items-center justify-between" style="text-align:left">
+          <div>
+            <div class="text-sm font-medium" style="color:var(--ink)">本周学情</div>
+            <div class="text-xs mt-1" style="color:var(--muted)">第12周总结</div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs tag-neutral px-2 py-1 rounded-full">周报</span>
+            <span style="color:var(--muted)">→</span>
+          </div>
+        </button>
+      </div>
+    </div>
+    <div class="pb-8 text-center">
+      <p class="text-xs" style="color:var(--muted)">学习机 · 学情报告</p>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 1: 日报首页 -->
+<div id="page-daily" class="page active">
+  <div class="max-w-sm mx-auto px-4 pb-8">
+    <!-- Header -->
+    <div class="pt-12 pb-6">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-xs text-muted font-light tracking-widest uppercase">Daily Report</span>
+        <div class="flex gap-1">
+          <button onclick="showPage('page-daily')" class="nav-dot active"></button>
+          <button onclick="showPage('page-weekly')" class="nav-dot"></button>
+        </div>
+      </div>
+      <div class="flex items-end justify-between">
+        <div>
+          <h1 class="serif text-2xl font-bold" style="color:var(--ink)">今日学情</h1>
+          <p class="text-sm mt-1" style="color:var(--muted)">3月24日 · 周一</p>
+        </div>
+        <div class="text-right">
+          <div class="text-3xl font-bold serif" style="color:var(--ink)">87</div>
+          <div class="text-xs" style="color:var(--muted)">综合得分</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 摘要卡片 -->
+    <div class="card p-5 mb-4">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-1 h-4 rounded-full" style="background:var(--ink)"></div>
+        <span class="text-sm font-medium" style="color:var(--ink)">今日学情摘要</span>
+      </div>
+      <div class="space-y-3">
+        <div class="conclusion-item flex items-start gap-3 p-3 rounded-12" style="background:var(--teal-light); border-radius:12px">
+          <span class="text-lg mt-0">🎯</span>
+          <div>
+            <span class="text-xs font-medium tag-positive px-2 py-0 rounded-full">专注达标</span>
+            <p class="text-sm mt-1 leading-relaxed" style="color:var(--ink)">数学专注度很高，完成了计划的 <strong>120%</strong>，超额完成目标</p>
+          </div>
+        </div>
+        <div class="conclusion-item flex items-start gap-3 p-3 rounded-12" style="background:var(--coral-light); border-radius:12px">
+          <span class="text-lg">⚡</span>
+          <div>
+            <span class="text-xs font-medium tag-warn px-2 py-0 rounded-full">待加强</span>
+            <p class="text-sm mt-1 leading-relaxed" style="color:var(--ink)">英语单词记忆有些吃力，建议明天安排 <strong>10分钟</strong> 复习</p>
+          </div>
+        </div>
+        <div class="conclusion-item flex items-start gap-3 p-3 rounded-12" style="background:var(--gold-light); border-radius:12px">
+          <span class="text-lg">⏱</span>
+          <div>
+            <span class="text-xs font-medium tag-neutral px-2 py-0 rounded-full">时长达标</span>
+            <p class="text-sm mt-1 leading-relaxed" style="color:var(--ink)">总学习时长 <strong>45分钟</strong>，达到今日目标，保持节奏</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 学科聚合视图 -->
+    <div class="card p-5 mb-4">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-1 h-4 rounded-full" style="background:var(--ink)"></div>
+          <span class="text-sm font-medium" style="color:var(--ink)">各科完成情况</span>
+        </div>
+        <button onclick="showPage('page-subjects')" class="text-xs font-medium" style="color:var(--coral)">查看详情 →</button>
+      </div>
+      <div class="space-y-4">
+        <div onclick="showSubject('math')" class="subject-card cursor-pointer">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-base">📐</span>
+              <span class="text-sm font-medium">数学</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs" style="color:var(--muted)">120%</span>
+              <span class="text-xs tag-positive px-2 py-0 rounded-full">超额完成</span>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:100%;background:var(--teal)"></div>
+          </div>
+        </div>
+        <div onclick="showSubject('chinese')" class="subject-card cursor-pointer">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-base">📖</span>
+              <span class="text-sm font-medium">语文</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs" style="color:var(--muted)">85%</span>
+              <span class="text-xs tag-neutral px-2 py-0 rounded-full">基本完成</span>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:85%;background:var(--gold)"></div>
+          </div>
+        </div>
+        <div onclick="showSubject('english')" class="subject-card cursor-pointer">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-base">🔤</span>
+              <span class="text-sm font-medium">英语</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs" style="color:var(--muted)">60%</span>
+              <span class="text-xs tag-warn px-2 py-0 rounded-full">需加强</span>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:60%;background:var(--coral)"></div>
+          </div>
+        </div>
+        <div onclick="showSubject('science')" class="subject-card cursor-pointer">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-base">🔬</span>
+              <span class="text-sm font-medium">科学</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs" style="color:var(--muted)">95%</span>
+              <span class="text-xs tag-positive px-2 py-0 rounded-full">优秀</span>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:95%;background:var(--teal)"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 学习时长图表 -->
+    <div class="card p-5 mb-4">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-1 h-4 rounded-full" style="background:var(--ink)"></div>
+        <span class="text-sm font-medium" style="color:var(--ink)">近7天学习时长</span>
+      </div>
+      <div class="flex items-end justify-between gap-2" style="height:80px">
+        <div class="flex flex-col items-center gap-1 flex-1">
+          <div class="w-full rounded-t-4" style="height:45px;background:var(--border);border-radius:4px 4px 0 0"></div>
+          <span class="text-xs" style="color:var(--muted)">周二</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 flex-1">
+          <div class="w-full rounded-t-4" style="height:60px;background:var(--border);border-radius:4px 4px 0 0"></div>
+          <span class="text-xs" style="color:var(--muted)">周三</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 flex-1">
+          <div class="w-full rounded-t-4" style="height:35px;background:var(--border);border-radius:4px 4px 0 0"></div>
+          <span class="text-xs" style="color:var(--muted)">周四</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 flex-1">
+          <div class="w-full rounded-t-4" style="height:55px;background:var(--border);border-radius:4px 4px 0 0"></div>
+          <span class="text-xs" style="color:var(--muted)">周五</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 flex-1">
+          <div class="w-full rounded-t-4" style="height:70px;background:var(--border);border-radius:4px 4px 0 0"></div>
+          <span class="text-xs" style="color:var(--muted)">周六</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 flex-1">
+          <div class="w-full rounded-t-4" style="height:50px;background:var(--border);border-radius:4px 4px 0 0"></div>
+          <span class="text-xs" style="color:var(--muted)">周日</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 flex-1">
+          <div class="w-full rounded-t-4" style="height:60px;background:var(--ink);border-radius:4px 4px 0 0"></div>
+          <span class="text-xs font-medium" style="color:var(--ink)">今天</span>
+        </div>
+      </div>
+      <div class="flex items-center justify-between mt-3 pt-3" style="border-top:1px solid var(--border)">
+        <span class="text-xs" style="color:var(--muted)">日均 48 分钟</span>
+        <span class="text-xs font-medium" style="color:var(--teal)">↑ 较上周 +12%</span>
+      </div>
+    </div>
+
+    <!-- 底部切换 -->
+    <div class="flex gap-2">
+      <button onclick="showPage('page-daily')" class="toggle-btn active flex-1 py-3 text-sm font-medium border" style="border-color:var(--ink);border-radius:12px">日报</button>
+      <button onclick="showPage('page-weekly')" class="toggle-btn flex-1 py-3 text-sm font-medium border" style="border-color:var(--border);color:var(--muted);border-radius:12px">周报</button>
+    </div>
+    <div class="mt-4 text-center">
+      <button onclick="showPage('page-cover')" class="text-xs" style="color:var(--muted)">← 返回封面</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: 学科聚合详情 -->
+<div id="page-subjects" class="page">
+  <div class="max-w-sm mx-auto px-4 pb-8">
+    <div class="pt-12 pb-6 flex items-center gap-3">
+      <button onclick="showPage('page-daily')" class="back-btn text-sm" style="color:var(--muted)">← 返回</button>
+      <div>
+        <h1 class="serif text-xl font-bold" style="color:var(--ink)">各科详情</h1>
+        <p class="text-xs" style="color:var(--muted)">3月24日</p>
+      </div>
+    </div>
+
+    <!-- 学科Tab -->
+    <div class="flex gap-2 mb-5 overflow-x-auto pb-1">
+      <button onclick="switchSubjectTab('math')" id="tab-math" class="tab-btn active px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" style="border-radius:20px;background:var(--ink);color:white">数学</button>
+      <button onclick="switchSubjectTab('chinese')" id="tab-chinese" class="tab-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" style="border-radius:20px;background:var(--border);color:var(--ink-light)">语文</button>
+      <button onclick="switchSubjectTab('english')" id="tab-english" class="tab-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" style="border-radius:20px;background:var(--border);color:var(--ink-light)">英语</button>
+      <button onclick="switchSubjectTab('science')" id="tab-science" class="tab-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap" style="border-radius:20px;background:var(--border);color:var(--ink-light)">科学</button>
+    </div>
+
+    <!-- 数学详情 -->
+    <div id="detail-math" class="subject-detail">
+      <div class="card p-5 mb-4">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">📐</span>
+            <div>
+              <div class="font-medium" style="color:var(--ink)">数学</div>
+              <div class="text-xs" style="color:var(--muted)">今日完成情况</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="serif text-3xl font-bold" style="color:var(--teal)">120%</div>
+            <div class="text-xs tag-positive px-2 py-0 rounded-full">超额完成</div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span style="color:var(--muted)">计划完成率</span>
+              <span style="color:var(--teal)">12/10 题</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:100%;background:var(--teal)"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span style="color:var(--muted)">正确率</span>
+              <span style="color:var(--teal)">91%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:91%;background:var(--teal)"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span style="color:var(--muted)">专注时长</span>
+              <span style="color:var(--ink)">18 分钟</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:90%;background:var(--ink)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card p-5 mb-4">
+        <div class="text-sm font-medium mb-3" style="color:var(--ink)">知识点掌握</div>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-sm" style="color:var(--ink-light)">分数运算</span>
+            <div class="flex gap-1">
+              <div class="w-4 h-4 rounded-sm" style="background:var(--teal)"></div>
+              <div class="w-4 h-4 rounded-sm" style="background:var(--teal)"></div>
+              <div class="w-4 h-4 rounded-sm" style="background:var(--teal)"></div>
+              <div class="w-4 h-4 rounded-sm" style="background:var(--teal)"></div>
+              <div class="w-4 h-4 rounded-sm" style="background:var(--border)"></div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm" style="color:var(--ink-light)">几何图形</span>
+            <div class="flex gap-1">
+              <div class="w-4 h-4 rounded-sm" style="background:var(--teal)"></div>
+              <div class="w-4 h-4 rounded-sm" style="background:var(--teal)"></div>
+              <div class="w-4 h-4 rounded-sm" style="background:var(--teal)"></div>
+              <div class="w-4 h-4 rounded-sm" style="background:var(--border)"></div>
+              <div class="w-4 h-4 rounded-sm" style="background:var(--border)"></div>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm" style="color:var(--ink-light)">应用题</span>
+            <div class="flex gap-1">
+              <div class="w-4 h-4 rounded-sm" style="background:var(--teal)"></div>
+              <div class="w-4 h-4 rounded-sm" style="background:var(--teal)"></div>
+              <div class="w-4 h-4 rounded-sm" style="background:var(--teal)"></div>
+              <div class="w-4 h-4 rounded-sm" style="background:var(--teal)"></div>
+              <div class="w-4 h-4 rounded-sm" style="background:var(--teal)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 英语详情 -->
+    <div id="detail-english" class="subject-detail" style="display:none">
+      <div class="card p-5 mb-4">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🔤</span>
+            <div>
+              <div class="font-medium" style="color:var(--ink)">英语</div>
+              <div class="text-xs" style="color:var(--muted)">今日完成情况</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="serif text-3xl font-bold" style="color:var(--coral)">60%</div>
+            <div class="text-xs tag-warn px-2 py-0 rounded-full">需加强</div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span style="color:var(--muted)">单词记忆</span>
+              <span style="color:var(--coral)">12/20 个</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:60%;background:var(--coral)"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span style="color:var(--muted)">阅读理解</span>
+              <span style="color:var(--gold)">75%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:75%;background:var(--gold)"></div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 p-3 rounded-12" style="background:var(--coral-light);border-radius:12px">
+          <p class="text-xs leading-relaxed" style="color:var(--coral)">💡 建议：明天安排10分钟复习今日未掌握的单词，重点关注动词变形</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 语文详情 -->
+    <div id="detail-chinese" class="subject-detail" style="display:none">
+      <div class="card p-5 mb-4">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">📖</span>
+            <div>
+              <div class="font-medium" style="color:var(--ink)">语文</div>
+              <div class="text-xs" style="color:var(--muted)">今日完成情况</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="serif text-3xl font-bold" style="color:var(--gold)">85%</div>
+            <div class="text-xs tag-neutral px-2 py-0 rounded-full">基本完成</div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span style="color:var(--muted)">阅读练习</span>
+              <span style="color:var(--gold)">完成</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:100%;background:var(--gold)"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span style="color:var(--muted)">写作练习</span>
+              <span style="color:var(--gold)">70%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:70%;background:var(--gold)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 科学详情 -->
+    <div id="detail-science" class="subject-detail" style="display:none">
+      <div class="card p-5 mb-4">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🔬</span>
+            <div>
+              <div class="font-medium" style="color:var(--ink)">科学</div>
+              <div class="text-xs" style="color:var(--muted)">今日完成情况</div>
+            </div>
+          </div>
+          <div class="text-right">
+            <div class="serif text-3xl font-bold" style="color:var(--teal)">95%</div>
+            <div class="text-xs tag-positive px-2 py-0 rounded-full">优秀</div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span style="color:var(--muted)">实验报告</span>
+              <span style="color:var(--teal)">完成</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:100%;background:var(--teal)"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span style="color:var(--muted)">概念理解</span>
+              <span style="color:var(--teal)">90%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:90%;background:var(--teal)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3: 周报 -->
+<div id="page-weekly" class="page">
+  <div class="max-w-sm mx-auto px-4 pb-8">
+    <div class="pt-12 pb-6">
+      <div class="flex items-center justify-between mb-1">
+        <span class="text-xs text-muted font-light tracking-widest uppercase">Weekly Report</span>
+        <div class="flex gap-1">
+          <button onclick="showPage('page-daily')" class="nav-dot"></button>
+          <button onclick="showPage('page-weekly')" class="nav-dot active"></button>
+        </div>
+      </div>
+      <div class="flex items-end justify-between">
+        <div>
+          <h1 class="serif text-2xl font-bold" style="color:var(--ink)">本周学情</h1>
+          <p class="text-sm mt-1" style="color:var(--muted)">第12周 · 3月18日—24日</p>
+        </div>
+        <div class="text-right">
+          <div class="text-3xl font-bold serif" style="color:var(--ink)">92</div>
+          <div class="text-xs" style="color:var(--muted)">周综合分</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 周报摘要 -->
+    <div class="card p-5 mb-4">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-1 h-4 rounded-full" style="background:var(--ink)"></div>
+        <span class="text-sm font-medium" style="color:var(--ink)">本周学情摘要</span>
+      </div>
+      <div class="space-y-3">
+        <div class="conclusion-item flex items-start gap-3 p-3" style="background:var(--teal-light);border-radius:12px">
+          <span class="text-lg">🏆</span>
+          <div>
+            <span class="text-xs font-medium tag-positive px-2 py-0 rounded-full">本周亮点</span>
+            <p class="text-sm mt-1 leading-relaxed" style="color:var(--ink)">数学连续5天完成计划，正确率稳定在 <strong>90%+</strong>，进步显著</p>
+          </div>
+        </div>
+        <div class="conclusion-item flex items-start gap-3 p-3" style="background:var(--coral-light);border-radius:12px">
+          <span class="text-lg">📌</span>
+          <div>
+            <span class="text-xs font-medium tag-warn px-2 py-0 rounded-full">重点关注</span>
+            <p class="text-sm mt-1 leading-relaxed" style="color:var(--ink)">英语单词记忆本周完成率仅 <strong>62%</strong>，建议下周增加复习频次</p>
+          </div>
+        </div>
+        <div class="conclusion-item flex items-start gap-3 p-3" style="background:var(--gold-light);border-radius:12px">
+          <span class="text-lg">📈</span>
+          <div>
+            <span class="text-xs font-medium tag-neutral px-2 py-0 rounded-full">整体趋势</span>
+            <p class="text-sm mt-1 leading-relaxed" style="color:var(--ink)">本周总学习时长 <strong>4.2小时</strong>，较上周提升 <strong>18%</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 周趋势图 -->
+    <div class="card p-5 mb-4">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-1 h-4 rounded-full" style="background:var(--ink)"></div>
+        <span class="text-sm font-medium" style="color:var(--ink)">本周各科完成率趋势</span>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="dot-indicator" style="background:var(--teal)"></span>
+              <span class="text-xs" style="color:var(--ink-light)">数学</span>
+            </div>
+            <span class="text-xs font-medium" style="color:var(--teal)">周均 108%</span>
+          </div>
+          <div class="flex gap-1 items-end" style="height:40px">
+            <div class="flex-1 rounded-t" style="height:85%;background:var(--teal);opacity:0.5;border-radius:3px 3px 0 0"></div>
+            <div class="flex-1 rounded-t" style="height:100%;background:var(--teal);opacity:0.6;border-radius:3px 3px 0 0"></div>
+            <div class="flex-1 rounded-t" style="height:90%;background:var(--teal);opacity:0.7;border-radius:3px 3px 0 0"></div>
+            <div class="flex-1 rounded-t" style="height:100%;background:var(--teal);opacity:0.8;border-radius:3px 3px 0 0"></div>
+            <div class="flex-1 rounded-t" style="height:95%;background:var(--teal);border-radius:3px 3px 0 0"></div>
+          </div>
+          <div class="flex gap-1 mt-1">
+            <div class="flex-1 text-center text-xs" style="color:var(--muted)">周一</div>
+            <div class="flex-1 text-center text-xs" style="color:var(--muted)">周二</div>
+            <div class="flex-1 text-center text-xs" style="color:var(--muted)">周三</div>
+            <div class="flex-1 text-center text-xs" style="color:var(--muted)">周四</div>
+            <div class="flex-1 text-center text-xs" style="color:var(--muted)">周五</div>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:16px">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="dot-indicator" style="background:var(--coral)"></span>
+              <span class="text-xs" style="color:var(--ink-light)">英语</span>
+            </div>
+            <span class="text-xs font-medium" style="color:var(--coral)">周均 62%</span>
+          </div>
+          <div class="flex gap-1 items-end" style="height:40px">
+            <div class="flex-1 rounded-t" style="height:70%;background:var(--coral);opacity:0.5;border-radius:3px 3px 0 0"></div>
+            <div class="flex-1 rounded-t" style="height:55%;background:var(--coral);opacity:0.6;border-radius:3px 3px 0 0"></div>
+            <div class="flex-1 rounded-t" style="height:65%;background:var(--coral);opacity:0.7;border-radius:3px 3px 0 0"></div>
+            <div class="flex-1 rounded-t" style="height:50%;background:var(--coral);opacity:0.8;border-radius:3px 3px 0 0"></div>
+            <div class="flex-1 rounded-t" style="height:60%;background:var(--coral);border-radius:3px 3px 0 0"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 周数据汇总 -->
+    <div class="card p-5 mb-4">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-1 h-4 rounded-full" style="background:var(--ink)"></div>
+        <span class="text-sm font-medium" style="color:var(--ink)">本周数据汇总</span>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="p-3 rounded-12" style="background:var(--cream);border-radius:12px">
+          <div class="serif text-xl font-bold" style="color:var(--ink)">4.2h</div>
+          <div class="text-xs mt-1" style="color:var(--muted)">总学习时长</div>
+          <div class="text-xs mt-1" style="color:var(--teal)">↑ +18%</div>
+        </div>
+        <div class="p-3 rounded-12" style="background:var(--cream);border-radius:12px">
+          <div class="serif text-xl font-bold" style="color:var(--ink)">87%</div>
+          <div class="text-xs mt-1" style="color:var(--muted)">平均完成率</div>
+          <div class="text-xs mt-1" style="color:var(--teal)">↑ +5%</div>
+        </div>
+        <div class="p-3 rounded-12" style="background:var(--cream);border-radius:12px">
+          <div class="serif text-xl font-bold" style="color:var(--ink)">5天</div>
+          <div class="text-xs mt-1" style="color:var(--muted)">连续学习</div>
+          <div class="text-xs mt-1" style="color:var(--gold)">保持中</div>
+        </div>
+        <div class="p-3 rounded-12" style="background:var(--cream);border-radius:12px">
+          <div class="serif text-xl font-bold" style="color:var(--ink)">4科</div>
+          <div class="text-xs mt-1" style="color:var(--muted)">覆盖学科</div>
+          <div class="text-xs mt-1" style="color:var(--teal)">全覆盖</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部切换 -->
+    <div class="flex gap-2">
+      <button onclick="showPage('page-daily')" class="toggle-btn flex-1 py-3 text-sm font-medium border" style="border-color:var(--border);color:var(--muted);border-radius:12px">日报</button>
+      <button onclick="showPage('page-weekly')" class="toggle-btn active flex-1 py-3 text-sm font-medium border" style="border-color:var(--ink);border-radius:12px">周报</button>
+    </div>
+    <div class="mt-4 text-center">
+      <button onclick="showPage('page-cover')" class="text-xs" style="color:var(--muted)">← 返回封面</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function showSubject(subject) {
+  showPage('page-subjects');
+  switchSubjectTab(subject);
+}
+
+function switchSubjectTab(subject) {
+  document.querySelectorAll('.subject-detail').forEach(d => d.style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.remove('active');
+    b.style.background = 'var(--border)';
+    b.style.color = 'var(--ink-light)';
+  });
+  const detail = document.getElementById('detail-' + subject);
+  if (detail) detail.style.display = 'block';
+  const tab = document.getElementById('tab-' + subject);
+  if (tab) {
+    tab.classList.add('active');
+    tab.style.background = 'var(--ink)';
+    tab.style.color = 'white';
+  }
+}
+</script>
+</body>
+</html>

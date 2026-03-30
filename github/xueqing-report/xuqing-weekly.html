@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>学情周报</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<link href="https://fonts.googleapis.com/css2?family=ABeeZee&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --n900: #1f2229; --n700: #656a73; --n500: #999da6;
+    --n200: #e4e5e7; --n100: #f3f4f6; --n50: #f8f8fa;
+    --blue: #38afff; --blue-deep: #3f9eff; --sky: #5fcfff;
+  }
+  * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+  body { font-family: 'Noto Sans SC', sans-serif; background: #e8eaed; margin: 0; color: var(--n900); }
+  .num { font-family: 'ABeeZee', sans-serif; }
+  .page { display: none; }
+  .page.active { display: block; }
+  .phone { max-width: 375px; margin: 0 auto; background: var(--n100); min-height: 100vh; overflow-x: hidden; position: relative; }
+  .card { background: white; border-radius: 12px; }
+  .scroll-x { overflow-x: auto; scrollbar-width: none; }
+  .scroll-x::-webkit-scrollbar { display: none; }
+  .subject-content { display: none; }
+  .subject-content.active { display: block; }
+  .subject-tab { transition: all 0.2s; cursor: pointer; white-space: nowrap; }
+  .subject-tab.active { color: white !important; text-shadow: 0 1px 1px #00a1e6; }
+  .fade-in { animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .clickable { cursor: pointer; }
+  .clickable:active { opacity: 0.7; }
+  .divider { height: 1px; background: var(--n200); }
+  .tag { display: inline-flex; align-items: center; border-radius: 20px; font-size: 12px; padding: 2px 10px; }
+  .outcome-row { display: flex; align-items: flex-start; gap: 12px; padding: 16px 0; }
+  .outcome-row + .outcome-row { border-top: 1px solid var(--n200); }
+  .suggestion-row { display: flex; align-items: flex-start; gap: 12px; padding: 16px 0; }
+  .suggestion-row + .suggestion-row { border-top: 1px solid rgba(250,119,42,0.12); }
+  .app-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; }
+  .app-row + .app-row { border-top: 1px solid var(--n200); }
+  .app-icon { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; }
+  .progress-bar { height: 4px; border-radius: 10px; background: var(--n200); overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 10px; }
+  .bar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+  .bar-pair { display: flex; align-items: flex-end; gap: 2px; }
+  .bar { border-radius: 10px 10px 0 0; width: 11px; }
+  .bar-label { font-size: 10px; color: var(--n500); font-family: 'ABeeZee', sans-serif; }
+  .home-indicator { height: 34px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; }
+  .home-bar { width: 134px; height: 5px; background: black; border-radius: 100px; }
+  .outcome-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .outcome-line { width: 1px; flex: 1; min-height: 32px; margin: 4px auto 0; }
+  .subject-pill { display: inline-flex; align-items: center; justify-content: center; border-radius: 20px; padding: 6px 14px; font-size: 13px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+  .mastery-bar { height: 6px; border-radius: 10px; background: var(--n200); overflow: hidden; }
+  .mastery-fill { height: 100%; border-radius: 10px; }
+  .detail-stat { background: var(--n50); border-radius: 10px; padding: 12px; flex: 1; }
+  .back-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- MAIN PAGE -->
+<div id="page-main" class="page active">
+<div class="phone">
+
+  <!-- Sky gradient header zone -->
+  <div style="background: linear-gradient(180deg, #5fcfff 0%, #9be7ff 27%, #e3f3ff 80%, #f3f4f6 100%);">
+
+    <!-- Status bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 24px 4px;">
+      <span class="num" style="font-size:15px;font-weight:500;color:var(--n900)">9:41</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="display:flex;align-items:flex-end;gap:2px;">
+          <div style="width:3px;height:4px;background:var(--n900);border-radius:1px;opacity:0.9"></div>
+          <div style="width:3px;height:6px;background:var(--n900);border-radius:1px;opacity:0.9"></div>
+          <div style="width:3px;height:9px;background:var(--n900);border-radius:1px;opacity:0.9"></div>
+          <div style="width:3px;height:11px;background:var(--n900);border-radius:1px;opacity:0.9"></div>
+        </div>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+          <path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" fill="#1f2229"/>
+          <path d="M4.5 7C5.6 5.9 6.7 5.5 8 5.5s2.4.4 3.5 1.5" stroke="#1f2229" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+          <path d="M1.5 4C3.3 2.2 5.5 1.5 8 1.5s4.7.7 6.5 2.5" stroke="#1f2229" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+        </svg>
+        <div style="display:flex;align-items:center;">
+          <div style="width:22px;height:11px;border:1px solid rgba(0,0,0,0.35);border-radius:2.5px;padding:1px;display:flex;align-items:center;">
+            <div style="width:18px;height:7px;background:var(--n900);border-radius:1px;"></div>
+          </div>
+          <div style="width:1.5px;height:4px;background:rgba(0,0,0,0.4);margin-left:1px;border-radius:0 1px 1px 0;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav bar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px 12px;">
+      <button class="back-btn">
+        <svg width="10" height="17" viewBox="0 0 10 17" fill="none">
+          <path d="M8.5 1.5L1.5 8.5l7 7" stroke="#1f2229" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#5fcfff,#38afff);display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:13px;color:white;font-weight:500;">丸</span>
+        </div>
+        <span style="font-size:14px;color:var(--n900);">小丸子</span>
+      </div>
+      <button onclick="toggleDatePicker()" id="date-btn" style="border:1px solid rgba(0,0,0,0.21);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--n900);background:transparent;cursor:pointer;display:flex;align-items:center;gap:4px;">
+        <span id="date-label">10.26-11.1</span>
+        <svg width="8" height="5" viewBox="0 0 8 5" fill="none"><path d="M1 1l3 3 3-3" stroke="#1f2229" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+
+    <!-- Date picker dropdown -->
+    <div id="date-picker" style="display:none;margin:0 16px 12px;background:white;border-radius:12px;padding:16px;box-shadow:0 4px 16px rgba(0,0,0,0.1);">
+      <p style="font-size:12px;color:var(--n700);margin:0 0 12px;">选择周期</p>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button onclick="selectDate('10.26-11.1')" style="padding:10px 16px;border-radius:8px;background:#e8f5ff;border:none;font-size:14px;color:var(--blue-deep);cursor:pointer;text-align:left;">10.26 - 11.1（本周）</button>
+        <button onclick="selectDate('10.19-10.25')" style="padding:10px 16px;border-radius:8px;background:var(--n50);border:none;font-size:14px;color:var(--n700);cursor:pointer;text-align:left;">10.19 - 10.25（上周）</button>
+        <button onclick="selectDate('10.12-10.18')" style="padding:10px 16px;border-radius:8px;background:var(--n50);border:none;font-size:14px;color:var(--n700);cursor:pointer;text-align:left;">10.12 - 10.18（两周前）</button>
+      </div>
+    </div>
+
+    <!-- Summary section -->
+    <div style="padding:0 16px 24px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;">
+        <h1 style="font-size:28px;font-weight:400;color:var(--n900);line-height:34px;margin:0;">本周总结</h1>
+        <span class="tag" style="background:rgba(255,255,255,0.6);color:var(--n700);margin-top:6px;font-size:14px;">有进步</span>
+      </div>
+      <p style="font-size:14px;color:rgba(28,28,29,0.87);line-height:24px;margin:0;">
+        小丸子本周使用时长相比上周有所增加，数学学科的精力投入尤为突出，特别是答题正确率取得了显著进步，这份努力值得您好好表扬呀！本周宝贝在词汇掌握上相比上周稍显薄弱，建议您近期多关注，帮助宝贝及时巩固单词哦！
+      </p>
+    </div>
+  </div>
+
+  <!-- Content area -->
+  <div style="padding:0 16px;display:flex;flex-direction:column;gap:12px;padding-bottom:32px;">
+
+    <!-- Usage time card -->
+    <div class="card" style="padding:20px;">
+      <h2 style="font-size:16px;font-weight:400;color:var(--n900);margin:0 0 16px;">使用时长</h2>
+
+      <!-- Total time -->
+      <div style="display:flex;align-items:baseline;gap:4px;margin-bottom:4px;">
+        <span class="num" style="font-size:20px;color:var(--n900);">8</span>
+        <span style="font-size:12px;color:var(--n900);">小时</span>
+        <span class="num" style="font-size:20px;color:var(--n900);">54</span>
+        <span style="font-size:12px;color:var(--n900);">分钟</span>
+        <span style="font-size:12px;color:var(--n700);margin-left:8px;">相比上一周</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="margin-bottom:1px;">
+          <path d="M7 10.5V3.5M4 6.5l3-3 3 3" stroke="#1f2229" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="num" style="font-size:12px;color:var(--n900);">5%</span>
+      </div>
+
+      <!-- Bar chart -->
+      <div style="margin:16px 0 8px;position:relative;">
+        <div style="position:absolute;left:0;top:0;bottom:20px;display:flex;flex-direction:column;justify-content:space-between;width:24px;">
+          <span class="num" style="font-size:12px;color:var(--n500);">6h</span>
+          <span class="num" style="font-size:12px;color:var(--n500);">4h</span>
+          <span class="num" style="font-size:12px;color:var(--n500);">2h</span>
+          <span class="num" style="font-size:12px;color:var(--n500);">0h</span>
+        </div>
+        <div style="margin-left:32px;">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;height:120px;border-bottom:1px solid var(--n200);">
+            <div class="bar-wrap">
+              <div class="bar-pair">
+                <div class="bar" style="height:24px;background:linear-gradient(180deg,#7dd8ff,#38afff);"></div>
+                <div class="bar" style="height:44px;background:linear-gradient(180deg,#b8e8ff,#7ec8ff);"></div>
+              </div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-pair">
+                <div class="bar" style="height:18px;background:linear-gradient(180deg,#7dd8ff,#38afff);"></div>
+                <div class="bar" style="height:10px;background:linear-gradient(180deg,#b8e8ff,#7ec8ff);"></div>
+              </div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-pair">
+                <div class="bar" style="height:60px;background:linear-gradient(180deg,#7dd8ff,#38afff);"></div>
+                <div class="bar" style="height:32px;background:linear-gradient(180deg,#b8e8ff,#7ec8ff);"></div>
+              </div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-pair">
+                <div class="bar" style="height:35px;background:linear-gradient(180deg,#7dd8ff,#38afff);"></div>
+                <div class="bar" style="height:63px;background:linear-gradient(180deg,#b8e8ff,#7ec8ff);"></div>
+              </div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-pair">
+                <div class="bar" style="height:119px;background:linear-gradient(180deg,#7dd8ff,#38afff);"></div>
+                <div class="bar" style="height:70px;background:linear-gradient(180deg,#b8e8ff,#7ec8ff);"></div>
+              </div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-pair">
+                <div class="bar" style="height:81px;background:linear-gradient(180deg,#7dd8ff,#38afff);"></div>
+                <div class="bar" style="height:45px;background:linear-gradient(180deg,#b8e8ff,#7ec8ff);"></div>
+              </div>
+            </div>
+            <div class="bar-wrap">
+              <div class="bar-pair">
+                <div class="bar" style="height:2px;background:linear-gradient(180deg,#7dd8ff,#38afff);"></div>
+                <div class="bar" style="height:2px;background:linear-gradient(180deg,#b8e8ff,#7ec8ff);"></div>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;">
+            <span class="bar-label">10.26</span>
+            <span class="bar-label">10.27</span>
+            <span class="bar-label">10.28</span>
+            <span class="bar-label">10.29</span>
+            <span class="bar-label">10.30</span>
+            <span class="bar-label">10.31</span>
+            <span class="bar-label">11.1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div style="display:flex;gap:16px;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:4px;">
+          <div style="width:16px;height:10px;border-radius:4px;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div>
+          <span style="font-size:10px;color:var(--n700);">三方应用</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <div style="width:16px;height:10px;border-radius:4px;background:linear-gradient(90deg,#b8e8ff,#7ec8ff);"></div>
+          <span style="font-size:10px;color:var(--n700);">自研应用</span>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <p style="font-size:14px;color:var(--n900);margin:0 0 10px;">本周已使用</p>
+      <div style="background:var(--n50);border-radius:8px;padding:12px 16px;display:flex;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <p style="font-size:12px;color:var(--n700);margin:0 0 4px;">自研应用 5个</p>
+          <div style="display:flex;align-items:baseline;gap:2px;">
+            <span class="num" style="font-size:20px;color:var(--n900);">36</span>
+            <span style="font-size:10px;color:var(--n900);">小时</span>
+            <span class="num" style="font-size:20px;color:var(--n900);margin-left:4px;">59</span>
+            <span style="font-size:10px;color:var(--n900);">分钟</span>
+          </div>
+        </div>
+        <div style="width:1px;background:var(--n200);margin:0 8px;"></div>
+        <div>
+          <p style="font-size:12px;color:var(--n700);margin:0 0 4px;">三方应用 1个</p>
+          <div style="display:flex;align-items:baseline;gap:2px;">
+            <span class="num" style="font-size:20px;color:var(--n900);">9</span>
+            <span style="font-size:10px;color:var(--n900);">小时</span>
+            <span class="num" style="font-size:20px;color:var(--n900);margin-left:4px;">47</span>
+            <span style="font-size:10px;color:var(--n900);">分钟</span>
+          </div>
+        </div>
+        <div style="width:1px;background:var(--n200);margin:0 8px;"></div>
+        <div>
+          <p style="font-size:12px;color:var(--n700);margin:0 0 4px;">翻译笔/跳绳</p>
+          <div style="display:flex;align-items:baseline;gap:2px;">
+            <span class="num" style="font-size:20px;color:var(--n900);">38</span>
+            <span style="font-size:10px;color:var(--n900);">分钟</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- App list -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <p style="font-size:14px;color:var(--n900);margin:0;">本周使用情况</p>
+        <button onclick="showPage('page-detail-apps')" style="font-size:12px;color:var(--n500);background:transparent;border:none;cursor:pointer;display:flex;align-items:center;gap:2px;">
+          查看全部
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 2.5l3 3.5-3 3.5" stroke="#999da6" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div>
+        <div class="app-row clickable" onclick="showPage('page-detail-apps')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#5fcfff,#38afff);display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:10px;color:white;font-weight:500;">英语</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <p style="font-size:14px;color:var(--n900);margin:0 0 6px;">瑞恩熊AI英语</p>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:75%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <p style="font-size:12px;color:var(--n700);margin:0;">2小时39分钟</p>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#999da6" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="app-row clickable" onclick="showPage('page-detail-apps')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#a8d8ff,#5fcfff);display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:10px;color:white;font-weight:500;">阅读</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <p style="font-size:14px;color:var(--n900);margin:0 0 6px;">分级阅读</p>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:52%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <p style="font-size:12px;color:var(--n700);margin:0;">1小时24分钟</p>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#999da6" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="app-row clickable" onclick="showPage('page-detail-apps')">
+          <div class="app-icon" style="background:linear-gradient(135deg,#ffd8a8,#ffb05c);display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:10px;color:white;font-weight:500;">英语</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <p style="font-size:14px;color:var(--n900);margin:0 0 6px;">新概念英语</p>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width:20%;background:linear-gradient(90deg,#ffd8a8,#ffb05c);"></div>
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <p style="font-size:12px;color:var(--n700);margin:0;">24分钟</p>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#999da6" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Learning outcomes card -->
+    <div class="card" style="padding:20px;background:linear-gradient(160deg,#fffbf0 0%,#fff8e8 100%);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <h2 style="font-size:16px;font-weight:400;color:var(--n900);margin:0;">学习成果</h2>
+        <span style="font-size:12px;color:#f0a500;">本周共 3 项成果</span>
+      </div>
+      <p style="font-size:12px;color:var(--n700);margin:0 0 16px;">点击成果数据可查看详情</p>
+
+      <!-- Timeline -->
+      <div style="position:relative;">
+        <!-- Item 1 -->
+        <div class="outcome-row clickable" onclick="showPage('page-outcome-detail')">
+          <div style="display:flex;flex-direction:column;align-items:center;width:8px;flex-shrink:0;padding-top:4px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#f0c842;flex-shrink:0;"></div>
+            <div style="width:1px;flex:1;background:rgba(240,200,66,0.3);min-height:32px;margin-top:4px;"></div>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+              <p style="font-size:14px;color:var(--n900);margin:0;">数学答题正确率提升</p>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#f0a500" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;color:var(--n700);">本周</span>
+              <span class="num" style="font-size:16px;color:#f0a500;font-weight:500;">87%</span>
+              <span style="font-size:12px;color:var(--n500);">vs 上周</span>
+              <span class="num" style="font-size:14px;color:var(--n700);">71%</span>
+              <span style="font-size:11px;color:#52c41a;background:#f6ffed;border-radius:4px;padding:1px 6px;">+16%</span>
+            </div>
+          </div>
+        </div>
+        <!-- Item 2 -->
+        <div class="outcome-row clickable" onclick="showPage('page-outcome-detail')">
+          <div style="display:flex;flex-direction:column;align-items:center;width:8px;flex-shrink:0;padding-top:4px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#f0c842;flex-shrink:0;"></div>
+            <div style="width:1px;flex:1;background:rgba(240,200,66,0.3);min-height:32px;margin-top:4px;"></div>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+              <p style="font-size:14px;color:var(--n900);margin:0;">英语分级阅读完成量</p>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#f0a500" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;color:var(--n700);">本周完成</span>
+              <span class="num" style="font-size:16px;color:#f0a500;font-weight:500;">12篇</span>
+              <span style="font-size:12px;color:var(--n500);">vs 上周</span>
+              <span class="num" style="font-size:14px;color:var(--n700);">8篇</span>
+              <span style="font-size:11px;color:#52c41a;background:#f6ffed;border-radius:4px;padding:1px 6px;">+50%</span>
+            </div>
+          </div>
+        </div>
+        <!-- Item 3 -->
+        <div class="outcome-row clickable" onclick="showPage('page-outcome-detail')">
+          <div style="display:flex;flex-direction:column;align-items:center;width:8px;flex-shrink:0;padding-top:4px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#f0c842;flex-shrink:0;"></div>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+              <p style="font-size:14px;color:var(--n900);margin:0;">语文字词练习连续打卡</p>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#f0a500" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;color:var(--n700);">连续打卡</span>
+              <span class="num" style="font-size:16px;color:#f0a500;font-weight:500;">7天</span>
+              <span style="font-size:12px;color:var(--n500);">历史最长记录</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Learning suggestions card -->
+    <div class="card" style="padding:20px;background:linear-gradient(160deg,#fff8f5 0%,#fff3ee 100%);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+        <h2 style="font-size:16px;font-weight:400;color:var(--n900);margin:0;">学习建议</h2>
+        <span style="font-size:12px;color:#fa772a;">本周 2 个关注点</span>
+      </div>
+      <p style="font-size:12px;color:var(--n700);margin:0 0 16px;">点击建议可查看具体提升方法</p>
+
+      <!-- Suggestion 1 -->
+      <div class="suggestion-row clickable" onclick="showPage('page-suggestion-detail')">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffcba8,#fa772a);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 2v8M5 7l3 3 3-3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M3 13h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <p style="font-size:14px;color:var(--n900);margin:0;font-weight:500;">英语词汇掌握偏弱</p>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#fa772a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p style="font-size:12px;color:var(--n700);margin:0;line-height:18px;">本周单词测试平均得分 62分，建议每天睡前花 10 分钟复习当天单词</p>
+        </div>
+      </div>
+
+      <!-- Suggestion 2 -->
+      <div class="suggestion-row clickable" onclick="showPage('page-suggestion-detail')">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ffcba8,#fa772a);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <circle cx="8" cy="8" r="5.5" stroke="white" stroke-width="1.5"/>
+            <path d="M8 5.5v3l2 1" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+            <p style="font-size:14px;color:var(--n900);margin:0;font-weight:500;">物理学习时间不足</p>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="#fa772a" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p style="font-size:12px;color:var(--n700);margin:0;line-height:18px;">本周物理仅学习 43 分钟，低于建议的每周 2 小时，可适当调整学习计划</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subject learning section -->
+    <div class="card" style="padding:20px 0 0;">
+      <div style="padding:0 20px 16px;">
+        <h2 style="font-size:16px;font-weight:400;color:var(--n900);margin:0 0 4px;">学科学习情况</h2>
+        <p style="font-size:12px;color:var(--n700);margin:0;">切换学科查看详细数据</p>
+      </div>
+
+      <!-- Subject tabs -->
+      <div class="scroll-x" style="padding:0 16px 16px;">
+        <div id="subject-tabs" style="display:flex;gap:8px;width:max-content;">
+          <div class="subject-pill active" id="tab-yuwen" onclick="switchSubject('yuwen')" style="background:linear-gradient(135deg,#5fcfff,#38afff);color:white;">语文</div>
+          <div class="subject-pill" id="tab-shuxue" onclick="switchSubject('shuxue')" style="background:var(--n100);color:var(--n700);">数学</div>
+          <div class="subject-pill" id="tab-yingyu" onclick="switchSubject('yingyu')" style="background:var(--n100);color:var(--n700);">英语</div>
+          <div class="subject-pill" id="tab-wuli" onclick="switchSubject('wuli')" style="background:var(--n100);color:var(--n700);">物理</div>
+          <div class="subject-pill" id="tab-huaxue" onclick="switchSubject('huaxue')" style="background:var(--n100);color:var(--n700);">化学</div>
+          <div class="subject-pill" id="tab-shengwu" onclick="switchSubject('shengwu')" style="background:var(--n100);color:var(--n700);">生物</div>
+        </div>
+      </div>
+
+      <!-- Subject content: 语文 -->
+      <div id="content-yuwen" class="subject-content active fade-in" style="padding:0 20px 20px;">
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">学习时长</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">2</span>
+              <span style="font-size:11px;color:var(--n900);">小时</span>
+              <span class="num" style="font-size:20px;color:var(--n900);">18</span>
+              <span style="font-size:11px;color:var(--n900);">分</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">练习完成率</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">91</span>
+              <span style="font-size:11px;color:var(--n900);">%</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">新增词汇</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">48</span>
+              <span style="font-size:11px;color:var(--n900);">个</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:13px;color:var(--n700);">知识掌握程度</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:12px;color:var(--n900);">字词理解</span>
+                <span class="num" style="font-size:12px;color:var(--blue);">88%</span>
+              </div>
+              <div class="mastery-bar"><div class="mastery-fill" style="width:88%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:12px;color:var(--n900);">阅读理解</span>
+                <span class="num" style="font-size:12px;color:var(--blue);">76%</span>
+              </div>
+              <div class="mastery-bar"><div class="mastery-fill" style="width:76%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:12px;color:var(--n900);">作文写作</span>
+                <span class="num" style="font-size:12px;color:var(--blue);">62%</span>
+              </div>
+              <div class="mastery-bar"><div class="mastery-fill" style="width:62%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject content: 数学 -->
+      <div id="content-shuxue" class="subject-content" style="padding:0 20px 20px;">
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">学习时长</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">3</span>
+              <span style="font-size:11px;color:var(--n900);">小时</span>
+              <span class="num" style="font-size:20px;color:var(--n900);">42</span>
+              <span style="font-size:11px;color:var(--n900);">分</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">答题正确率</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">87</span>
+              <span style="font-size:11px;color:var(--n900);">%</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">完成题数</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">124</span>
+              <span style="font-size:11px;color:var(--n900);">题</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">代数方程</span>
+              <span class="num" style="font-size:12px;color:var(--blue);">92%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:92%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">几何图形</span>
+              <span class="num" style="font-size:12px;color:var(--blue);">78%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:78%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">应用题解析</span>
+              <span class="num" style="font-size:12px;color:var(--blue);">85%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:85%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject content: 英语 -->
+      <div id="content-yingyu" class="subject-content" style="padding:0 20px 20px;">
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">学习时长</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">4</span>
+              <span style="font-size:11px;color:var(--n900);">小时</span>
+              <span class="num" style="font-size:20px;color:var(--n900);">11</span>
+              <span style="font-size:11px;color:var(--n900);">分</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">词汇测试</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">62</span>
+              <span style="font-size:11px;color:var(--n900);">分</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">阅读篇数</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">12</span>
+              <span style="font-size:11px;color:var(--n900);">篇</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">听力理解</span>
+              <span class="num" style="font-size:12px;color:var(--blue);">79%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:79%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">词汇掌握</span>
+              <span class="num" style="font-size:12px;color:#fa772a;">52%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:52%;background:linear-gradient(90deg,#ffd8a8,#fa772a);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">阅读理解</span>
+              <span class="num" style="font-size:12px;color:var(--blue);">83%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:83%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject content: 物理 -->
+      <div id="content-wuli" class="subject-content" style="padding:0 20px 20px;">
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">学习时长</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">43</span>
+              <span style="font-size:11px;color:var(--n900);">分钟</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">答题正确率</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">68</span>
+              <span style="font-size:11px;color:var(--n900);">%</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">完成章节</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">1</span>
+              <span style="font-size:11px;color:var(--n900);">章</span>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:12px;color:var(--n700);background:var(--n50);border-radius:8px;padding:10px 12px;line-height:18px;margin:0;">本周物理学习时间偏少，本周推荐学习「力与运动」章节，建议每天安排 20 分钟。</p>
+      </div>
+
+      <!-- Subject content: 化学 -->
+      <div id="content-huaxue" class="subject-content" style="padding:0 20px 20px;">
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">学习时长</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">1</span>
+              <span style="font-size:11px;color:var(--n900);">小时</span>
+              <span class="num" style="font-size:20px;color:var(--n900);">22</span>
+              <span style="font-size:11px;color:var(--n900);">分</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">实验完成</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">3</span>
+              <span style="font-size:11px;color:var(--n900);">个</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">答题正确率</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">74</span>
+              <span style="font-size:11px;color:var(--n900);">%</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">元素周期律</span>
+              <span class="num" style="font-size:12px;color:var(--blue);">81%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:81%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">化学方程式</span>
+              <span class="num" style="font-size:12px;color:var(--blue);">68%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:68%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject content: 生物 -->
+      <div id="content-shengwu" class="subject-content" style="padding:0 20px 20px;">
+        <div style="display:flex;gap:10px;margin-bottom:16px;">
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">学习时长</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">56</span>
+              <span style="font-size:11px;color:var(--n900);">分钟</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">答题正确率</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">80</span>
+              <span style="font-size:11px;color:var(--n900);">%</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">笔记条数</p>
+            <div style="display:flex;align-items:baseline;gap:2px;">
+              <span class="num" style="font-size:20px;color:var(--n900);">14</span>
+              <span style="font-size:11px;color:var(--n900);">条</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">细胞结构</span>
+              <span class="num" style="font-size:12px;color:var(--blue);">85%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:85%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">遗传变异</span>
+              <span class="num" style="font-size:12px;color:var(--blue);">73%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:73%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end content area -->
+
+  <div class="home-indicator"><div class="home-bar"></div></div>
+</div>
+</div><!-- end page-main -->
+
+
+<!-- PAGE: App Detail -->
+<div id="page-detail-apps" class="page">
+<div class="phone">
+  <div style="background:linear-gradient(180deg,#5fcfff 0%,#9be7ff 27%,#e3f3ff 80%,#f3f4f6 100%);padding:12px 24px 4px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <span class="num" style="font-size:15px;font-weight:500;color:var(--n900)">9:41</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="display:flex;align-items:flex-end;gap:2px;">
+          <div style="width:3px;height:4px;background:var(--n900);border-radius:1px;"></div>
+          <div style="width:3px;height:6px;background:var(--n900);border-radius:1px;"></div>
+          <div style="width:3px;height:9px;background:var(--n900);border-radius:1px;"></div>
+          <div style="width:3px;height:11px;background:var(--n900);border-radius:1px;"></div>
+        </div>
+        <div style="width:22px;height:11px;border:1px solid rgba(0,0,0,0.35);border-radius:2.5px;padding:1px;display:flex;align-items:center;">
+          <div style="width:18px;height:7px;background:var(--n900);border-radius:1px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(180deg,#e3f3ff 0%,#f3f4f6 100%);">
+    <button class="back-btn" onclick="showPage('page-main')">
+      <svg width="10" height="17" viewBox="0 0 10 17" fill="none">
+        <path d="M8.5 1.5L1.5 8.5l7 7" stroke="#1f2229" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h2 style="font-size:17px;font-weight:500;color:var(--n900);margin:0;">本周使用情况</h2>
+  </div>
+  <div style="padding:16px;display:flex;flex-direction:column;gap:12px;padding-bottom:32px;">
+    <div class="card" style="padding:20px;">
+      <p style="font-size:14px;color:var(--n700);margin:0 0 16px;">共使用 6 个应用，总时长 8小时54分</p>
+      <div>
+        <div class="app-row">
+          <div class="app-icon" style="background:linear-gradient(135deg,#5fcfff,#38afff);display:flex;align-items:center;justify-content:center;"><span style="font-size:10px;color:white;font-weight:500;">英语</span></div>
+          <div style="flex:1;min-width:0;">
+            <p style="font-size:14px;color:var(--n900);margin:0 0 6px;">瑞恩熊AI英语</p>
+            <div class="progress-bar"><div class="progress-fill" style="width:75%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+          </div>
+          <p style="font-size:12px;color:var(--n700);margin:0;flex-shrink:0;">2小时39分</p>
+        </div>
+        <div class="app-row">
+          <div class="app-icon" style="background:linear-gradient(135deg,#a8d8ff,#5fcfff);display:flex;align-items:center;justify-content:center;"><span style="font-size:10px;color:white;font-weight:500;">阅读</span></div>
+          <div style="flex:1;min-width:0;">
+            <p style="font-size:14px;color:var(--n900);margin:0 0 6px;">分级阅读</p>
+            <div class="progress-bar"><div class="progress-fill" style="width:52%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+          </div>
+          <p style="font-size:12px;color:var(--n700);margin:0;flex-shrink:0;">1小时24分</p>
+        </div>
+        <div class="app-row">
+          <div class="app-icon" style="background:linear-gradient(135deg,#ffd8a8,#ffb05c);display:flex;align-items:center;justify-content:center;"><span style="font-size:10px;color:white;font-weight:500;">英语</span></div>
+          <div style="flex:1;min-width:0;">
+            <p style="font-size:14px;color:var(--n900);margin:0 0 6px;">新概念英语</p>
+            <div class="progress-bar"><div class="progress-fill" style="width:20%;background:linear-gradient(90deg,#ffd8a8,#ffb05c);"></div></div>
+          </div>
+          <p style="font-size:12px;color:var(--n700);margin:0;flex-shrink:0;">24分</p>
+        </div>
+        <div class="app-row">
+          <div class="app-icon" style="background:linear-gradient(135deg,#c8f0a0,#5fce5f);display:flex;align-items:center;justify-content:center;"><span style="font-size:10px;color:white;font-weight:500;">数学</span></div>
+          <div style="flex:1;min-width:0;">
+            <p style="font-size:14px;color:var(--n900);margin:0 0 6px;">学而思数学</p>
+            <div class="progress-bar"><div class="progress-fill" style="width:60%;background:linear-gradient(90deg,#c8f0a0,#5fce5f);"></div></div>
+          </div>
+          <p style="font-size:12px;color:var(--n700);margin:0;flex-shrink:0;">1小时52分</p>
+        </div>
+        <div class="app-row">
+          <div class="app-icon" style="background:linear-gradient(135deg,#e8d0ff,#b070ff);display:flex;align-items:center;justify-content:center;"><span style="font-size:10px;color:white;font-weight:500;">语文</span></div>
+          <div style="flex:1;min-width:0;">
+            <p style="font-size:14px;color:var(--n900);margin:0 0 6px;">AI口语练习</p>
+            <div class="progress-bar"><div class="progress-fill" style="width:45%;background:linear-gradient(90deg,#e8d0ff,#b070ff);"></div></div>
+          </div>
+          <p style="font-size:12px;color:var(--n700);margin:0;flex-shrink:0;">1小时18分</p>
+        </div>
+        <div class="app-row">
+          <div class="app-icon" style="background:linear-gradient(135deg,#ffd8d8,#ff7070);display:flex;align-items:center;justify-content:center;"><span style="font-size:10px;color:white;font-weight:500;">综合</span></div>
+          <div style="flex:1;min-width:0;">
+            <p style="font-size:14px;color:var(--n900);margin:0 0 6px;">知识问答</p>
+            <div class="progress-bar"><div class="progress-fill" style="width:18%;background:linear-gradient(90deg,#ffd8d8,#ff7070);"></div></div>
+          </div>
+          <p style="font-size:12px;color:var(--n700);margin:0;flex-shrink:0;">28分</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="home-indicator"><div class="home-bar"></div></div>
+</div>
+</div><!-- end page-detail-apps -->
+
+
+<!-- PAGE: Outcome Detail -->
+<div id="page-outcome-detail" class="page">
+<div class="phone">
+  <div style="background:linear-gradient(180deg,#fffbf0 0%,#fff8e8 80%,#f3f4f6 100%);padding:12px 24px 4px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <span class="num" style="font-size:15px;font-weight:500;color:var(--n900)">9:41</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="display:flex;align-items:flex-end;gap:2px;">
+          <div style="width:3px;height:4px;background:var(--n900);border-radius:1px;"></div>
+          <div style="width:3px;height:6px;background:var(--n900);border-radius:1px;"></div>
+          <div style="width:3px;height:9px;background:var(--n900);border-radius:1px;"></div>
+          <div style="width:3px;height:11px;background:var(--n900);border-radius:1px;"></div>
+        </div>
+        <div style="width:22px;height:11px;border:1px solid rgba(0,0,0,0.35);border-radius:2.5px;padding:1px;display:flex;align-items:center;">
+          <div style="width:18px;height:7px;background:var(--n900);border-radius:1px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(180deg,#fff8e8 0%,#f3f4f6 100%);">
+    <button class="back-btn" onclick="showPage('page-main')">
+      <svg width="10" height="17" viewBox="0 0 10 17" fill="none">
+        <path d="M8.5 1.5L1.5 8.5l7 7" stroke="#1f2229" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h2 style="font-size:17px;font-weight:500;color:var(--n900);margin:0;">成果详情</h2>
+  </div>
+  <div style="padding:16px;display:flex;flex-direction:column;gap:12px;padding-bottom:32px;">
+    <div class="card" style="padding:20px;">
+      <h3 style="font-size:16px;font-weight:500;color:var(--n900);margin:0 0 8px;">数学答题正确率提升</h3>
+      <div style="display:flex;gap:16px;margin-bottom:20px;">
+        <div style="flex:1;background:#fffbf0;border-radius:10px;padding:14px;text-align:center;">
+          <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">本周</p>
+          <span class="num" style="font-size:32px;color:#f0a500;font-weight:500;">87%</span>
+        </div>
+        <div style="display:flex;align-items:center;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="#999da6" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div style="flex:1;background:var(--n50);border-radius:10px;padding:14px;text-align:center;">
+          <p style="font-size:11px;color:var(--n700);margin:0 0 4px;">上周</p>
+          <span class="num" style="font-size:32px;color:var(--n700);font-weight:400;">71%</span>
+        </div>
+      </div>
+      <p style="font-size:13px;color:var(--n700);line-height:22px;margin:0 0 16px;">小丸子本周在数学练习中表现出色，答题正确率相比上周提升了 16 个百分点。其中代数方程题型进步最为明显，建议继续保持并适当挑战更难的题型。</p>
+      <div style="background:var(--n50);border-radius:10px;padding:14px;">
+        <p style="font-size:13px;font-weight:500;color:var(--n900);margin:0 0 10px;">各题型正确率</p>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">代数方程</span>
+              <span class="num" style="font-size:12px;color:#f0a500;">92%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:92%;background:linear-gradient(90deg,#ffd880,#f0a500);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">应用题</span>
+              <span class="num" style="font-size:12px;color:#f0a500;">85%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:85%;background:linear-gradient(90deg,#ffd880,#f0a500);"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:12px;color:var(--n900);">几何图形</span>
+              <span class="num" style="font-size:12px;color:#f0a500;">78%</span>
+            </div>
+            <div class="mastery-bar"><div class="mastery-fill" style="width:78%;background:linear-gradient(90deg,#ffd880,#f0a500);"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="home-indicator"><div class="home-bar"></div></div>
+</div>
+</div><!-- end page-outcome-detail -->
+
+
+<!-- PAGE: Suggestion Detail -->
+<div id="page-suggestion-detail" class="page">
+<div class="phone">
+  <div style="background:linear-gradient(180deg,#fff8f5 0%,#fff3ee 80%,#f3f4f6 100%);padding:12px 24px 4px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <span class="num" style="font-size:15px;font-weight:500;color:var(--n900)">9:41</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="display:flex;align-items:flex-end;gap:2px;">
+          <div style="width:3px;height:4px;background:var(--n900);border-radius:1px;"></div>
+          <div style="width:3px;height:6px;background:var(--n900);border-radius:1px;"></div>
+          <div style="width:3px;height:9px;background:var(--n900);border-radius:1px;"></div>
+          <div style="width:3px;height:11px;background:var(--n900);border-radius:1px;"></div>
+        </div>
+        <div style="width:22px;height:11px;border:1px solid rgba(0,0,0,0.35);border-radius:2.5px;padding:1px;display:flex;align-items:center;">
+          <div style="width:18px;height:7px;background:var(--n900);border-radius:1px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:linear-gradient(180deg,#fff3ee 0%,#f3f4f6 100%);">
+    <button class="back-btn" onclick="showPage('page-main')">
+      <svg width="10" height="17" viewBox="0 0 10 17" fill="none">
+        <path d="M8.5 1.5L1.5 8.5l7 7" stroke="#1f2229" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <h2 style="font-size:17px;font-weight:500;color:var(--n900);margin:0;">提升建议</h2>
+  </div>
+  <div style="padding:16px;display:flex;flex-direction:column;gap:12px;padding-bottom:32px;">
+    <div class="card" style="padding:20px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#ffcba8,#fa772a);display:flex;align-items:center;justify-content:center;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 3v10M7 9l3 3 3-3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 16h12" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <h3 style="font-size:16px;font-weight:500;color:var(--n900);margin:0 0 2px;">英语词汇掌握偏弱</h3>
+          <span style="font-size:12px;color:#fa772a;">需要重点关注</span>
+        </div>
+      </div>
+      <div style="background:#fff8f5;border-radius:10px;padding:14px;margin-bottom:16px;">
+        <p style="font-size:13px;color:var(--n700);line-height:22px;margin:0;">本周单词测试平均得分仅 62 分，低于年级平均水平 75 分。分析原因：小丸子在单词记忆上花的时间较少，且缺少及时复习。</p>
+      </div>
+      <p style="font-size:14px;font-weight:500;color:var(--n900);margin:0 0 12px;">建议行动</p>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--n50);border-radius:10px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#fa772a,#ffa060);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-size:12px;color:white;font-weight:600;">1</span>
+          </div>
+          <div>
+            <p style="font-size:13px;font-weight:500;color:var(--n900);margin:0 0 2px;">每天睡前 10 分钟复习单词</p>
+            <p style="font-size:12px;color:var(--n700);margin:0;">可在「瑞恩熊AI英语」的词汇复习模块完成</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--n50);border-radius:10px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#fa772a,#ffa060);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-size:12px;color:white;font-weight:600;">2</span>
+          </div>
+          <div>
+            <p style="font-size:13px;font-weight:500;color:var(--n900);margin:0 0 2px;">利用艾宾浩斯遗忘曲线复习</p>
+            <p style="font-size:12px;color:var(--n700);margin:0;">分级阅读APP内的智能复习功能会自动安排复习时间</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:12px;background:var(--n50);border-radius:10px;">
+          <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#fa772a,#ffa060);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <span style="font-size:12px;color:white;font-weight:600;">3</span>
+          </div>
+          <div>
+            <p style="font-size:13px;font-weight:500;color:var(--n900);margin:0 0 2px;">家长可以一起参与亲子单词挑战</p>
+            <p style="font-size:12px;color:var(--n700);margin:0;">陪伴学习效果提升明显，推荐每周 2-3 次</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="home-indicator"><div class="home-bar"></div></div>
+</div>
+</div><!-- end page-suggestion-detail -->
+
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  var el = document.getElementById(id);
+  if (el) { el.classList.add('active'); el.scrollTop = 0; window.scrollTo(0,0); }
+}
+
+function toggleDatePicker() {
+  var dp = document.getElementById('date-picker');
+  dp.style.display = dp.style.display === 'none' ? 'block' : 'none';
+}
+
+function selectDate(range) {
+  document.getElementById('date-label').textContent = range;
+  document.getElementById('date-picker').style.display = 'none';
+}
+
+var subjects = ['yuwen','shuxue','yingyu','wuli','huaxue','shengwu'];
+
+function switchSubject(sub) {
+  subjects.forEach(function(s) {
+    var tab = document.getElementById('tab-' + s);
+    var content = document.getElementById('content-' + s);
+    if (s === sub) {
+      tab.classList.add('active');
+      tab.style.background = 'linear-gradient(135deg,#5fcfff,#38afff)';
+      tab.style.color = 'white';
+      content.classList.add('active');
+      content.classList.add('fade-in');
+    } else {
+      tab.classList.remove('active');
+      tab.style.background = 'var(--n100)';
+      tab.style.color = 'var(--n700)';
+      content.classList.remove('active');
+      content.classList.remove('fade-in');
+    }
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>写作思路</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+:root{
+  --blue:#4AADEA;--blue-d:#2D8BC9;--blue-l:#EAF5FC;
+  --green:#52C48C;--orange:#F5A623;
+  --text:#2C3E50;--t2:#6B7C93;--t3:#A0AEC0;
+  --bg:#F5F9FC;--white:#FFF;
+  --sh:0 2px 12px rgba(0,0,0,.06);--r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'Noto Sans SC','PingFang SC',sans-serif;
+  background:var(--bg);color:var(--text);
+  display:flex;flex-direction:column;
+  height:100dvh;max-width:480px;margin:0 auto;
+}
+/* nav */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;background:var(--bg);flex-shrink:0;position:relative;z-index:10}
+.nav-back{width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.nav-title{font-size:17px;font-weight:700;position:absolute;left:50%;transform:translateX(-50%)}
+.nav-r{display:flex;gap:10px}
+.nav-ic{width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+/* scroll */
+.sc{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 16px 12px;-webkit-overflow-scrolling:touch}
+.sc::-webkit-scrollbar{display:none}
+/* bottom panel */
+.bp{flex-shrink:0;background:linear-gradient(180deg,transparent 0,rgba(235,245,252,.95) 20%,#edf5fb 50%);padding:0 12px 22px;position:relative;z-index:10}
+.bp-in{display:flex;align-items:flex-end;gap:6px}
+.ti{width:96px;flex-shrink:0;margin-bottom:-2px}
+.ti svg{width:100%;filter:drop-shadow(0 4px 10px rgba(0,0,0,.09))}
+.sa{flex:1;display:flex;flex-direction:column;gap:8px}
+.sb{background:rgba(48,65,80,.86);backdrop-filter:blur(12px);border-radius:14px;padding:11px 14px;font-size:13px;color:rgba(255,255,255,.93);line-height:1.75;box-shadow:0 4px 18px rgba(0,0,0,.12)}
+.sb .tc{display:inline-block;width:2px;height:13px;background:rgba(255,255,255,.7);margin-left:2px;vertical-align:middle;animation:bk .8s infinite}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:0}}
+.sbr{display:flex;gap:8px}
+.sbtn{flex:1;padding:11px 0;border-radius:22px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;text-align:center;transition:all .2s;border:none}
+.sbtn-p{background:var(--blue);color:#fff;box-shadow:0 3px 10px rgba(74,173,234,.3)}
+.sbtn-s{background:#fff;color:var(--text);border:1.5px solid #D0DCE8!important}
+.sbtn:active{transform:scale(.96)}
+/* pages */
+.page{display:none}
+.page.active{display:block;animation:fi .3s ease}
+@keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+/* done card */
+.dc{display:flex;align-items:center;gap:10px;background:#fff;border-radius:var(--r);padding:13px 16px;margin-bottom:10px;box-shadow:var(--sh)}
+.dc .stric{width:22px;height:22px;flex-shrink:0}
+.dc span{flex:1;font-size:15px;font-weight:600}
+.dc .ck{width:22px;height:22px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* main card */
+.mc{background:#fff;border-radius:var(--r);padding:18px 16px;box-shadow:var(--sh);margin-bottom:12px}
+.mc-t{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700;margin-bottom:14px}
+.mc-t .stric{width:22px;height:22px}
+/* topic */
+.tl{font-size:14px;color:var(--text);line-height:1.85}
+.tl em{color:var(--blue);font-style:normal;font-weight:600}
+/* chat */
+.ca{display:flex;flex-direction:column;gap:8px}
+.ub{background:var(--blue);color:#fff;border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:13px;line-height:1.6;align-self:flex-end;max-width:82%}
+.ab{background:#F0F6FB;border-radius:4px 14px 14px 14px;padding:10px 14px;font-size:13px;color:var(--text);line-height:1.7;max-width:90%}
+.ld{display:inline-flex;gap:3px}
+.ld span{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:ld 1.2s infinite}
+.ld span:nth-child(2){animation-delay:.2s}
+.ld span:nth-child(3){animation-delay:.4s}
+@keyframes ld{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-4px);opacity:1}}
+/* input */
+.ib{display:flex;gap:8px;align-items:flex-end;background:#fff;border-radius:12px;padding:8px 10px;border:1.5px solid #D8E6F0;margin-top:8px}
+.ib textarea{flex:1;border:none;outline:none;font-size:14px;font-family:inherit;color:var(--text);resize:none;background:transparent;min-height:32px;max-height:88px;line-height:1.5}
+.ib textarea::placeholder{color:#B0C4D8}
+.snd{width:34px;height:34px;border-radius:50%;background:var(--blue);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.snd svg{width:14px;height:14px;fill:#fff}
+.mic{width:34px;height:34px;border-radius:50%;background:#EEF5FC;border:1px solid #C8DCEE;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mic svg{width:14px;height:14px;fill:var(--blue)}
+/* opt */
+.op{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1.5px solid #D8E6F0;border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;font-size:13px;line-height:1.6}
+.op:active,.op.sl{border-color:var(--blue);background:var(--blue-l)}
+.on2{width:20px;height:20px;border-radius:50%;background:#E4EEF6;color:var(--blue-d);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.op.sl .on2{background:var(--blue);color:#fff}
+/* big btn */
+.bb{width:100%;padding:13px;border-radius:24px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;text-align:center;border:none;margin-top:10px;transition:all .15s}
+.bb:active{transform:scale(.97)}
+.bb-p{background:var(--blue);color:#fff;box-shadow:0 3px 12px rgba(74,173,234,.3)}
+/* rec row */
+.rr{display:flex;align-items:center;gap:6px;margin-bottom:14px;font-size:12px;color:var(--t3)}
+.rr .lk{color:var(--blue);font-weight:600;font-size:13px}
+/* mindmap */
+.mm{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:6px 0 20px}
+.mm::-webkit-scrollbar{display:none}
+.mm-c{position:relative;width:340px;height:190px}
+.mn{position:absolute;border-radius:8px;padding:6px 10px;font-size:11px;line-height:1.45;white-space:nowrap}
+.mn-rt{background:var(--blue);color:#fff;font-weight:700;font-size:12px;box-shadow:0 2px 8px rgba(74,173,234,.3)}
+.mn-sc{background:#fff;border:1.5px solid #C0D8EA;font-weight:600;color:var(--text)}
+.mn-dt{background:#F8FBFE;border:1px solid #DCE8F2;color:var(--t2);font-size:10.5px;white-space:normal;max-width:122px;line-height:1.4}
+.mn-dt.dm{opacity:.3}
+.mm-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.rf{position:absolute;bottom:0;right:0;display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t3);cursor:pointer}
+/* tabs */
+.tb{display:flex;margin-bottom:14px}
+.ti2{flex:1;text-align:center;padding:9px 0;font-size:14px;font-weight:600;color:var(--t2);cursor:pointer;border:1.5px solid #D0DCE8;background:#fff;transition:all .2s}
+.ti2:first-child{border-radius:10px 0 0 10px}
+.ti2:last-child{border-radius:0 10px 10px 0}
+.ti2:not(:first-child){border-left:none}
+.ti2.on{background:var(--blue-l);color:var(--blue);border-color:var(--blue)}
+/* material */
+.mq{font-size:13.5px;color:var(--t2);line-height:1.7;margin-bottom:16px}
+.mh{font-size:16px;font-weight:700;color:var(--text);margin:0 0 12px}
+.mi{font-size:14px;line-height:1.9;color:var(--text);margin-bottom:12px}
+.mt{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:500;margin-left:6px;vertical-align:middle}
+.mt-b{background:var(--blue-l);color:var(--blue-d)}
+.mt-o{background:#FFF3E0;color:#D08000}
+.mt-g{background:#E8F8EF;color:#2A8C5A}
+.ph{font-size:16px;font-weight:700;color:var(--text);margin:20px 0 12px}
+.pl{font-size:14px;line-height:2.3;color:var(--text);margin-bottom:4px}
+.bl{display:inline-block;border-bottom:1.5px solid var(--t3);min-width:48px;margin:0 2px}
+.tr{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.tp{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid #D0DCE8;color:var(--t2);background:#fff}
+/* jump btns */
+.jl{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.jb{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:14px;box-shadow:var(--sh);cursor:pointer;transition:all .15s}
+.jb:active{transform:scale(.98);background:#F8FBFE}
+.ji{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ji svg{width:20px;height:20px}
+.jn{flex:1}
+.jt{font-size:14px;font-weight:600;color:var(--text)}
+.js{font-size:11px;color:var(--t3);margin-top:2px}
+</style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<div class="nav">
+  <div class="nav-back" onclick="goBack()"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2C3E50" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg></div>
+  <div class="nav-title" id="navT">写作思路</div>
+  <div class="nav-r">
+    <div class="nav-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2C3E50" stroke-width="2.5"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></div>
+    <div class="nav-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2C3E50" stroke-width="2"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9"/></svg></div>
+  </div>
+</div>
+
+<!-- 内容区 -->
+<div class="sc" id="sc">
+
+<!-- P0 审题 -->
+<div class="page active" id="p0">
+  <div class="mc">
+    <div class="mc-t"><div class="stric"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.3 7L12 16.5 5.7 21l2.3-7L2 9.5h7.5z" fill="#F5A623"/></svg></div>明确题目要求</div>
+    <div class="tl" style="font-weight:600;margin-bottom:12px">题目：我的植物朋友</div>
+    <div class="tl">1 写一篇关于<em>植物</em>的记叙文，表达真情实感；</div>
+    <div class="tl">2 需要描述一件<em>具体的事例</em>，把植物的形象生动地展现出来；</div>
+    <div class="tl">3 作文字数<em>400字以上</em></div>
+  </div>
+</div>
+
+<!-- P1 选材 -->
+<div class="page" id="p1">
+  <div class="dc"><div class="stric"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.3 7L12 16.5 5.7 21l2.3-7L2 9.5h7.5z" fill="#F5A623"/></svg></div><span>明确题目要求</span><div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+  <div class="mc">
+    <div class="mc-t"><div class="stric"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.3 7L12 16.5 5.7 21l2.3-7L2 9.5h7.5z" fill="#F5A623"/></svg></div>确定写作内容</div>
+    <div class="ca" id="chat1"></div>
+    <div id="inp1"><div class="ib"><textarea id="ui1" placeholder="请在这里输入你的回答..." rows="1" oninput="ar(this)"></textarea><div class="mic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="23" stroke="currentColor" stroke-width="2"/></svg></div><button class="snd" onclick="sub1()"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22 11 13 2 9z"/></svg></button></div></div>
+    <div id="cb1" style="display:none"><button class="bb bb-p" onclick="goTo(2)">确认素材，进入立意</button></div>
+  </div>
+</div>
+
+<!-- P2 立意 -->
+<div class="page" id="p2">
+  <div class="dc"><div class="stric"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.3 7L12 16.5 5.7 21l2.3-7L2 9.5h7.5z" fill="#F5A623"/></svg></div><span>明确题目要求</span><div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+  <div class="dc"><div class="stric"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.3 7L12 16.5 5.7 21l2.3-7L2 9.5h7.5z" fill="#F5A623"/></svg></div><span>确定写作内容</span><div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+  <div class="mc">
+    <div class="mc-t"><div class="stric"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.3 7L12 16.5 5.7 21l2.3-7L2 9.5h7.5z" fill="#F5A623"/></svg></div>确定写作中心思想</div>
+    <div class="ca" id="chat2"></div>
+    <div id="inp2"><div class="ib"><textarea id="ui2" placeholder="比如：我想表达对仙人掌顽强精神的敬佩..." rows="1" oninput="ar(this)"></textarea><button class="snd" onclick="subTh()"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22 11 13 2 9z"/></svg></button></div><p style="font-size:12px;color:var(--blue);text-align:center;margin-top:6px;cursor:pointer" onclick="showOpts()">不知道怎么写？点此让AI帮你</p></div>
+    <div id="thO" style="display:none"></div>
+    <div id="cb2" style="display:none"><button class="bb bb-p" onclick="goTo(3)">确认立意，搭建框架</button></div>
+  </div>
+</div>
+
+<!-- P3 框架 -->
+<div class="page" id="p3">
+  <div class="dc"><div class="stric"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.3 7L12 16.5 5.7 21l2.3-7L2 9.5h7.5z" fill="#F5A623"/></svg></div><span>前3步已完成</span><div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+  <div class="mc">
+    <div class="mc-t"><div class="stric"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.3 7L12 16.5 5.7 21l2.3-7L2 9.5h7.5z" fill="#F5A623"/></svg></div>确定写作提纲</div>
+    <div class="ca" id="chat3"></div>
+    <div id="inp3"><div class="ib"><textarea id="ui3" placeholder="请描述这部分的写作思路..." rows="1" oninput="ar(this)"></textarea><div class="mic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="19" x2="12" y2="23" stroke="currentColor" stroke-width="2"/></svg></div><button class="snd" onclick="subF()"><svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22 11 13 2 9z"/></svg></button></div><p style="font-size:11px;color:var(--t3);text-align:center;margin-top:4px" id="fhint">请描述文章的"开头"部分</p></div>
+  </div>
+</div>
+
+<!-- P4 提纲确认 -->
+<div class="page" id="p4">
+  <div class="dc"><div class="stric"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.3 7L12 16.5 5.7 21l2.3-7L2 9.5h7.5z" fill="#F5A623"/></svg></div><span>明确题目要求</span><div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+  <div class="dc"><div class="stric"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.3 7L12 16.5 5.7 21l2.3-7L2 9.5h7.5z" fill="#F5A623"/></svg></div><span>确定写作内容</span><div class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+  <div class="mc">
+    <div class="mc-t"><div class="stric"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 7.5H22l-6 4.5 2.3 7L12 16.5 5.7 21l2.3-7L2 9.5h7.5z" fill="#F5A623"/></svg></div>确定写作提纲</div>
+    <div class="rr"><span>推荐观看</span><span class="lk" id="rlk">写作主题：我的仙人掌朋友——列提纲</span></div>
+    <!-- 思维导图 -->
+    <div class="mm">
+      <div class="mm-c">
+        <svg class="mm-svg" viewBox="0 0 340 190" id="mmSvg"></svg>
+        <!-- 根节点 -->
+        <div class="mn mn-rt" id="mmR" style="left:0;top:76px">我的植物朋友</div>
+        <!-- 一级节点 -->
+        <div class="mn mn-sc" id="mmN0" style="left:126px;top:14px">开头</div>
+        <div class="mn mn-sc" id="mmN1" style="left:126px;top:80px">中间</div>
+        <div class="mn mn-sc" id="mmN2" style="left:126px;top:150px">结尾</div>
+        <!-- 二级节点 -->
+        <div class="mn mn-dt" id="mmD0" style="left:192px;top:6px"></div>
+        <div class="mn mn-dt" id="mmD1a" style="left:192px;top:52px"></div>
+        <div class="mn mn-dt" id="mmD1b" style="left:192px;top:86px"></div>
+        <div class="mn mn-dt" id="mmD1c" style="left:192px;top:116px"></div>
+        <div class="mn mn-dt" id="mmD2" style="left:192px;top:144px"></div>
+      </div>
+    </div>
+    <div class="rf" onclick="alert('换一换')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>换一换</div>
+    <div style="margin-top:6px" id="rvA" style="display:none">
+      <div class="ab" style="margin-bottom:8px">你想修改哪个部分呢？</div>
+      <div class="op" onclick="doRev(0)"><div class="on2">开</div>修改开头部分</div>
+      <div class="op" onclick="doRev(1)"><div class="on2">中</div>修改中间部分</div>
+      <div class="op" onclick="doRev(2)"><div class="on2">结</div>修改结尾部分</div>
+    </div>
+  </div>
+</div>
+
+<!-- P5 写作素材 -->
+<div class="page" id="p5">
+  <div class="tb">
+    <div class="ti2 on" onclick="stab(0)">开头</div>
+    <div class="ti2" onclick="stab(1)">中间</div>
+    <div class="ti2" onclick="stab(2)">结尾</div>
+  </div>
+  <div id="tc0">
+    <div class="mq">怎么描写第一次见到仙人掌时的情景呢？</div>
+    <div class="mh">内容示范</div>
+    <div class="mi">1.窗台上那株仙人掌，浑身长满了密密麻麻的小刺，像一个穿着铠甲的小勇士，默默守护着我的窗前。<span class="mt mt-b">比喻</span></div>
+    <div class="mi">2.它的茎干又厚又绿，像翡翠一样晶莹剔透，而我总担心那些尖刺会把阳光都扎疼了。<span class="mt mt-b">比喻</span></div>
+    <div class="mi">3.整个房间安静得仿佛只听见仙人掌在悄悄生长，连空气都变得温柔起来。<span class="mt mt-o">夸张</span></div>
+    <div class="ph">句式表达</div>
+    <div class="pl"><span class="bl"></span>的仙人掌，长满了<span class="bl"></span>。窗台上<span class="bl"></span>，像<span class="bl"></span>。</div>
+    <div class="pl"><span class="bl"></span>的茎干，像<span class="bl"></span>，看得我<span class="bl"></span>。</div>
+    <div class="tr"><div class="tp">夸张</div><div class="tp">环境烘托</div><div class="tp">心理描写</div></div>
+  </div>
+  <div id="tc1" style="display:none">
+    <div class="mq">怎么写与仙人掌之间发生的故事呢？</div>
+    <div class="mh">内容示范</div>
+    <div class="mi">1.有一次妈妈出差一个月忘记浇水，我以为它会枯萎，可它依然挺立着，甚至开出了一朵小花。<span class="mt mt-g">细节</span></div>
+    <div class="mi">2.我小心翼翼地给它浇水，生怕弄疼了它，结果它的刺轻轻扎了我一下，好像在说："谢谢你！"<span class="mt mt-b">拟人</span></div>
+    <div class="ph">句式表达</div>
+    <div class="pl">记得有一次，<span class="bl"></span>，我以为<span class="bl"></span>，没想到<span class="bl"></span>。</div>
+    <div class="pl">那一刻，我<span class="bl"></span>，心里<span class="bl"></span>。</div>
+    <div class="tr"><div class="tp">叙事</div><div class="tp">心理描写</div><div class="tp">拟人</div></div>
+  </div>
+  <div id="tc2" style="display:none">
+    <div class="mq">怎么在结尾点明中心思想、升华感情？</div>
+    <div class="mh">内容示范</div>
+    <div class="mi">1.这株仙人掌告诉我，不需要鲜花和掌声，只要坚持生长，就是最了不起的事。<span class="mt mt-g">感悟</span></div>
+    <div class="mi">2.它是我最特别的植物朋友，教会了我在困难面前，也要像它一样坚强。<span class="mt mt-o">升华</span></div>
+    <div class="ph">句式表达</div>
+    <div class="pl">这株<span class="bl"></span>，让我明白了<span class="bl"></span>，它将永远是<span class="bl"></span>。</div>
+    <div class="tr"><div class="tp">总结</div><div class="tp">抒情</div><div class="tp">升华主题</div></div>
+  </div>
+  <div class="jl">
+    <div class="jb" onclick="alert('AI思路成文')"><div class="ji" style="background:var(--blue-l)"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div><div class="jn"><div class="jt">AI 思路成文</div><div class="js">根据提纲一键生成作文草稿</div></div><span style="color:var(--t3);font-size:18px">›</span></div>
+    <div class="jb" onclick="alert('作文批改')"><div class="ji" style="background:#E8F8EF"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div class="jn"><div class="jt">作文批改</div><div class="js">上传作文，AI 智能批改点评</div></div><span style="color:var(--t3);font-size:18px">›</span></div>
+    <div class="jb" onclick="alert('素材库')"><div class="ji" style="background:#FFF3E0"><svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div class="jn"><div class="jt">写作素材库</div><div class="js">更多范文、好词好句</div></div><span style="color:var(--t3);font-size:18px">›</span></div>
+  </div>
+</div>
+
+</div><!-- /sc -->
+
+<!-- 底部教师面板 -->
+<div class="bp">
+  <div class="bp-in">
+    <div class="ti">
+      <svg viewBox="0 0 140 220" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="70" cy="216" rx="28" ry="5" fill="rgba(0,0,0,.07)"/>
+        <path d="M46 142Q70 176 94 142L100 202Q70 215 40 202Z" fill="#78C4E8"/>
+        <path d="M46 142Q70 160 94 142L98 176Q70 189 42 176Z" fill="#9AD4F0"/>
+        <rect x="44" y="100" width="52" height="50" rx="12" fill="#F5EDE0"/>
+        <path d="M60 105L70 114L80 105" stroke="#C09888" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M64 102Q70 98 76 102" fill="#4A7A4A" stroke="none"/>
+        <ellipse cx="70" cy="103" rx="5" ry="2.5" fill="#4A7A4A" opacity=".8"/>
+        <path d="M46 110Q28 97 34 78" stroke="#F5D5B8" stroke-width="14" stroke-linecap="round" fill="none"/>
+        <path d="M34 78Q30 66 38 58" stroke="#F5D5B8" stroke-width="11" stroke-linecap="round" fill="none"/>
+        <circle cx="38" cy="58" r="5" fill="#F5D5B8"/>
+        <path d="M94 110Q110 118 106 134" stroke="#F5D5B8" stroke-width="13" stroke-linecap="round" fill="none"/>
+        <ellipse cx="70" cy="62" rx="30" ry="32" fill="#F5D5B8"/>
+        <ellipse cx="70" cy="46" rx="30" ry="22" fill="#3A2518"/>
+        <path d="M40 52Q44 64 46 72" stroke="#3A2518" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <path d="M100 52Q96 64 94 72" stroke="#3A2518" stroke-width="9" stroke-linecap="round" fill="none"/>
+        <path d="M44 38Q56 28 70 30Q84 28 96 38" stroke="#3A2518" stroke-width="12" stroke-linecap="round" fill="none"/>
+        <path d="M56 30Q66 24 76 28" stroke="rgba(255,255,255,.15)" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <circle cx="60" cy="64" r="3.5" fill="#fff"/>
+        <circle cx="80" cy="64" r="3.5" fill="#fff"/>
+        <circle cx="61" cy="65" r="2" fill="#3A2518"/>
+        <circle cx="81" cy="65" r="2" fill="#3A2518"/>
+        <circle cx="61.8" cy="64.2" r=".9" fill="#fff"/>
+        <circle cx="81.8" cy="64.2" r=".9" fill="#fff"/>
+        <path d="M56 57Q60 54 64 56" stroke="#3A2518" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M76 56Q80 54 84 57" stroke="#3A2518" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M63 72Q70 77 77 72" stroke="#C08878" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <ellipse cx="53" cy="70" rx="5" ry="3" fill="#FFB0A0" opacity=".4"/>
+        <ellipse cx="87" cy="70" rx="5" ry="3" fill="#FFB0A0" opacity=".4"/>
+      </svg>
+    </div>
+    <div class="sa">
+      <div class="sb" id="sbub"><span id="stxt"></span><span class="tc" id="scur"></span></div>
+      <div class="sbr" id="sbtns" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let cur=0;
+const D={plant:'仙人掌',outlines:['','',''],theme:''};
+let q1s=0,q1d=false,fs=0,mi=[false,false,false,false,false,false];
+
+const Q1=[
+  '同学你好，我是你的AI写作老师！题目是《我的植物朋友》，请告诉我你想写哪种植物呀？',
+  '很好！{p}真是个不错的选择。请描述一下它的外形特点，比如颜色、形状、大小？',
+  '描述得很生动！那{p}有什么特别的生长习性呢？比如喜欢阳光还是耐旱？',
+  '了解了！那你和{p}之间有什么有趣或感人的故事吗？',
+  '太棒了！最后，你为什么喜欢{p}呢？它对你有什么特别的意义？'
+];
+const FP=[
+  '好的，我们先来构思文章的"开头"。你打算如何开头？可以用环境描写引出植物，或描写第一次见到它的情景。',
+  '开头构思很好！接下来是文章"中间"主体部分，你准备写哪些具体内容？比如外形、习性，以及你们之间的故事。',
+  '中间部分很充实！最后构思"结尾"，要点明中心思想，让文章有力量。你想怎样收尾？'
+];
+const FN=['开头','中间','结尾'];
+
+function goTo(n){
+  document.getElementById('p'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('p'+n).classList.add('active');
+  document.getElementById('sc').scrollTop=0;
+  document.getElementById('navT').textContent=n===5?'写作素材':'写作思路';
+  onEnter(n);
+}
+function goBack(){if(cur>0)goTo(cur-1);}
+
+function onEnter(n){
+  if(n===0&&!mi[0])startM0();
+  if(n===1&&!mi[1])startM1();
+  if(n===2&&!mi[2])startM2();
+  if(n===3&&!mi[3])startM3();
+  if(n===4)fillP4();
+  if(n===5)setBP('写作准备全部完成！这里有和你的写作主题匹配的范文和素材，快去看看吧。',null);
+}
+
+function setBP(text,btns,cb){
+  const txt=document.getElementById('stxt');
+  const c=document.getElementById('scur');
+  const ba=document.getElementById('sbtns');
+  txt.textContent='';c.style.display='inline-block';
+  ba.style.display='none';ba.innerHTML='';
+  typeS(txt,c,text,38,()=>{
+    c.style.display='none';
+    if(btns){ba.style.display='flex';btns.forEach(b=>{const el=document.createElement('button');el.className='sbtn '+(b.p?'sbtn-p':'sbtn-s');el.textContent=b.l;el.onclick=b.a;ba.appendChild(el);});}
+    if(cb)cb();
+  });
+}
+
+function startM0(){
+  mi[0]=true;
+  setTimeout(()=>setBP('题目：我的植物朋友\n1 这是一篇描写植物的记叙文，以下要求需要关注：\n1 选取一种与你有故事的植物；\n2 需要描述具体的事例，把植物形象生动地展现出来......',
+    [{l:'我明白了，开始选材',p:true,a:()=>goTo(1)}]
+  ),400);
+}
+
+function startM1(){
+  mi[1]=true;
+  setTimeout(()=>{aiMsg('chat1',Q1[0]);setBP('请根据我的提问，描述你想写的植物吧！',null);},300);
+}
+function sub1(){
+  const v=gv('ui1');if(!v)return;
+  uMsg('chat1',v);
+  if(q1s===0){D.plant=v.replace(/[，,。.！!？?\s]/g,'').substring(0,8)||v.substring(0,8);updatePR();}
+  q1s++;
+  if(q1s<Q1.length)setTimeout(()=>aiMsg('chat1',Q1[q1s].replace(/{p}/g,D.plant)),400);
+  else if(!q1d){q1d=true;setTimeout(()=>{aiMsg('chat1','太棒了！你对"'+D.plant+'"的了解真丰富！素材收集完毕。');document.getElementById('inp1').style.display='none';document.getElementById('cb1').style.display='block';setBP('素材已经很充足了，点击按钮进入下一步。',null);},400);}
+}
+
+function startM2(){
+  mi[2]=true;
+  setTimeout(()=>{aiMsg('chat2','你已经选好了植物朋友"'+D.plant+'"。现在，我们来想想这篇文章最想表达什么中心思想？你觉得通过写'+D.plant+'，你想告诉读者什么？');setBP('想一想写'+D.plant+'最想表达的感情是什么？可以直接输入，也可以让我帮你。',null);},300);
+}
+function showOpts(){
+  document.getElementById('inp2').style.display='none';
+  const c=document.getElementById('thO');c.style.display='block';
+  const ts=['通过写'+D.plant+'在干旱中顽强生长，赞美坚韧不拔的精神','记述与'+D.plant+'相处的温馨故事，表达对"无声朋友"的深厚感情','通过观察'+D.plant+'的成长，感悟到平凡中也有坚守与美丽'];
+  c.innerHTML='<div style="font-size:12px;color:var(--t3);margin-bottom:8px">AI 为你准备了几个立意方案：</div>';
+  ts.forEach((t,i)=>{c.innerHTML+=`<div class="op" onclick="selTh(this,${i})"><div class="on2">${i+1}</div><div>${t}</div></div>`;});
+}
+function selTh(el,i){document.querySelectorAll('#thO .op').forEach(o=>o.classList.remove('sl'));el.classList.add('sl');D.theme=el.querySelector('div:last-child').textContent;document.getElementById('cb2').style.display='block';}
+function subTh(){const v=gv('ui2');if(!v){showOpts();return;}D.theme=v;document.getElementById('inp2').style.display='none';document.getElementById('cb2').style.display='block';}
+
+function startM3(){
+  mi[3]=true;fs=0;
+  setTimeout(()=>{aiMsg('chat3',FP[0]);setBP('我们来分三步构思：开头、中间、结尾。先从"开头"开始吧！',null);document.getElementById('fhint').textContent='请描述文章的"开头"部分';},300);
+}
+function subF(){
+  const v=gv('ui3');if(!v)return;
+  uMsg('chat3',v);D.outlines[fs]=v;fs++;
+  if(fs<3){document.getElementById('fhint').textContent='请描述文章的"'+FN[fs]+'"部分';setTimeout(()=>{aiMsg('chat3',FP[fs]);setBP('"'+FN[fs-1]+'"部分确定了！接下来构思"'+FN[fs]+'"部分。',null);},500);}
+  else{document.getElementById('inp3').style.display='none';setTimeout(()=>{aiMsg('chat3','三个部分都构思完毕！提纲非常清晰。');setBP('提纲构思完成！进入最终确认。',[{l:'进入提纲确认',p:true,a:()=>goTo(4)}]);},500);}
+}
+
+function fillP4(){
+  const def=['描述第一次见到'+D.plant+'时的情景，引出印象','详细描写'+D.plant+'外形、习性及相处故事','点明中心思想，表达对'+D.plant+'的敬佩与感悟'];
+  const ids=['mmD0','mmD1a','mmD1b','mmD1c','mmD2'];
+  ids.forEach(id=>document.getElementById(id).style.display='none');
+  // 填充节点
+  const d0=document.getElementById('mmD0');d0.textContent=D.outlines[0]||def[0];d0.style.display='block';d0.classList.remove('dm');
+  const d1a=document.getElementById('mmD1a');d1a.textContent=D.outlines[1]||def[1];d1a.style.display='block';d1a.classList.remove('dm');d1a.style.top='60px';
+  const d2=document.getElementById('mmD2');d2.textContent=D.outlines[2]||def[2];d2.style.display='block';d2.classList.remove('dm');
+  drawMM();
+  document.getElementById('rlk').textContent='写作主题：我的'+D.plant+'朋友——列提纲';
+  setBP('很好！我们一起输出了"'+D.plant+'"的写作提纲，去试试完成完整的写作内容吧。',
+    [{l:'确认提纲',p:true,a:()=>goTo(5)},{l:'修改提纲',p:false,a:toggleRev}]
+  );
+}
+function drawMM(){
+  document.getElementById('mmSvg').innerHTML=`
+    <path d="M96 92 C110 92 112 28 126 28" fill="none" stroke="#B8D4E8" stroke-width="1.5"/>
+    <path d="M96 92 C110 92 118 92 126 92" fill="none" stroke="#B8D4E8" stroke-width="1.5"/>
+    <path d="M96 92 C110 92 112 162 126 162" fill="none" stroke="#B8D4E8" stroke-width="1.5"/>
+    <path d="M166 28 L192 22" fill="none" stroke="#B8D4E8" stroke-width="1.5"/>
+    <path d="M166 92 L192 72" fill="none" stroke="#B8D4E8" stroke-width="1.5"/>
+    <path d="M166 162 L192 156" fill="none" stroke="#B8D4E8" stroke-width="1.5"/>
+  `;
+}
+function toggleRev(){const a=document.getElementById('rvA');a.style.display=a.style.display==='none'?'block':'none';}
+function doRev(i){fs=i;D.outlines[i]='';mi[3]=false;goTo(3);mi[3]=true;setTimeout(()=>{aiMsg('chat3','好的，我们来重新构思"'+FN[i]+'"部分。'+FP[i]);document.getElementById('fhint').textContent='请重新描述"'+FN[i]+'"部分';document.getElementById('inp3').style.display='block';},300);}
+
+function stab(i){for(let j=0;j<3;j++){document.getElementById('tc'+j).style.display=j===i?'block':'none';document.querySelector('.tb').children[j].className='ti2'+(j===i?' on':'');}}
+
+function updatePR(){const refs=['rlk'];refs.forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='写作主题：我的'+D.plant+'朋友——列提纲';});}
+function gv(id){const el=document.getElementById(id);const v=el.value.trim();el.value='';ar(el);return v;}
+function ar(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,88)+'px';}
+function sb(){document.getElementById('sc').scrollTop=9999;}
+
+function aiMsg(cid,text){
+  const c=document.getElementById(cid);
+  const d=document.createElement('div');d.className='ab';
+  d.innerHTML='<span class="ld"><span></span><span></span><span></span></span>';
+  c.appendChild(d);sb();
+  setTimeout(()=>{d.innerHTML='';const sp=document.createElement('span');d.appendChild(sp);const cu=document.createElement('span');cu.className='tc';d.appendChild(cu);typeS(sp,cu,text,35,()=>{cu.style.display='none';sb();});},600);
+}
+function uMsg(cid,text){const c=document.getElementById(cid);const d=document.createElement('div');d.className='ub';d.textContent=text;c.appendChild(d);sb();}
+function typeS(sp,cu,text,spd,cb){let i=0;sp.textContent='';(function nx(){if(i<text.length){if(text[i]==='\n')sp.appendChild(document.createElement('br'));else sp.appendChild(document.createTextNode(text[i]));i++;setTimeout(nx,spd);}else{if(cb)cb();}})();}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey){
+    const a=document.activeElement;if(!a||a.tagName!=='TEXTAREA')return;
+    e.preventDefault();
+    if(a.id==='ui1')sub1();else if(a.id==='ui2')subTh();else if(a.id==='ui3')subF();
+  }
+});
+
+window.addEventListener('load',()=>{startM0();drawMM();});
+</script>
+</body>
+</html>

@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>学情周报 v2</title>
+<link href="https://fonts.googleapis.com/css2?family=ABeeZee&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+<style>
+/* ─── Design Tokens (from Figma) ─────────────────────────────── */
+:root {
+  --n900: #1f2229;
+  --n700: #656a73;
+  --n500: #999da6;
+  --n200: #e4e5e7;
+  --n100: #f3f4f6;
+  --n50:  #f8f8fa;
+  --white: #ffffff;
+  --blue:  #38afff;
+  --sky:   #5fcfff;
+  --blue-data: #1098f3;
+  --green: #52c41a;
+  --green-trend: #3fac0a;
+  --orange: #ff6509;
+  --red: rgba(232,43,10,0.87);
+  --header-grad: linear-gradient(180deg,#5fcfff 0%,#9be7ff 27%,#e3f3ff 80%,#f3f4f6 100%);
+  --tab-active-grad: linear-gradient(149.74deg,#5fcfff 0%,#38afff 100%);
+  --bar-blue-grad: linear-gradient(180deg,#7dd8ff 0%,#38afff 100%);
+  --bar-sky-grad: linear-gradient(180deg,#b8e8ff 0%,#7ec8ff 100%);
+  --prog-grad: linear-gradient(90deg,#7dd8ff,#38afff);
+}
+
+/* ─── Reset ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { width: 100%; min-height: 100vh; background: #e8eaed; font-family: 'Noto Sans SC', sans-serif; color: var(--n900); -webkit-font-smoothing: antialiased; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+.num { font-family: 'ABeeZee', sans-serif; font-style: normal; }
+
+/* ─── Layout ─────────────────────────────────────────────────── */
+.phone {
+  max-width: 375px;
+  min-height: 100vh;
+  margin: 0 auto;
+  background: var(--n100);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ─── Page routing ───────────────────────────────────────────── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ─── Shared utilities ───────────────────────────────────────── */
+.card { background: var(--white); border-radius: 12px; }
+.scroll-x { overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+.scroll-x::-webkit-scrollbar { display: none; }
+.divider { height: 1px; background: var(--n200); }
+.tappable { cursor: pointer; transition: opacity .15s; }
+.tappable:active { opacity: .65; }
+.fade-in { animation: fadeIn .22s ease both; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+
+/* ─── Status bar ─────────────────────────────────────────────── */
+.status-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px 4px;
+}
+.signal-bars { display: flex; align-items: flex-end; gap: 2px; }
+.signal-bars span { background: var(--n900); border-radius: 1px; opacity: .9; width: 3px; }
+.battery-wrap { display: flex; align-items: center; gap: 1px; }
+.battery-body { width: 22px; height: 11px; border: 1px solid rgba(0,0,0,.35); border-radius: 2.5px; padding: 1px; display: flex; align-items: center; }
+.battery-fill { flex: 1; height: 7px; background: var(--n900); border-radius: 1px; }
+.battery-cap { width: 1.5px; height: 4px; background: rgba(0,0,0,.4); border-radius: 0 1px 1px 0; }
+
+/* ─── Navigation bar ─────────────────────────────────────────── */
+.nav-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 16px 12px;
+}
+.nav-back { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+.nav-center { display: flex; align-items: center; gap: 8px; }
+.nav-avatar { width: 30px; height: 30px; border-radius: 50%; overflow: hidden; background: var(--tab-active-grad); display: flex; align-items: center; justify-content: center; }
+.nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.nav-avatar-placeholder { font-size: 13px; color: white; font-weight: 500; }
+.nav-name { font-size: 14px; color: var(--n900); }
+.nav-class { font-size: 12px; color: var(--n700); margin-left: 4px; }
+.nav-share { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; }
+
+/* ─── Filter bar ─────────────────────────────────────────────── */
+.filter-bar { display: flex; align-items: center; justify-content: space-between; padding: 0 16px 16px; }
+.report-toggle {
+  display: flex; align-items: center;
+  background: rgba(255,255,255,.5);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255,255,255,.8);
+  border-radius: 16px; padding: 2px; height: 32px; gap: 0;
+}
+.toggle-item {
+  height: 28px; border-radius: 14px; padding: 0 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--n700); transition: all .2s;
+  white-space: nowrap; cursor: pointer;
+}
+.toggle-item.active { background: var(--white); color: var(--n900); font-weight: 400; }
+.date-picker-btn {
+  display: flex; align-items: center; gap: 4px;
+  border: 1px solid rgba(0,0,0,.21); border-radius: 20px;
+  padding: 5px 12px; font-size: 12px; color: var(--n900);
+  background: transparent;
+}
+
+/* ─── Date picker dropdown ───────────────────────────────────── */
+.date-dropdown {
+  display: none; position: absolute; right: 16px; top: 100%;
+  z-index: 100; background: white; border-radius: 12px;
+  padding: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  min-width: 200px;
+}
+.date-dropdown.open { display: block; }
+.date-dropdown-title { font-size: 12px; color: var(--n700); margin-bottom: 10px; }
+.date-option {
+  display: block; width: 100%; padding: 10px 14px;
+  border-radius: 8px; font-size: 14px; text-align: left;
+  margin-bottom: 6px; cursor: pointer; color: var(--n700);
+  background: var(--n50); border: none;
+}
+.date-option:last-child { margin-bottom: 0; }
+.date-option.selected { background: #e8f5ff; color: var(--blue); }
+
+/* ─── Summary section ────────────────────────────────────────── */
+.summary-section { padding: 0 16px 24px; }
+.summary-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.summary-top-left { flex: 1; min-width: 0; }
+.summary-header { margin-bottom: 6px; }
+.summary-title { font-size: 28px; font-weight: 700; color: var(--n900); line-height: 34px; }
+.summary-tag {
+  background: rgba(255,255,255,.6); color: var(--n700);
+  border-radius: 20px; font-size: 14px; padding: 4px 12px;
+  margin-top: 6px; white-space: nowrap; backdrop-filter: blur(4px);
+  display: inline-block;
+}
+.summary-deco { flex-shrink: 0; width: 110px; pointer-events: none; }
+.summary-deco img { width: 100%; height: auto; display: block; }
+.summary-text { font-size: 14px; color: rgba(28,28,29,.87); line-height: 26px; }
+.summary-text .highlight-green { color: #2ece4e; font-weight: 500; }
+.summary-text .highlight-red { color: rgba(232,43,10,.87); font-weight: 500; }
+
+/* ─── Content area ───────────────────────────────────────────── */
+.content-area { padding: 0 16px 32px; display: flex; flex-direction: column; gap: 12px; }
+
+/* ─── Usage time card ────────────────────────────────────────── */
+.card-head { font-size: 16px; font-weight: 500; color: var(--n900); margin-bottom: 4px; }
+.card-sub { font-size: 12px; color: var(--n700); }
+.time-total { display: flex; align-items: baseline; gap: 3px; margin: 14px 0 4px; flex-wrap: wrap; }
+.time-num { font-size: 20px; color: var(--n900); }
+.time-unit { font-size: 12px; color: var(--n900); }
+.time-trend { font-size: 12px; color: var(--n700); margin-left: 6px; }
+.time-trend-pct { font-size: 12px; font-weight: 400; }
+.time-trend-pct.up { color: var(--green-trend); }
+.time-trend-pct.down { color: var(--red); }
+
+/* ─── Bar chart ──────────────────────────────────────────────── */
+.chart-wrap { display: flex; gap: 6px; margin: 16px 0 0; }
+.chart-y { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; padding-bottom: 20px; min-width: 22px; }
+.chart-y span { font-size: 12px; color: var(--n500); line-height: 1; }
+.chart-area { flex: 1; }
+.chart-bars { display: flex; align-items: flex-end; justify-content: space-between; height: 120px; border-bottom: 1px solid var(--n200); padding-bottom: 1px; }
+.chart-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+.bar-pair { display: flex; align-items: flex-end; gap: 2px; }
+.bar { border-radius: 10px 10px 0 0; width: 11px; min-height: 2px; }
+.bar.third { background: var(--bar-blue-grad); }
+.bar.self  { background: var(--bar-sky-grad); }
+.chart-xlabels { display: flex; justify-content: space-between; margin-top: 6px; }
+.chart-xlabels span { font-size: 10px; color: var(--n500); flex: 1; text-align: center; }
+.chart-legend { display: flex; gap: 16px; margin: 10px 0 8px; }
+.chart-col.active .bar { opacity: 1; }
+.chart-col:not(.active) .bar { opacity: 0.45; }
+.chart-col.active { position: relative; }
+.day-detail {
+  background: var(--white); border-radius: 10px; padding: 10px 14px;
+  margin-bottom: 12px; border: 1px solid var(--n200);
+  animation: fadeIn .18s ease both;
+}
+.day-detail-date { font-size: 12px; color: var(--n700); display: block; margin-bottom: 6px; }
+.day-detail-row { display: flex; align-items: center; gap: 6px; padding: 3px 0; }
+.day-detail-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.day-detail-dot.third { background: var(--bar-blue-grad); }
+.day-detail-dot.self { background: var(--bar-sky-grad); }
+.day-detail-label { font-size: 12px; color: var(--n700); flex: 1; }
+.day-detail-val { font-size: 13px; color: var(--n900); font-weight: 500; }
+.legend-item { display: flex; align-items: center; gap: 4px; }
+.legend-dot { width: 16px; height: 10px; border-radius: 4px; }
+.legend-dot.third { background: linear-gradient(90deg,#7dd8ff,#38afff); }
+.legend-dot.self  { background: linear-gradient(90deg,#b8e8ff,#7ec8ff); }
+.legend-label { font-size: 10px; color: var(--n700); }
+
+/* ─── Stats box ──────────────────────────────────────────────── */
+.stats-box {
+  background: var(--n50); border-radius: 8px;
+  padding: 12px 14px; display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 16px; gap: 8px;
+}
+.stats-col { flex: 1; }
+.stats-label { font-size: 12px; color: var(--n700); margin-bottom: 4px; }
+.stats-label span { color: var(--n900); font-weight: 500; }
+.stats-val { display: flex; align-items: baseline; gap: 2px; }
+.stats-num { font-size: 20px; color: var(--n900); }
+.stats-unit { font-size: 10px; color: var(--n900); }
+.stats-divider { width: 1px; background: var(--n200); align-self: stretch; }
+
+/* ─── App list ───────────────────────────────────────────────── */
+.section-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.section-label { font-size: 14px; color: var(--n900); }
+.see-more-btn { font-size: 12px; color: var(--n500); display: flex; align-items: center; gap: 2px; }
+.app-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; }
+.app-item + .app-item { border-top: 1px solid var(--n200); }
+.app-icon { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; overflow: hidden; }
+.app-icon img { width: 100%; height: 100%; object-fit: cover; }
+.app-icon-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; font-weight: 500; }
+.app-body { flex: 1; min-width: 0; }
+.app-name { font-size: 14px; color: var(--n900); margin-bottom: 6px; }
+.progress-bar { height: 4px; border-radius: 10px; background: var(--n200); overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 10px; }
+.app-time { font-size: 12px; color: var(--n700); flex-shrink: 0; white-space: nowrap; }
+.caret-icon { flex-shrink: 0; }
+.see-all-row {
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  padding: 12px 0 4px; font-size: 12px; color: var(--n500); cursor: pointer;
+}
+.expand-caret { transition: transform .2s; }
+.expand-caret.open { transform: rotate(180deg); }
+.hidden-apps { display: none; }
+.hidden-apps.open { display: block; }
+
+/* ─── Outcomes card ──────────────────────────────────────────── */
+.outcome-item { display: flex; gap: 12px; padding: 16px 0; }
+.outcome-item + .outcome-item { border-top: 1px solid var(--n200); }
+.outcome-timeline { display: flex; flex-direction: column; align-items: center; width: 8px; flex-shrink: 0; padding-top: 4px; }
+.outcome-dot { width: 8px; height: 8px; border-radius: 4px; background: var(--blue); flex-shrink: 0; }
+.outcome-line { width: 1px; flex: 1; background: #b8e8ff; margin-top: 4px; min-height: 28px; }
+.outcome-body { flex: 1; min-width: 0; }
+.outcome-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.outcome-title { font-size: 14px; color: var(--n900); }
+.outcome-data-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.outcome-week-label { font-size: 12px; color: var(--n700); }
+.outcome-val { font-size: 16px; color: var(--blue-data); }
+.outcome-vs { font-size: 12px; color: var(--n500); }
+.outcome-last { font-size: 14px; color: var(--n700); }
+.outcome-badge { font-size: 11px; color: var(--green); background: #f6ffed; border-radius: 4px; padding: 1px 6px; }
+.outcome-badge.record { color: var(--n500); background: var(--n50); }
+
+/* ─── Suggestions card ───────────────────────────────────────── */
+.suggest-item { display: flex; gap: 12px; padding: 16px 0; }
+.suggest-item + .suggest-item { border-top: 1px solid rgba(250,119,42,.12); }
+.suggest-icon { width: 36px; height: 36px; border-radius: 18px; flex-shrink: 0; overflow: hidden; }
+.suggest-icon img { width: 100%; height: 100%; object-fit: cover; }
+.suggest-icon-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.suggest-body { flex: 1; min-width: 0; }
+.suggest-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.suggest-title { font-size: 14px; font-weight: 500; color: var(--n900); }
+.suggest-desc { font-size: 12px; color: var(--n700); line-height: 18px; }
+.suggest-desc .highlight-orange { color: var(--red); }
+.suggest-desc .highlight-red { color: #ff4d4f; }
+
+/* ─── Subject tabs ───────────────────────────────────────────── */
+.subject-tabs-wrap { padding: 12px 16px 0; }
+.subject-tabs { display: flex; gap: 8px; width: max-content; }
+.subject-tab {
+  height: 31.5px; border-radius: 20px; padding: 0 14px;
+  display: flex; align-items: center; font-size: 13px;
+  color: var(--n700); background: var(--n100);
+  transition: all .2s; cursor: pointer; white-space: nowrap;
+}
+.subject-tab.active { background: var(--tab-active-grad); color: white; }
+.subject-content { display: none; padding: 16px 20px 20px; }
+.subject-content.active { display: block; }
+.detail-stats { display: flex; gap: 10px; margin-bottom: 16px; }
+.detail-stat { background: var(--n50); border-radius: 10px; padding: 12px; flex: 1; }
+.detail-stat-label { font-size: 11px; color: var(--n700); margin-bottom: 4px; }
+.detail-stat-val { display: flex; align-items: baseline; gap: 2px; }
+.detail-stat-num { font-size: 20px; color: var(--n900); }
+.detail-stat-unit { font-size: 11px; color: var(--n900); white-space: nowrap; }
+.mastery-label { font-size: 13px; color: var(--n700); margin-bottom: 10px; }
+.mastery-item { margin-bottom: 10px; }
+.mastery-item:last-child { margin-bottom: 0; }
+.mastery-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.mastery-name { font-size: 12px; color: var(--n900); }
+.mastery-pct { font-size: 12px; color: var(--blue); }
+.mastery-pct.warn { color: var(--orange); }
+.mastery-bar { height: 6px; border-radius: 10px; background: var(--n200); overflow: hidden; }
+.mastery-fill { height: 100%; border-radius: 10px; background: var(--prog-grad); }
+.mastery-fill.warn { background: linear-gradient(90deg,#ffd8a8,var(--orange)); }
+
+/* ─── Home indicator ─────────────────────────────────────────── */
+.home-indicator { height: 34px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 8px; }
+.home-bar { width: 134px; height: 5px; background: black; border-radius: 100px; }
+
+/* ─── Detail pages ───────────────────────────────────────────── */
+.detail-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; position: relative; }
+.detail-header h2 { font-size: 17px; font-weight: 500; color: var(--n900); }
+.detail-content { padding: 16px; display: flex; flex-direction: column; gap: 12px; padding-bottom: 32px; }
+.compare-row { display: flex; gap: 12px; align-items: center; margin-bottom: 16px; }
+.compare-box { flex: 1; border-radius: 10px; padding: 14px; text-align: center; }
+.compare-box.current { background: #fffbf0; }
+.compare-box.prev { background: var(--n50); }
+.compare-box-label { font-size: 11px; color: var(--n700); margin-bottom: 4px; }
+.compare-box-val { font-size: 32px; font-weight: 500; }
+.compare-box-val.gold { color: #f0a500; }
+.compare-box-val.gray { color: var(--n700); font-weight: 400; }
+.insight-box { background: var(--n50); border-radius: 10px; padding: 14px; margin-bottom: 16px; }
+.insight-text { font-size: 13px; color: var(--n700); line-height: 22px; }
+.action-title { font-size: 14px; font-weight: 500; color: var(--n900); margin-bottom: 12px; }
+.action-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: var(--n50); border-radius: 10px; margin-bottom: 8px; }
+.action-item:last-child { margin-bottom: 0; }
+.action-num { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg,var(--orange),#ffa060); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.action-num span { font-size: 12px; color: white; font-weight: 600; }
+.action-text-main { font-size: 13px; font-weight: 500; color: var(--n900); margin-bottom: 2px; }
+.action-text-sub { font-size: 12px; color: var(--n700); }
+
+/* ─── SVG icon helpers ───────────────────────────────────────── */
+.icon-caret-right { display: inline-flex; align-items: center; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PAGE: MAIN
+══════════════════════════════════════════════════════════════════ -->
+<div id="page-main" class="page active">
+<div class="phone">
+
+  <!-- Gradient header zone -->
+  <div style="background:var(--header-grad); position:relative;">
+
+    <!-- Status bar -->
+    <div class="status-bar">
+      <span class="num" style="font-size:15px;font-weight:500;color:var(--n900)">9:41</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="signal-bars">
+          <span style="height:4px;"></span>
+          <span style="height:6px;"></span>
+          <span style="height:9px;"></span>
+          <span style="height:11px;"></span>
+        </div>
+        <!-- WiFi SVG -->
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+          <path d="M8 9.5a1.5 1.5 0 100 3 1.5 1.5 0 000-3z" fill="#1f2229"/>
+          <path d="M4.5 7C5.6 5.9 6.7 5.5 8 5.5s2.4.4 3.5 1.5" stroke="#1f2229" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+          <path d="M1.5 4C3.3 2.2 5.5 1.5 8 1.5s4.7.7 6.5 2.5" stroke="#1f2229" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+        </svg>
+        <div class="battery-wrap">
+          <div class="battery-body"><div class="battery-fill"></div></div>
+          <div class="battery-cap"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation bar -->
+    <div class="nav-bar">
+      <!-- Back -->
+      <button class="nav-back tappable">
+        <svg width="10" height="17" viewBox="0 0 10 17" fill="none">
+          <path d="M8.5 1.5L1.5 8.5l7 7" stroke="var(--n900)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <!-- Child info -->
+      <div class="nav-center">
+        <div class="nav-avatar">
+          <img src="xuqing-report/child.png" alt="小丸子" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+        </div>
+        <span class="nav-name">小丸子</span>
+      </div>
+      <!-- Share -->
+      <button class="nav-share tappable">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <circle cx="14" cy="4" r="2" stroke="var(--n900)" stroke-width="1.4"/>
+          <circle cx="4" cy="9" r="2" stroke="var(--n900)" stroke-width="1.4"/>
+          <circle cx="14" cy="14" r="2" stroke="var(--n900)" stroke-width="1.4"/>
+          <path d="M6 8l6-3M6 10l6 3" stroke="var(--n900)" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Filter bar (日报/周报 toggle + date picker) -->
+    <div class="filter-bar" style="position:relative;">
+      <!-- Report type toggle -->
+      <div class="report-toggle">
+        <div class="toggle-item" id="toggle-daily" onclick="switchReport('daily')">日报</div>
+        <div class="toggle-item active" id="toggle-weekly" onclick="switchReport('weekly')">周报</div>
+      </div>
+      <!-- Date picker button -->
+      <button class="date-picker-btn tappable" onclick="toggleDateDropdown()" id="date-btn">
+        <span id="date-display">10.26-11.1</span>
+        <svg width="8" height="5" viewBox="0 0 8 5" fill="none">
+          <path d="M1 1l3 3 3-3" stroke="var(--n900)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <!-- Dropdown -->
+      <div id="date-dropdown" class="date-dropdown">
+        <div class="date-dropdown-title">选择查看周期</div>
+        <button class="date-option selected" onclick="selectDate('10.26-11.1',this)">10.26 — 11.1（本周）</button>
+        <button class="date-option" onclick="selectDate('10.19-10.25',this)">10.19 — 10.25（上周）</button>
+        <button class="date-option" onclick="selectDate('10.12-10.18',this)">10.12 — 10.18（两周前）</button>
+        <button class="date-option" onclick="selectDate('10.5-10.11',this)">10.5 — 10.11（三周前）</button>
+      </div>
+    </div>
+
+    <!-- Summary section -->
+    <div class="summary-section">
+      <div class="summary-top">
+        <div class="summary-top-left">
+          <div class="summary-header">
+            <h1 class="summary-title">本周总结</h1>
+          </div>
+        </div>
+        <!-- Decorative illustration -->
+        <div class="summary-deco" aria-hidden="true">
+          <img src="xuqing-report/badge-perfect.png" alt="">
+        </div>
+      </div>
+      <p class="summary-text">
+        小丸子本周使用时长相比上周有所增加，数学学科的精力投入尤为突出，特别是<span class="highlight-green">答题正确率</span>取得了显著进步，这份努力值得您好好表扬呀！本周宝贝在<span class="highlight-red">词汇</span>掌握上相比上周稍显薄弱，建议您近期多关注，帮助宝贝及时巩固单词哦！
+      </p>
+    </div>
+  </div><!-- end gradient zone -->
+
+  <!-- ── Cards area ─────────────────────────────────────────── -->
+  <div class="content-area">
+
+    <!-- ① 使用时长 card -->
+    <div class="card" style="padding:20px;">
+      <div class="card-head">使用时长</div>
+
+      <!-- Total time + trend -->
+      <div class="time-total">
+        <span class="num time-num">58</span><span class="time-unit">小时</span>
+        <span class="num time-num">54</span><span class="time-unit">分钟</span>
+        <span class="time-trend">相比上一周</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="margin-bottom:1px;flex-shrink:0;">
+          <path d="M7 10.5V3.5M4 6.5l3-3 3 3" stroke="var(--green-trend)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="num time-trend-pct up">5%</span>
+      </div>
+
+      <!-- Bar chart -->
+      <div class="chart-wrap">
+        <div class="chart-y">
+          <span class="num" style="font-size:12px;color:var(--n500)">6h</span>
+          <span class="num" style="font-size:12px;color:var(--n500)">4h</span>
+          <span class="num" style="font-size:12px;color:var(--n500)">2h</span>
+          <span class="num" style="font-size:12px;color:var(--n500)">0h</span>
+        </div>
+        <div class="chart-area">
+          <div class="chart-bars" id="chart-bars">
+            <div class="chart-col tappable" onclick="selectDay(0)"><div class="bar-pair"><div class="bar third" style="height:24px"></div><div class="bar self" style="height:44px"></div></div></div>
+            <div class="chart-col tappable" onclick="selectDay(1)"><div class="bar-pair"><div class="bar third" style="height:18px"></div><div class="bar self" style="height:10px"></div></div></div>
+            <div class="chart-col tappable" onclick="selectDay(2)"><div class="bar-pair"><div class="bar third" style="height:60px"></div><div class="bar self" style="height:32px"></div></div></div>
+            <div class="chart-col tappable" onclick="selectDay(3)"><div class="bar-pair"><div class="bar third" style="height:35px"></div><div class="bar self" style="height:63px"></div></div></div>
+            <div class="chart-col tappable" onclick="selectDay(4)"><div class="bar-pair"><div class="bar third" style="height:119px"></div><div class="bar self" style="height:70px"></div></div></div>
+            <div class="chart-col tappable" onclick="selectDay(5)"><div class="bar-pair"><div class="bar third" style="height:81px"></div><div class="bar self" style="height:45px"></div></div></div>
+            <div class="chart-col tappable" onclick="selectDay(6)"><div class="bar-pair"><div class="bar third" style="height:2px"></div><div class="bar self" style="height:2px"></div></div></div>
+          </div>
+          <div class="chart-xlabels">
+            <span class="num">10.26</span><span class="num">10.27</span><span class="num">10.28</span>
+            <span class="num">10.29</span><span class="num">10.30</span><span class="num">10.31</span><span class="num">11.1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot third"></div><span class="legend-label">三方应用</span></div>
+        <div class="legend-item"><div class="legend-dot self"></div><span class="legend-label">自研应用</span></div>
+      </div>
+
+      <!-- Day detail tooltip -->
+      <div id="day-detail" class="day-detail" style="display:none;">
+        <span class="day-detail-date" id="day-detail-date"></span>
+        <div class="day-detail-row">
+          <span class="day-detail-dot third"></span><span class="day-detail-label">三方应用</span>
+          <span class="day-detail-val num" id="day-detail-third"></span>
+        </div>
+        <div class="day-detail-row">
+          <span class="day-detail-dot self"></span><span class="day-detail-label">自研应用</span>
+          <span class="day-detail-val num" id="day-detail-self"></span>
+        </div>
+      </div>
+
+      <!-- Stats box -->
+      <div class="stats-box">
+        <div class="stats-col">
+          <div class="stats-label">自研应用 <span>5个</span></div>
+          <div class="stats-val">
+            <span class="num stats-num">36</span><span class="stats-unit">小时</span>
+            <span class="num stats-num" style="margin-left:4px;">59</span><span class="stats-unit">分钟</span>
+          </div>
+        </div>
+        <div class="stats-divider"></div>
+        <div class="stats-col" style="padding-left:12px;">
+          <div class="stats-label">三方应用 <span>1个</span></div>
+          <div class="stats-val">
+            <span class="num stats-num">9</span><span class="stats-unit">小时</span>
+            <span class="num stats-num" style="margin-left:4px;">47</span><span class="stats-unit">分钟</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- App list header -->
+      <div class="section-row">
+        <span class="section-label">本周使用情况</span>
+      </div>
+
+      <!-- App list – first 3 visible -->
+      <div id="app-list">
+        <div class="app-item tappable" onclick="showPage('page-apps')">
+          <div class="app-icon"><div class="app-icon-placeholder" style="background:none;padding:0;overflow:hidden;"><img src="xuqing-report/瑞恩熊 icon.png" alt="瑞恩熊" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px;"></div></div>
+          <div class="app-body">
+            <div class="app-name">瑞恩熊AI英语</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:75%;background:var(--prog-grad);"></div></div>
+          </div>
+          <span class="app-time">2小时39分钟</span>
+          <svg class="caret-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="var(--n500)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="app-item tappable" onclick="showPage('page-apps')">
+          <div class="app-icon"><div class="app-icon-placeholder" style="background:none;padding:0;overflow:hidden;"><img src="xuqing-report/分级阅读 icon.png" alt="分级阅读" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px;"></div></div>
+          <div class="app-body">
+            <div class="app-name">分级阅读</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:52%;background:var(--prog-grad);"></div></div>
+          </div>
+          <span class="app-time">1小时24分钟</span>
+          <svg class="caret-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="var(--n500)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="app-item tappable" onclick="showPage('page-apps')">
+          <div class="app-icon"><div class="app-icon-placeholder" style="background:none;padding:0;overflow:hidden;"><img src="xuqing-report/新概念英语icon.png" alt="新概念英语" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px;"></div></div>
+          <div class="app-body">
+            <div class="app-name">新概念英语</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:20%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+          </div>
+          <span class="app-time">24分钟</span>
+          <svg class="caret-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="var(--n500)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <!-- Hidden apps -->
+        <div id="hidden-apps" class="hidden-apps">
+          <div class="app-item tappable" onclick="showPage('page-apps')">
+            <div class="app-icon"><div class="app-icon-placeholder" style="background:none;padding:0;overflow:hidden;"><img src="xuqing-report/乐读 icon.png" alt="乐读" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px;"></div></div>
+            <div class="app-body">
+              <div class="app-name">乐读</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:60%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+            </div>
+            <span class="app-time">1小时52分钟</span>
+            <svg class="caret-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="var(--n500)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="app-item tappable" onclick="showPage('page-apps')">
+            <div class="app-icon"><div class="app-icon-placeholder" style="background:none;padding:0;overflow:hidden;"><img src="xuqing-report/英语天天练icon.png" alt="英语天天练" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px;"></div></div>
+            <div class="app-body">
+              <div class="app-name">英语天天练</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:45%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div>
+            </div>
+            <span class="app-time">1小时18分钟</span>
+            <svg class="caret-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="var(--n500)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <!-- Expand toggle -->
+        <div class="see-all-row tappable" id="expand-toggle" onclick="toggleApps()">
+          <span id="expand-label" style="color:var(--n500);">查看全部</span>
+          <svg id="expand-caret" class="expand-caret" width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2.5 4.5l3.5 3.5 3.5-3.5" stroke="var(--n500)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+    </div><!-- end 使用时长 card -->
+
+    <!-- ② 学习成果 card -->
+    <div class="card" style="padding:20px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
+        <div class="card-head">学习成果</div>
+        <!-- Decorative -->
+        <img src="xuqing-report/Group 2036083702.png" alt="" style="flex-shrink:0;margin-top:-4px;width:52px;height:auto;display:block;">
+      </div>
+      <div class="card-sub" style="margin-top:-20px;margin-bottom:16px;">任何进步都值得表扬，快去夸夸宝贝吧</div>
+
+      <!-- Item 1 -->
+      <div class="outcome-item tappable" onclick="showPage('page-outcome')">
+        <div class="outcome-timeline">
+          <div class="outcome-dot"></div>
+          <div class="outcome-line"></div>
+        </div>
+        <div class="outcome-body">
+          <div class="outcome-title-row">
+            <span class="outcome-title">数学答题正确率提升</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="var(--blue-data)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="outcome-data-row">
+            <span class="outcome-week-label">本周</span>
+            <span class="num outcome-val">87%</span>
+            <span class="outcome-vs">vs 上周</span>
+            <span class="num outcome-last">71%</span>
+            <span class="outcome-badge">+16%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 2 -->
+      <div class="outcome-item tappable" onclick="showPage('page-outcome-reading')">        <div class="outcome-timeline">
+          <div class="outcome-dot"></div>
+          <div class="outcome-line"></div>
+        </div>
+        <div class="outcome-body">
+          <div class="outcome-title-row">
+            <span class="outcome-title">英语分级阅读完成量</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="var(--blue-data)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="outcome-data-row">
+            <span class="outcome-week-label">本周完成</span>
+            <span class="num outcome-val">12篇</span>
+            <span class="outcome-vs">vs 上周</span>
+            <span class="num outcome-last">8篇</span>
+            <span class="outcome-badge">+50%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item 3 -->
+      <div class="outcome-item tappable" onclick="showPage('page-outcome')">
+        <div class="outcome-timeline">
+          <div class="outcome-dot"></div>
+        </div>
+        <div class="outcome-body">
+          <div class="outcome-title-row">
+            <span class="outcome-title">语文字词练习连续打卡</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="var(--blue-data)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="outcome-data-row">
+            <span class="outcome-week-label">连续打卡</span>
+            <span class="num outcome-val">7天</span>
+            <span class="outcome-badge record">历史最长记录</span>
+          </div>
+        </div>
+      </div>
+    </div><!-- end 学习成果 card -->
+
+    <!-- ③ 学习建议 card -->
+    <div class="card" style="padding:20px;">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;">
+        <div class="card-head">学习建议</div>
+        <img src="xuqing-report/Group 2036083703.png" alt="" style="flex-shrink:0;margin-top:-4px;width:52px;height:auto;display:block;">
+      </div>
+      <div class="card-sub" style="margin-top:-20px;margin-bottom:16px;">重点关注他们，提醒孩子及时调整</div>
+
+      <!-- Suggestion 1 -->
+      <div class="suggest-item tappable" onclick="showPage('page-suggest')">
+        <div class="suggest-icon">
+          <div class="suggest-icon-placeholder">
+            <!-- Letter A icon -->
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <circle cx="18" cy="18" r="18" fill="url(#sg1)"/>
+              <text x="18" y="23" text-anchor="middle" font-family="ABeeZee" font-size="16" font-weight="600" fill="white"></text>
+              <defs>
+                <linearGradient id="sg1" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#ffcba8"/>
+                  <stop offset="100%" stop-color="#fa772a"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+        <div class="suggest-body">
+          <div class="suggest-title-row">
+            <span class="suggest-title">英语词汇掌握偏弱</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="var(--blue-data)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p class="suggest-desc">本周单词测试平均得分 <span class="highlight-orange">62分</span>，建议孩子下周重点复习这部分单词，巩固掌握哦。</p>
+        </div>
+      </div>
+
+      <!-- Suggestion 2 -->
+      <div class="suggest-item tappable" onclick="showPage('page-suggest')">
+        <div class="suggest-icon">
+          <div class="suggest-icon-placeholder">
+            <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+              <circle cx="18" cy="18" r="18" fill="url(#sg2)"/>
+              <text x="18" y="23" text-anchor="middle" font-family="ABeeZee" font-size="16" font-weight="600" fill="white"></text>
+              <defs>
+                <linearGradient id="sg2" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#ffd580"/>
+                  <stop offset="100%" stop-color="#f0a500"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+        </div>
+        <div class="suggest-body">
+          <div class="suggest-title-row">
+            <span class="suggest-title">数学知识点需巩固</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="var(--blue-data)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p class="suggest-desc">「圆的认识」相关题目本周<span class="highlight-red">已错 5 次</span>，需及时分析错题原因，针对性查漏补缺，避免重复犯错哦。</p>
+        </div>
+      </div>
+    </div><!-- end 学习建议 card -->
+
+    <!-- ④ 学科学习情况 card -->
+    <div class="card" style="padding-top:20px;padding-bottom:0;overflow:hidden;">
+      <div style="padding:0 20px;">
+        <div class="card-head" style="margin-bottom:4px;">学科学习情况</div>
+        <div class="card-sub" style="margin-bottom:12px;">切换学科，查看详细数据</div>
+      </div>
+
+      <!-- Subject tabs -->
+      <div class="subject-tabs-wrap scroll-x" style="padding-bottom:0;">
+        <div class="subject-tabs">
+          <div class="subject-tab active" id="tab-yuwen"   onclick="switchSubject('yuwen')">语文</div>
+          <div class="subject-tab"        id="tab-shuxue"  onclick="switchSubject('shuxue')">数学</div>
+          <div class="subject-tab"        id="tab-yingyu"  onclick="switchSubject('yingyu')">英语</div>
+          <div class="subject-tab"        id="tab-wuli"    onclick="switchSubject('wuli')">物理</div>
+          <div class="subject-tab"        id="tab-huaxue"  onclick="switchSubject('huaxue')">化学</div>
+          <div class="subject-tab"        id="tab-shengwu" onclick="switchSubject('shengwu')">生物</div>
+          <div class="subject-tab"        id="tab-daofa"   onclick="switchSubject('daofa')">道法</div>
+        </div>
+      </div>
+
+      <!-- ─ 语文 ─ -->
+      <div id="content-yuwen" class="subject-content active fade-in">
+        <div class="detail-stats">
+          <div class="detail-stat">
+            <div class="detail-stat-label">学习时长</div>
+            <div class="detail-stat-val">
+              <span class="num detail-stat-num">2</span><span class="detail-stat-unit">小时</span>
+              <span class="num detail-stat-num" style="margin-left:3px;">18</span><span class="detail-stat-unit">分</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">练习完成率</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">91</span><span class="detail-stat-unit">%</span></div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">新增词汇</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">48</span><span class="detail-stat-unit">个</span></div>
+          </div>
+        </div>
+        <div class="mastery-label">知识掌握程度</div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">字词理解</span><span class="num mastery-pct">88%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:88%"></div></div>
+        </div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">阅读理解</span><span class="num mastery-pct">76%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:76%"></div></div>
+        </div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">作文写作</span><span class="num mastery-pct">62%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:62%"></div></div>
+        </div>
+      </div>
+
+      <!-- ─ 数学 ─ -->
+      <div id="content-shuxue" class="subject-content">
+        <div class="detail-stats">
+          <div class="detail-stat">
+            <div class="detail-stat-label">学习时长</div>
+            <div class="detail-stat-val">
+              <span class="num detail-stat-num">3</span><span class="detail-stat-unit">小时</span>
+              <span class="num detail-stat-num" style="margin-left:3px;">42</span><span class="detail-stat-unit">分</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">答题正确率</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">87</span><span class="detail-stat-unit">%</span></div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">完成题数</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">124</span><span class="detail-stat-unit">题</span></div>
+          </div>
+        </div>
+        <div class="mastery-label">知识掌握程度</div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">代数方程</span><span class="num mastery-pct">92%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:92%"></div></div>
+        </div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">应用题解析</span><span class="num mastery-pct">85%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:85%"></div></div>
+        </div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">几何图形</span><span class="num mastery-pct">78%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:78%"></div></div>
+        </div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">圆的认识</span><span class="num mastery-pct warn">54%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill warn" style="width:54%"></div></div>
+        </div>
+      </div>
+
+      <!-- ─ 英语 ─ -->
+      <div id="content-yingyu" class="subject-content">
+        <div class="detail-stats">
+          <div class="detail-stat">
+            <div class="detail-stat-label">学习时长</div>
+            <div class="detail-stat-val">
+              <span class="num detail-stat-num">4</span><span class="detail-stat-unit">小时</span>
+              <span class="num detail-stat-num" style="margin-left:3px;">11</span><span class="detail-stat-unit">分</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">词汇测试</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">62</span><span class="detail-stat-unit">分</span></div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">阅读篇数</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">12</span><span class="detail-stat-unit">篇</span></div>
+          </div>
+        </div>
+        <div class="mastery-label">知识掌握程度</div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">阅读理解</span><span class="num mastery-pct">83%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:83%"></div></div>
+        </div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">听力理解</span><span class="num mastery-pct">79%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:79%"></div></div>
+        </div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">词汇掌握</span><span class="num mastery-pct warn">52%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill warn" style="width:52%"></div></div>
+        </div>
+      </div>
+
+      <!-- ─ 物理 ─ -->
+      <div id="content-wuli" class="subject-content">
+        <div class="detail-stats">
+          <div class="detail-stat">
+            <div class="detail-stat-label">学习时长</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">43</span><span class="detail-stat-unit">分钟</span></div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">答题正确率</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">68</span><span class="detail-stat-unit">%</span></div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">完成章节</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">1</span><span class="detail-stat-unit">章</span></div>
+          </div>
+        </div>
+        <div style="background:var(--n50);border-radius:8px;padding:12px;font-size:12px;color:var(--n700);line-height:20px;">
+          本周物理学习时间偏少，建议每天安排 20 分钟学习「力与运动」章节，下周目标达到 2 小时以上。
+        </div>
+      </div>
+
+      <!-- ─ 化学 ─ -->
+      <div id="content-huaxue" class="subject-content">
+        <div class="detail-stats">
+          <div class="detail-stat">
+            <div class="detail-stat-label">学习时长</div>
+            <div class="detail-stat-val">
+              <span class="num detail-stat-num">1</span><span class="detail-stat-unit">小时</span>
+              <span class="num detail-stat-num" style="margin-left:3px;">22</span><span class="detail-stat-unit">分</span>
+            </div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">实验完成</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">3</span><span class="detail-stat-unit">个</span></div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">答题正确率</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">74</span><span class="detail-stat-unit">%</span></div>
+          </div>
+        </div>
+        <div class="mastery-label">知识掌握程度</div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">元素周期律</span><span class="num mastery-pct">81%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:81%"></div></div>
+        </div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">化学方程式</span><span class="num mastery-pct">68%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:68%"></div></div>
+        </div>
+      </div>
+
+      <!-- ─ 生物 ─ -->
+      <div id="content-shengwu" class="subject-content">
+        <div class="detail-stats">
+          <div class="detail-stat">
+            <div class="detail-stat-label">学习时长</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">56</span><span class="detail-stat-unit">分钟</span></div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">答题正确率</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">80</span><span class="detail-stat-unit">%</span></div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">笔记条数</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">14</span><span class="detail-stat-unit">条</span></div>
+          </div>
+        </div>
+        <div class="mastery-label">知识掌握程度</div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">细胞结构</span><span class="num mastery-pct">85%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:85%"></div></div>
+        </div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">遗传变异</span><span class="num mastery-pct">73%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:73%"></div></div>
+        </div>
+      </div>
+
+      <!-- ─ 道法 ─ -->
+      <div id="content-daofa" class="subject-content">
+        <div class="detail-stats">
+          <div class="detail-stat">
+            <div class="detail-stat-label">学习时长</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">38</span><span class="detail-stat-unit">分钟</span></div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">答题正确率</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">89</span><span class="detail-stat-unit">%</span></div>
+          </div>
+          <div class="detail-stat">
+            <div class="detail-stat-label">练习题数</div>
+            <div class="detail-stat-val"><span class="num detail-stat-num">32</span><span class="detail-stat-unit">题</span></div>
+          </div>
+        </div>
+        <div class="mastery-label">知识掌握程度</div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">法律知识</span><span class="num mastery-pct">91%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:91%"></div></div>
+        </div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">道德规范</span><span class="num mastery-pct">87%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:87%"></div></div>
+        </div>
+      </div>
+
+    </div><!-- end 学科 card -->
+
+  </div><!-- end content-area -->
+
+  <div class="home-indicator"><div class="home-bar"></div></div>
+</div>
+</div><!-- end page-main -->
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     PAGE: APP DETAIL
+══════════════════════════════════════════════════════════════════ -->
+<div id="page-apps" class="page">
+<div class="phone">
+  <div style="background:var(--header-grad);">
+    <div class="status-bar">
+      <span class="num" style="font-size:15px;color:var(--n900)">9:41</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="signal-bars"><span style="height:4px;"></span><span style="height:6px;"></span><span style="height:9px;"></span><span style="height:11px;"></span></div>
+        <div class="battery-wrap"><div class="battery-body"><div class="battery-fill"></div></div><div class="battery-cap"></div></div>
+      </div>
+    </div>
+    <div class="detail-header" style="padding-bottom:16px;">
+      <button class="nav-back tappable" onclick="showPage('page-main')">
+        <svg width="10" height="17" viewBox="0 0 10 17" fill="none"><path d="M8.5 1.5L1.5 8.5l7 7" stroke="var(--n900)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h2>本周应用使用详情</h2>
+    </div>
+  </div>
+  <div class="detail-content">
+    <div class="card" style="padding:20px;">
+      <div class="card-sub" style="margin-bottom:16px;">共使用 6 个应用，总时长 8小时54分</div>
+      <div>
+        <div class="app-item"><div class="app-icon"><div class="app-icon-placeholder" style="background:none;padding:0;overflow:hidden;"><img src="xuqing-report/瑞恩熊 icon.png" alt="瑞恩熊" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px;"></div></div><div class="app-body"><div class="app-name">瑞恩熊AI英语</div><div class="progress-bar"><div class="progress-fill" style="width:75%;background:var(--prog-grad);"></div></div></div><span class="app-time">2小时39分</span></div>
+        <div class="app-item"><div class="app-icon"><div class="app-icon-placeholder" style="background:none;padding:0;overflow:hidden;"><img src="xuqing-report/分级阅读 icon.png" alt="分级阅读" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px;"></div></div><div class="app-body"><div class="app-name">分级阅读</div><div class="progress-bar"><div class="progress-fill" style="width:52%;background:var(--prog-grad);"></div></div></div><span class="app-time">1小时24分</span></div>
+        <div class="app-item"><div class="app-icon"><div class="app-icon-placeholder" style="background:none;padding:0;overflow:hidden;"><img src="xuqing-report/乐读 icon.png" alt="乐读" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px;"></div></div><div class="app-body"><div class="app-name">乐读</div><div class="progress-bar"><div class="progress-fill" style="width:60%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div></div><span class="app-time">1小时52分</span></div>
+        <div class="app-item"><div class="app-icon"><div class="app-icon-placeholder" style="background:linear-gradient(135deg,#e8d0ff,#b070ff);">语文</div></div><div class="app-body"><div class="app-name">AI口语练习</div><div class="progress-bar"><div class="progress-fill" style="width:45%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div></div><span class="app-time">1小时18分</span></div>
+        <div class="app-item"><div class="app-icon"><div class="app-icon-placeholder" style="background:none;padding:0;overflow:hidden;"><img src="xuqing-report/新概念英语icon.png" alt="新概念英语" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px;"></div></div><div class="app-body"><div class="app-name">新概念英语</div><div class="progress-bar"><div class="progress-fill" style="width:20%;background:linear-gradient(90deg,#7dd8ff,#38afff);"></div></div></div><span class="app-time">24分钟</span></div>
+        <div class="app-item"><div class="app-icon"><div class="app-icon-placeholder" style="background:linear-gradient(135deg,#ffd8d8,#ff7070);">综合</div></div><div class="app-body"><div class="app-name">知识问答</div><div class="progress-bar"><div class="progress-fill" style="width:18%;background:linear-gradient(90deg,#ffd8d8,#ff7070);"></div></div></div><span class="app-time">28分钟</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="home-indicator"><div class="home-bar"></div></div>
+</div>
+</div><!-- end page-apps -->
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     PAGE: OUTCOME DETAIL
+══════════════════════════════════════════════════════════════════ -->
+<div id="page-outcome" class="page">
+<div class="phone">
+  <div style="background:linear-gradient(180deg,#fffbf0 0%,#fff8e8 60%,#f3f4f6 100%);">
+    <div class="status-bar">
+      <span class="num" style="font-size:15px;color:var(--n900)">9:41</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="signal-bars"><span style="height:4px;"></span><span style="height:6px;"></span><span style="height:9px;"></span><span style="height:11px;"></span></div>
+        <div class="battery-wrap"><div class="battery-body"><div class="battery-fill"></div></div><div class="battery-cap"></div></div>
+      </div>
+    </div>
+    <div class="detail-header" style="padding-bottom:16px;">
+      <button class="nav-back tappable" onclick="showPage('page-main')">
+        <svg width="10" height="17" viewBox="0 0 10 17" fill="none"><path d="M8.5 1.5L1.5 8.5l7 7" stroke="var(--n900)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h2 style="position:absolute;left:50%;transform:translateX(-50%);">学习成果详情</h2>
+    </div>
+  </div>
+  <div class="detail-content">
+    <div class="card" style="padding:20px;">
+      <h3 style="font-size:16px;font-weight:500;color:var(--n900);margin-bottom:16px;">数学答题正确率提升</h3>
+      <div class="compare-row">
+        <div class="compare-box current">
+          <div class="compare-box-label">本周</div>
+          <div class="num compare-box-val gold">87%</div>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10h12M12 6l4 4-4 4" stroke="var(--n500)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="compare-box prev">
+          <div class="compare-box-label">上周</div>
+          <div class="num compare-box-val gray">71%</div>
+        </div>
+      </div>
+      <div class="insight-box">
+        <p class="insight-text">小丸子本周在数学练习中表现出色，答题正确率相比上周提升了 16 个百分点。其中代数方程题型进步最为明显，建议继续保持并适当挑战更难的题型。</p>
+      </div>
+      <div style="background:var(--n50);border-radius:10px;padding:14px;">
+        <div class="action-title">各知识点正确率</div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">代数方程</span><span class="num" style="font-size:12px;color:#f0a500;">92%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:92%;background:linear-gradient(90deg,#ffd880,#f0a500);"></div></div>
+        </div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">应用题</span><span class="num" style="font-size:12px;color:#f0a500;">85%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:85%;background:linear-gradient(90deg,#ffd880,#f0a500);"></div></div>
+        </div>
+        <div class="mastery-item">
+          <div class="mastery-row"><span class="mastery-name">几何图形</span><span class="num" style="font-size:12px;color:#f0a500;">78%</span></div>
+          <div class="mastery-bar"><div class="mastery-fill" style="width:78%;background:linear-gradient(90deg,#ffd880,#f0a500);"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="home-indicator"><div class="home-bar"></div></div>
+</div>
+</div><!-- end page-outcome -->
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     PAGE: OUTCOME DETAIL — READING
+══════════════════════════════════════════════════════════════════ -->
+<div id="page-outcome-reading" class="page">
+<div class="phone">
+  <div style="background:linear-gradient(180deg,#e8f7f0 0%,#d0f0e4 30%,#f3f4f6 100%);">
+    <div class="status-bar">
+      <span class="num" style="font-size:15px;color:var(--n900)">9:41</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="signal-bars"><span style="height:4px;"></span><span style="height:6px;"></span><span style="height:9px;"></span><span style="height:11px;"></span></div>
+        <div class="battery-wrap"><div class="battery-body"><div class="battery-fill"></div></div><div class="battery-cap"></div></div>
+      </div>
+    </div>
+    <div class="detail-header" style="padding-bottom:16px;">
+      <button class="nav-back tappable" onclick="showPage('page-main')">
+        <svg width="10" height="17" viewBox="0 0 10 17" fill="none"><path d="M8.5 1.5L1.5 8.5l7 7" stroke="var(--n900)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h2 style="position:absolute;left:50%;transform:translateX(-50%);">学习成果详情</h2>
+    </div>
+  </div>
+  <div class="detail-content">
+
+    <!-- 核心数据卡片 -->
+    <div class="card" style="padding:20px;">
+      <h3 style="font-size:16px;font-weight:500;color:var(--n900);margin-bottom:6px;">英语分级阅读完成情况</h3>
+      <p style="font-size:13px;color:var(--n700);margin-bottom:16px;line-height:20px;">本周共完成绘本 <span style="color:var(--green);font-weight:600;">5 本</span>，较上周增加 2 本，阅读积极性明显提升。</p>
+
+      <!-- 四项核心指标 2×2 grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div style="background:#f7f7f9;border-radius:10px;padding:14px 12px;">
+          <div style="font-size:11px;color:var(--n500);margin-bottom:6px;">本周阅读时长</div>
+          <div style="display:flex;align-items:baseline;gap:2px;">
+            <span class="num" style="font-size:22px;font-weight:600;color:var(--n900);">2</span>
+            <span style="font-size:11px;color:var(--n700);">小时</span>
+            <span class="num" style="font-size:22px;font-weight:600;color:var(--n900);margin-left:3px;">18</span>
+            <span style="font-size:11px;color:var(--n700);">分</span>
+          </div>
+          <div style="font-size:11px;color:var(--green-trend);margin-top:4px;">较上周 +34分钟</div>
+        </div>
+        <div style="background:#f7f7f9;border-radius:10px;padding:14px 12px;">
+          <div style="font-size:11px;color:var(--n500);margin-bottom:6px;">累计词汇量</div>
+          <div style="display:flex;align-items:baseline;gap:2px;">
+            <span class="num" style="font-size:22px;font-weight:600;color:var(--n900);">1,248</span>
+            <span style="font-size:11px;color:var(--n700);">个</span>
+          </div>
+          <div style="font-size:11px;color:var(--green-trend);margin-top:4px;">本周新增 +86 个</div>
+        </div>
+        <div style="background:#f7f7f9;border-radius:10px;padding:14px 12px;">
+          <div style="font-size:11px;color:var(--n500);margin-bottom:6px;">当前阅读等级</div>
+          <div style="display:flex;align-items:baseline;gap:3px;">
+            <span class="num" style="font-size:20px;font-weight:700;color:var(--blue);">Level 3</span>
+          </div>
+          <div style="font-size:11px;color:var(--n500);margin-top:4px;">适合小学中年级</div>
+        </div>
+        <div style="background:#f7f7f9;border-radius:10px;padding:14px 12px;">
+          <div style="font-size:11px;color:var(--n500);margin-bottom:6px;">单词测试正确率</div>
+          <div style="display:flex;align-items:baseline;gap:2px;">
+            <span class="num" style="font-size:22px;font-weight:600;color:var(--n900);">78</span>
+            <span style="font-size:11px;color:var(--n700);">%</span>
+          </div>
+          <div style="font-size:11px;color:var(--orange);margin-top:4px;">较上周 -4%，需关注</div>
+        </div>
+      </div>
+
+      <!-- AI 洞察 -->
+      <div style="background:#f7f7f9;border-radius:10px;padding:14px;">
+        <p style="font-size:13px;color:var(--n700);line-height:22px;">小丸子本周阅读量持续提升，<strong style="color:var(--n900);font-weight:500;">词汇积累</strong>稳步增长。单词测验正确率略有下降，建议配合课后复习工具巩固新词，推荐使用 <span style="color:var(--blue);text-decoration:underline;cursor:pointer;">天天记单词</span> 尤其关注本周新增词汇的拼写练习。</p>
+      </div>
+    </div>
+
+    <!-- 本周已读绘本 -->
+    <div class="card" style="padding:20px;">
+      <div style="font-size:14px;font-weight:500;color:var(--n900);margin-bottom:14px;">本周已读绘本</div>
+
+      <!-- 绘本条目 1 -->
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--n200);">
+        <!-- 封面 -->
+        <div style="width:48px;height:64px;border-radius:4px;background:linear-gradient(135deg,#a8d8ea,#5bafd6);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:9px;color:white;font-weight:600;text-align:center;line-height:14px;">The<br>Mud<br>Pie</span>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+            <span style="font-size:14px;color:var(--n900);font-weight:500;">The Mud Pie</span>
+            <span style="font-size:10px;color:white;background:var(--blue);border-radius:3px;padding:1px 5px;flex-shrink:0;">Lv.1</span>
+          </div>
+          <div style="font-size:11px;color:var(--n500);margin-bottom:6px;">Oxford Reading Tree · 38词</div>
+          <!-- 活动打点 -->
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <div style="display:flex;align-items:center;gap:3px;">
+              <div style="width:14px;height:14px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3l2 2 4-4" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span style="font-size:10px;color:var(--n700);">听绘本</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:3px;">
+              <div style="width:14px;height:14px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3l2 2 4-4" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span style="font-size:10px;color:var(--n700);">跟读挑战</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:3px;">
+              <div style="width:14px;height:14px;border-radius:50%;background:var(--n200);display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>
+              <span style="font-size:10px;color:var(--n500);">趣味测试</span>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--n500);">2025.04.18</div>
+        </div>
+        <!-- 用时 -->
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="display:flex;align-items:baseline;gap:1px;justify-content:flex-end;">
+            <span class="num" style="font-size:20px;font-weight:700;color:var(--n900);line-height:1;">12</span>
+            <span style="font-size:11px;color:var(--n700);">分钟</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 绘本条目 2 -->
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--n200);">
+        <div style="width:48px;height:64px;border-radius:4px;background:linear-gradient(135deg,#fde8c8,#f5a623);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:9px;color:white;font-weight:600;text-align:center;line-height:14px;">一起<br>去<br>旅行</span>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+            <span style="font-size:14px;color:var(--n900);font-weight:500;">一起去旅行</span>
+            <span style="font-size:10px;color:white;background:var(--blue);border-radius:3px;padding:1px 5px;flex-shrink:0;">Lv.2</span>
+          </div>
+          <div style="font-size:11px;color:var(--n500);margin-bottom:6px;">海尼曼 · 52词</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <div style="display:flex;align-items:center;gap:3px;">
+              <div style="width:14px;height:14px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3l2 2 4-4" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span style="font-size:10px;color:var(--n700);">听绘本</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:3px;">
+              <div style="width:14px;height:14px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3l2 2 4-4" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span style="font-size:10px;color:var(--n700);">跟读挑战</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:3px;">
+              <div style="width:14px;height:14px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3l2 2 4-4" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span style="font-size:10px;color:var(--n700);">趣味测试</span>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--n500);">2025.04.19</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="display:flex;align-items:baseline;gap:1px;justify-content:flex-end;">
+            <span class="num" style="font-size:20px;font-weight:700;color:var(--n900);line-height:1;">18</span>
+            <span style="font-size:11px;color:var(--n700);">分钟</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 绘本条目 3 -->
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;">
+        <div style="width:48px;height:64px;border-radius:4px;background:linear-gradient(135deg,#d4ecd4,#52c41a);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:9px;color:white;font-weight:600;text-align:center;line-height:14px;">我想<br>变小</span>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+            <span style="font-size:14px;color:var(--n900);font-weight:500;">我想变小</span>
+            <span style="font-size:10px;color:white;background:var(--blue);border-radius:3px;padding:1px 5px;flex-shrink:0;">Lv.2</span>
+          </div>
+          <div style="font-size:11px;color:var(--n500);margin-bottom:6px;">海尼曼 · 47词</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+            <div style="display:flex;align-items:center;gap:3px;">
+              <div style="width:14px;height:14px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="8" height="6" viewBox="0 0 8 6" fill="none"><path d="M1 3l2 2 4-4" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <span style="font-size:10px;color:var(--n700);">听绘本</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:3px;">
+              <div style="width:14px;height:14px;border-radius:50%;background:var(--n200);display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>
+              <span style="font-size:10px;color:var(--n500);">跟读挑战</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:3px;">
+              <div style="width:14px;height:14px;border-radius:50%;background:var(--n200);display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>
+              <span style="font-size:10px;color:var(--n500);">趣味测试</span>
+            </div>
+          </div>
+          <div style="font-size:10px;color:var(--n500);">2025.04.20</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="display:flex;align-items:baseline;gap:1px;justify-content:flex-end;">
+            <span class="num" style="font-size:20px;font-weight:700;color:var(--n900);line-height:1;">15</span>
+            <span style="font-size:11px;color:var(--n700);">分钟</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 词汇掌握情况 -->
+    <div class="card" style="padding:20px;">
+      <div style="font-size:14px;font-weight:500;color:var(--n900);margin-bottom:14px;">本周新增词汇掌握情况</div>
+
+      <!-- 测试统计 -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <div style="flex:1;background:#f7f7f9;border-radius:8px;padding:10px 12px;text-align:center;">
+          <div style="font-size:11px;color:var(--n500);margin-bottom:4px;">测试词数</div>
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:2px;">
+            <span class="num" style="font-size:20px;font-weight:600;color:var(--n900);">20</span>
+            <span style="font-size:11px;color:var(--n700);">词</span>
+          </div>
+        </div>
+        <div style="flex:1;background:#f7f7f9;border-radius:8px;padding:10px 12px;text-align:center;">
+          <div style="font-size:11px;color:var(--n500);margin-bottom:4px;">错误词数</div>
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:2px;">
+            <span class="num" style="font-size:20px;font-weight:600;color:var(--red);">7</span>
+            <span style="font-size:11px;color:var(--n700);">词</span>
+          </div>
+        </div>
+        <div style="flex:1;background:#f7f7f9;border-radius:8px;padding:10px 12px;text-align:center;">
+          <div style="font-size:11px;color:var(--n500);margin-bottom:4px;">正确率</div>
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:1px;">
+            <span class="num" style="font-size:20px;font-weight:600;color:var(--green);">89</span>
+            <span style="font-size:11px;color:var(--n700);">%</span>
+          </div>
+          <div style="font-size:10px;color:var(--green);margin-top:2px;">优秀</div>
+        </div>
+      </div>
+
+      <!-- 单词列表 双列 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <!-- 左列 -->
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#f7f7f9;border-radius:8px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;color:var(--n900);">agree</span>
+            <div style="width:16px;height:16px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5L8 1" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div style="background:#f7f7f9;border-radius:8px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;color:var(--n900);">teamwork</span>
+            <div style="width:16px;height:16px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5L8 1" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div style="background:#f7f7f9;border-radius:8px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;color:var(--n900);">fly</span>
+            <div style="width:16px;height:16px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5L8 1" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </div>
+        <!-- 右列 -->
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="background:#f7f7f9;border-radius:8px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;color:var(--n900);">France</span>
+            <div style="width:16px;height:16px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5L8 1" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div style="background:#fff0f0;border-radius:8px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;border:1px solid rgba(232,43,10,.15);">
+            <span style="font-size:13px;color:var(--red);font-weight:500;">written</span>
+            <div style="width:16px;height:16px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 1.5l5 5M6.5 1.5l-5 5" stroke="white" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div style="background:#f7f7f9;border-radius:8px;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:13px;color:var(--n900);">Spring Festival</span>
+            <div style="width:16px;height:16px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="9" height="7" viewBox="0 0 9 7" fill="none"><path d="M1 3.5l2.5 2.5L8 1" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="home-indicator"><div class="home-bar"></div></div>
+</div>
+</div><!-- end page-outcome-reading -->
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     PAGE: SUGGESTION DETAIL
+══════════════════════════════════════════════════════════════════ -->
+<div id="page-suggest" class="page">
+<div class="phone">
+  <div style="background:linear-gradient(180deg,#fff8f5 0%,#fff3ee 60%,#f3f4f6 100%);">
+    <div class="status-bar">
+      <span class="num" style="font-size:15px;color:var(--n900)">9:41</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="signal-bars"><span style="height:4px;"></span><span style="height:6px;"></span><span style="height:9px;"></span><span style="height:11px;"></span></div>
+        <div class="battery-wrap"><div class="battery-body"><div class="battery-fill"></div></div><div class="battery-cap"></div></div>
+      </div>
+    </div>
+    <div class="detail-header" style="padding-bottom:16px;">
+      <button class="nav-back tappable" onclick="showPage('page-main')">
+        <svg width="10" height="17" viewBox="0 0 10 17" fill="none"><path d="M8.5 1.5L1.5 8.5l7 7" stroke="var(--n900)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <h2>提升建议详情</h2>
+    </div>
+  </div>
+  <div class="detail-content">
+    <div class="card" style="padding:20px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+        <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#ffcba8,#fa772a);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M11 4v10M8 10l3 3 3-3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5 17h12" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-size:16px;font-weight:500;color:var(--n900);margin-bottom:2px;">英语词汇掌握偏弱</div>
+          <div style="font-size:12px;color:var(--orange);">需要重点关注</div>
+        </div>
+      </div>
+      <div class="insight-box" style="background:#fff8f5;">
+        <p class="insight-text">本周单词测试平均得分仅 62 分，低于年级平均水平 75 分。分析原因：小丸子在单词记忆上花的时间较少，且缺少及时复习。</p>
+      </div>
+      <div class="action-title">建议行动</div>
+      <div class="action-item">
+        <div class="action-num"><span>1</span></div>
+        <div>
+          <div class="action-text-main">每天睡前 10 分钟复习单词</div>
+          <div class="action-text-sub">可在「瑞恩熊AI英语」的词汇复习模块完成，系统会自动推送今日单词</div>
+        </div>
+      </div>
+      <div class="action-item">
+        <div class="action-num"><span>2</span></div>
+        <div>
+          <div class="action-text-main">利用艾宾浩斯遗忘曲线复习</div>
+          <div class="action-text-sub">分级阅读 APP 内的智能复习功能会自动安排最佳复习时间</div>
+        </div>
+      </div>
+      <div class="action-item">
+        <div class="action-num"><span>3</span></div>
+        <div>
+          <div class="action-text-main">家长可以一起参与亲子单词挑战</div>
+          <div class="action-text-sub">陪伴学习效果提升明显，推荐每周 2-3 次，每次 10 分钟</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="home-indicator"><div class="home-bar"></div></div>
+</div>
+</div><!-- end page-suggest -->
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════════════════ -->
+<script>
+// ─── Chart day data ────────────────────────────────────────────
+var dayData = [
+  { date: '10月26日（周一）', third: '42分钟', self: '1小时17分' },
+  { date: '10月27日（周二）', third: '31分钟', self: '17分钟' },
+  { date: '10月28日（周三）', third: '1小时44分', self: '55分钟' },
+  { date: '10月29日（周四）', third: '1小时1分', self: '1小时50分' },
+  { date: '10月30日（周五）', third: '3小时27分', self: '2小时2分' },
+  { date: '10月31日（周六）', third: '2小时21分', self: '1小时18分' },
+  { date: '11月1日（周日）',  third: '—',        self: '—' }
+];
+var selectedDay = -1;
+function selectDay(idx) {
+  var cols = document.querySelectorAll('#chart-bars .chart-col');
+  var detail = document.getElementById('day-detail');
+  if (selectedDay === idx) {
+    // 取消选中
+    cols.forEach(function(c) { c.classList.remove('active'); });
+    detail.style.display = 'none';
+    selectedDay = -1;
+    return;
+  }
+  selectedDay = idx;
+  cols.forEach(function(c, i) {
+    c.classList.toggle('active', i === idx);
+  });
+  var d = dayData[idx];
+  document.getElementById('day-detail-date').textContent = d.date;
+  document.getElementById('day-detail-third').textContent = d.third;
+  document.getElementById('day-detail-self').textContent = d.self;
+  detail.style.display = 'block';
+}
+
+// ─── Page routing ─────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(function(p) {
+    p.classList.remove('active');
+  });
+  var el = document.getElementById(id);
+  if (el) {
+    el.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+}
+
+// ─── Report type toggle (日报 / 周报) ─────────────────────────
+function switchReport(type) {
+  var daily  = document.getElementById('toggle-daily');
+  var weekly = document.getElementById('toggle-weekly');
+  if (type === 'daily') {
+    daily.classList.add('active');
+    weekly.classList.remove('active');
+    document.getElementById('date-display').textContent = '3月25日';
+  } else {
+    weekly.classList.add('active');
+    daily.classList.remove('active');
+    document.getElementById('date-display').textContent = '10.26-11.1';
+  }
+}
+
+// ─── Date picker dropdown ──────────────────────────────────────
+function toggleDateDropdown() {
+  var dd = document.getElementById('date-dropdown');
+  dd.classList.toggle('open');
+}
+function selectDate(range, btn) {
+  document.getElementById('date-display').textContent = range;
+  document.querySelectorAll('.date-option').forEach(function(b) {
+    b.classList.remove('selected');
+  });
+  if (btn) btn.classList.add('selected');
+  document.getElementById('date-dropdown').classList.remove('open');
+}
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+  var btn = document.getElementById('date-btn');
+  var dd  = document.getElementById('date-dropdown');
+  if (dd && btn && !btn.contains(e.target) && !dd.contains(e.target)) {
+    dd.classList.remove('open');
+  }
+});
+
+// ─── App list expand ──────────────────────────────────────────
+function toggleApps() {
+  var hidden = document.getElementById('hidden-apps');
+  var caret  = document.getElementById('expand-caret');
+  var label  = document.getElementById('expand-label');
+  var isOpen = hidden.classList.contains('open');
+  if (isOpen) {
+    hidden.classList.remove('open');
+    caret.classList.remove('open');
+    label.textContent = '查看全部';
+  } else {
+    hidden.classList.add('open');
+    caret.classList.add('open');
+    label.textContent = '收起';
+  }
+}
+
+// ─── Subject tabs ─────────────────────────────────────────────
+var subjects = ['yuwen','shuxue','yingyu','wuli','huaxue','shengwu','daofa'];
+function switchSubject(sub) {
+  subjects.forEach(function(s) {
+    var tab     = document.getElementById('tab-' + s);
+    var content = document.getElementById('content-' + s);
+    if (s === sub) {
+      tab.classList.add('active');
+      content.classList.add('active', 'fade-in');
+    } else {
+      tab.classList.remove('active');
+      content.classList.remove('active', 'fade-in');
+    }
+  });
+}
+</script>
+</body>
+</html>
