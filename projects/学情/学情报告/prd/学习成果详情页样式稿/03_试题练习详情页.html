@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>试题练习详情页</title>
+  <link rel="stylesheet" href="mobile-detail.css">
+</head>
+<body>
+  <main class="phone">
+    <header class="page-head">
+      <nav class="nav"><button class="nav-btn">‹</button><div class="nav-title">学习成果详情</div><button class="nav-btn">···</button></nav>
+      <section class="hero">
+        <div class="hero-kicker">周报 04.28-05.04</div>
+        <h1 class="hero-title">试题练习完成情况</h1>
+        <p class="hero-desc">本周答对 <strong>36 题</strong>，正确率达到 88%，最高连续答对 12 题。</p>
+      </section>
+      <article class="card" style="margin: 0 16px 0;">
+        <div class="metric-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+          <div class="metric-card"><div class="metric-label">答对题数</div><div class="metric-value"><span class="metric-num">36</span><span class="metric-unit">题</span></div><div class="metric-change positive">较上周 +8题</div></div>
+          <div class="metric-card"><div class="metric-label">正确率</div><div class="metric-value"><span class="metric-num">88</span><span class="metric-unit">%</span></div><div class="metric-change positive">保持优秀</div></div>
+          <div class="metric-card"><div class="metric-label">最高连对</div><div class="metric-value"><span class="metric-num">12</span><span class="metric-unit">题</span></div><div class="metric-change positive">状态很好</div></div>
+          <div class="metric-card"><div class="metric-label">完成题包/试卷</div><div class="metric-value"><span class="metric-num">3</span><span class="metric-unit">个</span></div><div class="metric-change">本周完成</div></div>
+        </div>
+        <div class="insight">正确率保持在 <strong>88%</strong>，做题稳定性比之前更好。最高连续答对 12 题，说明解题状态更连贯。</div>
+      </article>
+    </header>
+    <section class="content">
+      <article class="card">
+        <div class="section-head"><div><div class="section-title">本周练习表现</div></div></div>
+        <div class="list">
+          <div class="list-row clickable">
+            <div class="icon-box green" style="background:var(--green-soft);color:var(--green);">A</div>
+            <div class="row-body">
+              <div class="row-title">圆的认识专项题包</div>
+              <div class="row-desc">20 题 · 04.30 完成</div>
+              <div class="row-meta" style="margin-top:8px;"><span class="tag green">正确率 95%</span></div>
+              <div class="row-desc" style="margin-top:6px;">正确率从上次的 78% 提升到 95%，进步非常明显</div>
+            </div>
+            <div class="row-action">›</div>
+          </div>
+          <div class="list-row clickable">
+            <div class="icon-box" style="background:var(--blue-soft);color:var(--blue-data);">卷</div>
+            <div class="row-body">
+              <div class="row-title">单元综合试卷</div>
+              <div class="row-desc">综合发挥稳定</div>
+              <div class="row-meta" style="margin-top:8px;"><span class="tag blue">正确率 85%</span></div>
+              <div class="row-desc" style="margin-top:6px;">知识点能灵活运用到整套题中</div>
+            </div>
+            <div class="row-action">›</div>
+          </div>
+        </div>
+      </article>
+      <article class="card">
+        <div class="section-head"><div><div class="section-title">连对记录</div></div></div>
+        <div class="stage-card" style="background:linear-gradient(135deg,#e8f5ff,#f0f9ff);border:1px solid #d4ebff;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:var(--blue-data);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;">🔥</div>
+            <strong style="font-size:16px;color:var(--n900);">05.02 连续答对 12 题</strong>
+          </div>
+          <div style="font-size:13px;color:var(--n700);line-height:20px;">在「圆的认识」单元，解题手感太好了，状态很连贯</div>
+        </div>
+      </article>
+    </section>
+    <div class="footer-safe"><div class="home-bar"></div></div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>作文详情页</title>
+  <link rel="stylesheet" href="mobile-detail.css">
+</head>
+<body>
+  <main class=”phone”>
+    <header class=”page-head”>
+      <nav class=”nav”><button class=”nav-btn”>‹</button><div class=”nav-title”>学习成果详情</div><button class=”nav-btn”>···</button></nav>
+      <section class=”hero”>
+        <div class=”hero-kicker”>周报 04.28-05.04</div>
+        <h1 class=”hero-title”>作文完成情况</h1>
+        <p class=”hero-desc”>本周完成 <strong>2 篇</strong> 高质量作文，最高分 91 分，表达和结构都有进步。</p>
+      </section>
+      <article class=”card” style=”margin: 0 16px 0;”>
+        <div class=”metric-grid” style=”grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;”>
+          <div class=”metric-card”><div class=”metric-label”>高分作文</div><div class=”metric-value”><span class=”metric-num”>2</span><span class=”metric-unit”>篇</span></div><div class=”metric-change positive”>较上周 +1篇</div></div>
+          <div class=”metric-card”><div class=”metric-label”>最高分</div><div class=”metric-value”><span class=”metric-num”>91</span><span class=”metric-unit”>分</span></div><div class=”metric-change positive”>表现出色</div></div>
+          <div class=”metric-card”><div class=”metric-label”>平均分</div><div class=”metric-value”><span class=”metric-num”>88</span><span class=”metric-unit”>分</span></div><div class=”metric-change positive”>稳定优秀</div></div>
+          <div class=”metric-card”><div class=”metric-label”>提升幅度</div><div class=”metric-value”><span class=”metric-num”>5</span><span class=”metric-unit”>分</span></div><div class=”metric-change positive”>持续进步</div></div>
+        </div>
+        <div class=”insight”>本周完成 <strong>2 篇</strong> 高质量作文，写作输出更稳定。最高分达到 91 分，表达和结构都有进步。</div>
+      </article>
+    </header>
+    <section class=”content”>
+      <article class=”card”>
+        <div class=”section-head”><div><div class=”section-title”>本周作文表现</div></div></div>
+        <div class=”essay-preview clickable” style=”border:1px solid rgba(82,196,26,0.18);”>
+          <div style=”display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;”>
+            <div style=”flex:1;”>
+              <strong style=”font-size:16px;color:var(--n900);display:block;margin-bottom:6px;”>《那一次我学会了坚持》</strong>
+              <div style=”font-size:12px;color:var(--n500);”>已批改 · 05.02</div>
+            </div>
+            <div style=”text-align:right;”>
+              <div class=”score-num”>91</div>
+              <div style=”font-size:11px;color:var(--n500);margin-top:4px;”>分</div>
+            </div>
+          </div>
+          <div style=”background:#fff;border-radius:8px;padding:12px;font-size:13px;color:var(--n700);line-height:20px;margin-bottom:10px;border-left:3px solid var(--green);”>
+            这次写作围绕”我的一次成长经历”展开，结构完整，表达自然，细节描写比上一次更具体，能更好地围绕主题展开。
+          </div>
+          <div style=”display:flex;align-items:center;justify-content:space-between;”>
+            <span style=”font-size:12px;color:var(--green);”>表达力提升明显</span>
+            <span style=”color:#b2b6bd;font-size:18px;”>›</span>
+          </div>
+        </div>
+      </article>
+      <article class=”card”>
+        <div class=”section-head”><div><div class=”section-title”>改进建议</div></div></div>
+        <div class=”insight”>文章结构清楚，能围绕主题展开。下一步可以增加<strong style=”color:var(--n900);”>心理描写</strong>，让表达更有层次。</div>
+      </article>
+    </section>
+    <div class="footer-safe"><div class="home-bar"></div></div>
+  </main>
+</body>
+</html>

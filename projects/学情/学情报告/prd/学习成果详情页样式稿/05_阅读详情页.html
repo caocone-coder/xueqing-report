@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>阅读详情页</title>
+  <link rel="stylesheet" href="mobile-detail.css">
+</head>
+<body>
+  <main class="phone">
+    <header class="page-head">
+      <nav class="nav"><button class="nav-btn">‹</button><div class="nav-title">学习成果详情</div><button class="nav-btn">···</button></nav>
+      <section class="hero">
+        <div class="hero-kicker">周报 04.28-05.04</div>
+        <h1 class="hero-title">英语分级阅读完成情况</h1>
+        <p class="hero-desc">本周共完成绘本 <strong>5 本</strong>，较上周增加 2 本，阅读积极性明显提升。</p>
+      </section>
+      <article class="card" style="margin: 0 16px 0;">
+        <div class="metric-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+          <div class="metric-card"><div class="metric-label">本周阅读时长</div><div class="metric-value"><span class="metric-num">2</span><span class="metric-unit">小时 18分</span></div><div class="metric-change positive">较上周 +34分钟</div></div>
+          <div class="metric-card"><div class="metric-label">累计词汇量</div><div class="metric-value"><span class="metric-num">1,248</span></div><div class="metric-change positive">本周新增 +86个</div></div>
+          <div class="metric-card"><div class="metric-label">当前阅读等级</div><div class="metric-value level"><span class="metric-num">Level 3</span></div><div class="metric-change">适合小学中年级</div></div>
+          <div class="metric-card"><div class="metric-label">单词测试正确率</div><div class="metric-value"><span class="metric-num">78</span><span class="metric-unit">%</span></div><div class="metric-change negative">较上周 -4%，需关注</div></div>
+        </div>
+        <div class="insight">小丸子本周阅读量持续提升，<strong>词汇积累稳步增长</strong>。单词测验正确率有所下降，建议配合 <span class="tag-inline">天天记单词</span> 复习工具巩固新词，推荐使用。</div>
+      </article>
+    </header>
+    <section class="content">
+      <article class="card">
+        <div class="section-head"><div><div class="section-title">本周已读绘本</div></div></div>
+        <div class="book-list">
+          <div class="book-row clickable">
+            <div class="book-thumb">M</div>
+            <div class="book-info"><div class="book-name">The Mud Pie <span class="tag blue">Lv.1</span></div><div class="book-meta-line">Oxford Reading Tree · 38词</div><div class="book-badges"><span class="tag green">已听读</span><span class="tag green">已跟读</span><span class="tag green">趣味测试</span></div><div class="book-meta-line">2026.04.29</div></div>
+            <div class="book-time">12<span>分钟</span></div>
+          </div>
+          <div class="book-row clickable">
+            <div class="book-thumb" style="background:linear-gradient(145deg,#fff0d4,#ffc36d);color:#f0a500;">R</div>
+            <div class="book-info"><div class="book-name">一起去旅行 <span class="tag blue">Lv.1</span></div><div class="book-meta-line">海尼曼 · 52词</div><div class="book-badges"><span class="tag green">已听读</span><span class="tag green">趣味测试</span></div><div class="book-meta-line">2026.05.01</div></div>
+            <div class="book-time">18<span>分钟</span></div>
+          </div>
+        </div>
+      </article>
+      <article class="card">
+        <div class="section-head"><div><div class="section-title">本周新增词汇掌握情况</div></div></div>
+        <div class="word-stats">
+          <div class="word-stat"><div class="word-stat-label">测试词数</div><div class="word-stat-value">20</div></div>
+          <div class="word-stat warn"><div class="word-stat-label">错误词数</div><div class="word-stat-value">7</div></div>
+          <div class="word-stat good"><div class="word-stat-label">正确率</div><div class="word-stat-value">89%</div></div>
+        </div>
+        <div class="word-grid">
+          <div class="word-cell">agree</div><div class="word-cell">France</div>
+          <div class="word-cell">teamwork</div><div class="word-cell">fly</div>
+          <div class="word-cell">sunshine</div><div class="word-cell">rainbow</div>
+          <div class="word-cell">kitchen</div><div class="word-cell wrong">nephew<span class="cross"></span></div>
+          <div class="word-cell">picnic</div><div class="word-cell">library</div>
+          <div class="word-cell">grateful</div><div class="word-cell">bridge</div>
+        </div>
+      </article>
+    </section>
+    <div class="footer-safe"><div class="home-bar"></div></div>
+  </main>
+</body>
+</html>
