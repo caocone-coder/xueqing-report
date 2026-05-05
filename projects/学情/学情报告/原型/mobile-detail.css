@@ -128,8 +128,10 @@ button {
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
   gap: 10px;
   margin-bottom: 16px;
+  width: 100%;
 }
 
 .metric-card {
@@ -139,6 +141,8 @@ button {
   padding: 14px 12px;
   border: 1px solid rgba(255, 255, 255, 0.5);
   min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .insight {
