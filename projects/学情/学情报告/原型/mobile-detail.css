@@ -127,7 +127,7 @@ button {
 /* 方案 A：渐进式融合样式 */
 .metric-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 10px;
   margin-bottom: 16px;
 }
@@ -138,6 +138,7 @@ button {
   border-radius: 12px;
   padding: 14px 12px;
   border: 1px solid rgba(255, 255, 255, 0.5);
+  min-width: 0;
 }
 
 .insight {
