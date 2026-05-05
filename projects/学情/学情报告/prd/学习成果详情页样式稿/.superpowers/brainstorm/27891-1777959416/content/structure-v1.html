@@ -1,0 +1,73 @@
+<h2>学习成果详情页统一骨架</h2>
+<p class="subtitle">方案 B：统一头部、概览卡、留白和信息层级；列表区按分类保留自己的表现形式</p>
+
+<div class="section">
+  <div class="mockup">
+    <div class="mockup-header">统一页面骨架</div>
+    <div class="mockup-body" style="background:#f5f6f8;padding:20px;border-radius:16px;">
+      <div style="background:linear-gradient(180deg,#e8f8f1 0%,#f5f6f8 100%);border-radius:18px;padding:18px 16px 20px;margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-size:14px;color:#222;">
+          <span>←</span><strong>学习成果详情</strong><span></span>
+        </div>
+        <div style="font-size:22px;font-weight:700;color:#1f2229;margin-bottom:8px;">成果标题</div>
+        <div style="font-size:14px;line-height:22px;color:#656a73;">一句家长向总结：这周完成了什么，比上周怎样，说明孩子在哪方面有进步。</div>
+      </div>
+
+      <div style="background:#fff;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(31,34,41,.04);">
+        <div style="font-size:18px;font-weight:600;margin-bottom:10px;color:#1f2229;">进步概览</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div style="background:#f7f7f9;border-radius:12px;padding:12px;min-height:82px;">
+            <div style="font-size:12px;color:#999da6;margin-bottom:8px;">指标 1</div>
+            <div style="font-size:32px;font-weight:700;color:#1f2229;line-height:1;">XX</div>
+            <div style="font-size:12px;color:#52c41a;margin-top:8px;">较上周 +x</div>
+          </div>
+          <div style="background:#f7f7f9;border-radius:12px;padding:12px;min-height:82px;">
+            <div style="font-size:12px;color:#999da6;margin-bottom:8px;">指标 2</div>
+            <div style="font-size:32px;font-weight:700;color:#1f2229;line-height:1;">XX</div>
+            <div style="font-size:12px;color:#52c41a;margin-top:8px;">本周新增 +x</div>
+          </div>
+          <div style="background:#f7f7f9;border-radius:12px;padding:12px;min-height:82px;">
+            <div style="font-size:12px;color:#999da6;margin-bottom:8px;">指标 3</div>
+            <div style="font-size:24px;font-weight:700;color:#38afff;line-height:1.1;">Level / 91%</div>
+            <div style="font-size:12px;color:#999da6;margin-top:8px;">当前水平说明</div>
+          </div>
+          <div style="background:#f7f7f9;border-radius:12px;padding:12px;min-height:82px;">
+            <div style="font-size:12px;color:#999da6;margin-bottom:8px;">指标 4</div>
+            <div style="font-size:24px;font-weight:700;color:#1f2229;line-height:1.1;">状态标签</div>
+            <div style="font-size:12px;color:#ff6509;margin-top:8px;">异常/提醒可放这里</div>
+          </div>
+        </div>
+        <div style="background:#f7f7f9;border-radius:12px;padding:12px;font-size:14px;line-height:22px;color:#656a73;">
+          家长解读：用 1 段话解释这些数字意味着什么，帮助家长看懂“进步发生在哪”。
+        </div>
+      </div>
+
+      <div style="background:#fff;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(31,34,41,.04);">
+        <div style="font-size:18px;font-weight:600;margin-bottom:12px;color:#1f2229;">本周完成内容</div>
+        <div style="height:92px;border-radius:12px;background:#f7f7f9;display:flex;align-items:center;justify-content:center;color:#999da6;font-size:14px;">这里按分类变化：书单 / 知识点列表 / 错题列表 / 作品卡片</div>
+      </div>
+
+      <div style="background:#fff;border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(31,34,41,.04);">
+        <div style="font-size:18px;font-weight:600;margin-bottom:12px;color:#1f2229;">更细明细</div>
+        <div style="height:116px;border-radius:12px;background:#f7f7f9;display:flex;align-items:center;justify-content:center;color:#999da6;font-size:14px;">这里按分类变化：词汇掌握 / 错因分布 / 掌握度 / 点评 / 过程表现</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="yes" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>这个统一骨架可以</h3>
+      <p>继续往下细化 8 类页面各自的第二、第三张卡</p>
+    </div>
+  </div>
+  <div class="option" data-choice="adjust" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>骨架还要调整</h3>
+      <p>调整卡片顺序、指标区、或家长解读的位置后再细化</p>
+    </div>
+  </div>
+</div>
