@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>学习成果详情页 - 按内容分类</title>
+  <link rel="stylesheet" href="mobile-detail.css">
+  <style>
+    .page-switcher{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:999;display:flex;gap:0;background:#fff;border-radius:0 0 12px 12px;box-shadow:0 2px 12px rgba(0,0,0,.1);overflow-x:auto;max-width:375px;width:100%;scrollbar-width:none;}
+    .page-switcher::-webkit-scrollbar{display:none;}
+    .page-switcher button{flex:0 0 auto;padding:10px 10px;font-size:11px;border:0;background:none;color:var(--n700);white-space:nowrap;font-family:inherit;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
+    .page-switcher button.active{color:var(--blue-data);font-weight:600;border-bottom-color:var(--blue-data);}
+    .page-section{display:none;}
+    .page-section.active{display:block;}
+    .phone{padding-top:42px;}
+    .trend-row{display:flex;align-items:center;gap:6px;margin-top:8px;}
+    .trend-arrow{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+    .trend-arrow.up{background:var(--green-soft);color:var(--green);}
+    .trend-arrow.stable{background:var(--blue-soft);color:var(--blue-data);}
+    .trend-text{font-size:11px;color:var(--n700);}
+    .trend-text strong{color:var(--n900);}
+    .divider{height:1px;background:var(--n200);margin:12px 0;}
+    .summary-bar{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;background:var(--n50);margin-bottom:12px;}
+    .summary-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;background:var(--blue-grad);}
+    .summary-icon.green{background:linear-gradient(135deg,#8eea7d,#52c41a);}
+    .summary-icon.orange{background:var(--orange-grad);}
+    .summary-text{flex:1;font-size:12px;line-height:18px;color:var(--n700);}
+    .summary-text strong{color:var(--n900);}
+  </style>
+</head>
+<body>
+<main class="phone">
+  <div class="page-switcher">
+    <button class="active" onclick="switchPage('knowledge')">知识点</button>
+    <button onclick="switchPage('wrong')">错题</button>
+    <button onclick="switchPage('quiz')">试题练习</button>
+    <button onclick="switchPage('task')">课程任务</button>
+    <button onclick="switchPage('reading')">阅读</button>
+    <button onclick="switchPage('vocab')">字词背诵</button>
+    <button onclick="switchPage('essay')">作文</button>
+    <button onclick="switchPage('creative')">素养作品</button>
+  </div>
+
+<!-- ========== 1. 知识点/单元详情页 ========== -->
+<div class="page-section active" id="page-knowledge">
+  <header class="page-head">
+    <nav class="nav"><button class="nav-btn">&#8249;</button><div class="nav-title">知识点详情</div><button class="nav-btn">&#183;&#183;&#183;</button></nav>
+    <section class="hero">
+      <div class="hero-kicker">周报 04.28-05.04</div>
+      <h1 class="hero-title">知识点学扎实了</h1>
+      <p class="hero-desc">这周把数学、物理的 7 个知识点学得更明白，「圆的认识」单元已全部掌握。</p>
+    </section>
+  </header>
+  <section class="content">
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步概览</div><div class="section-sub">本周知识掌握变化</div></div><span class="tag green">已达标</span></div>
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">新掌握</div><div class="metric-value"><span class="metric-num">7</span><span class="metric-unit">个</span></div></div>
+        <div class="metric-card"><div class="metric-label">平均掌握度</div><div class="metric-value"><span class="metric-num">86</span><span class="metric-unit">%</span></div></div>
+        <div class="metric-card"><div class="metric-label">提升幅度</div><div class="metric-value"><span class="metric-num">22</span><span class="metric-unit">%</span></div></div>
+      </div>
+      <div class="summary-bar">
+        <div class="summary-icon green">+3</div>
+        <div class="summary-text">比上周多掌握 <strong>3 个</strong> 知识点，其中 2 个是原来的薄弱点</div>
+      </div>
+      <div class="insight">原本掌握度不到 60% 的知识点现在都稳定在 80% 以上，「圆的认识」整单元已学透，基础更牢了。</div>
+      <div class="change-list">
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">攻克 <strong>2 个</strong> 薄弱知识点，从不及格提升到优秀水平。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">「圆的认识」单元 <strong>5 个</strong> 知识点全部达标，章节学透。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">知识点平均理解度提升 <strong>22%</strong>，对知识的理解在变深。</div></div>
+      </div>
+      <div class="trend-row"><span class="trend-arrow up">^</span><span class="trend-text">连续 <strong>3 周</strong> 保持掌握节奏，学习状态稳定向好</span></div>
+    </article>
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步明细</div><div class="section-sub">各知识点掌握详情</div></div><span class="tag blue">知识点</span></div>
+      <div class="tabs"><div class="tab active">数学 5</div><div class="tab">物理 2</div></div>
+      <div class="list">
+        <div class="list-row clickable">
+          <div class="icon-box green">克</div>
+          <div class="row-body">
+            <div class="row-title">圆的周长计算</div>
+            <div class="row-desc">掌握度从 52% 提升到 88%，从薄弱点变成强项。</div>
+            <div class="progress"><div class="progress-fill green" style="width:88%"></div></div>
+            <div class="row-meta"><span class="tag green">已攻克</span><span class="tag">04.30 突破</span></div>
+            <div class="progress-note"><strong>进步看点</strong> 从不及格到接近优秀，这个知识点的突破很扎实。</div>
+          </div>
+          <div class="row-action">&#8250;</div>
+        </div>
+        <div class="list-row clickable">
+          <div class="icon-box green">掌</div>
+          <div class="row-body">
+            <div class="row-title">圆的半径与直径</div>
+            <div class="row-desc">掌握度从 62% 提升到 90%，概念理解更清晰。</div>
+            <div class="progress"><div class="progress-fill green" style="width:90%"></div></div>
+            <div class="row-meta"><span class="tag green">已掌握</span><span class="tag">04.29 达标</span></div>
+            <div class="progress-note"><strong>进步看点</strong> 半径和直径的关系能灵活运用到解题中了。</div>
+          </div>
+          <div class="row-action">&#8250;</div>
+        </div>
+        <div class="list-row clickable">
+          <div class="icon-box">单</div>
+          <div class="row-body">
+            <div class="row-title">「圆的认识」整单元达标</div>
+            <div class="row-desc">单元内 5 个知识点全部掌握度超过 80%，章节学透。</div>
+            <div class="progress"><div class="progress-fill green" style="width:100%"></div></div>
+            <div class="row-meta"><span class="tag green">单元达标</span><span class="tag blue">里程碑</span></div>
+            <div class="progress-note"><strong>进步看点</strong> 整个单元融会贯通，综合运用能力更强了。</div>
+          </div>
+          <div class="row-action">&#8250;</div>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>
+
+<!-- ========== 2. 错题详情页 ========== -->
+<div class="page-section" id="page-wrong">
+  <header class="page-head">
+    <nav class="nav"><button class="nav-btn">&#8249;</button><div class="nav-title">错题详情</div><button class="nav-btn">&#183;&#183;&#183;</button></nav>
+    <section class="hero">
+      <div class="hero-kicker">周报 04.28-05.04</div>
+      <h1 class="hero-title">错题越来越少了</h1>
+      <p class="hero-desc">这周成功消灭了数学、英语的 14 道错题，弱点正在变成强项。</p>
+    </section>
+  </header>
+  <section class="content">
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步概览</div><div class="section-sub">本周错题订正变化</div></div><span class="tag orange">错题本</span></div>
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">已攻克</div><div class="metric-value"><span class="metric-num">14</span><span class="metric-unit">道</span></div></div>
+        <div class="metric-card"><div class="metric-label">订正率</div><div class="metric-value"><span class="metric-num">93</span><span class="metric-unit">%</span></div></div>
+        <div class="metric-card"><div class="metric-label">最高频错因</div><div class="metric-value"><span class="metric-num" style="font-size:15px">审题</span></div></div>
+      </div>
+      <div class="summary-bar">
+        <div class="summary-icon green">+6</div>
+        <div class="summary-text">比上周多攻克 <strong>6 道</strong> 错题，订正效率在提升</div>
+      </div>
+      <div class="insight">本周最常见错因是审题有误，已经能主动找到错因并归类，后续练习会更有方向。</div>
+      <div class="change-list">
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">成功订正 <strong>14 道</strong> 错题，弱点正在变成强项。</div></div>
+        <div class="change-item"><span class="change-dot orange"></span><div class="change-text">找到了 <strong>8 道</strong> 错题的规律，主要是审题和计算问题。</div></div>
+      </div>
+      <div class="trend-row"><span class="trend-arrow up">^</span><span class="trend-text">订正率连续 <strong>2 周</strong> 超过 90%，错题处理更主动</span></div>
+    </article>
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步明细</div><div class="section-sub">本周错题订正详情</div></div><span class="tag green">已订正</span></div>
+      <div class="tabs"><div class="tab active">数学 9</div><div class="tab">英语 5</div></div>
+      <div class="list">
+        <div class="list-row clickable">
+          <div class="icon-box orange">错</div>
+          <div class="row-body">
+            <div class="row-title">圆周长应用题</div>
+            <div class="row-desc">重新作答正确，04.30 完成订正。</div>
+            <div class="row-meta"><span class="tag orange">审题有误</span><span class="tag green">已攻克</span></div>
+            <div class="progress-note"><strong>进步看点</strong> 这类题已经能重新做对，说明审题和解题步骤都有提升。</div>
+          </div>
+          <div class="row-action">&#8250;</div>
+        </div>
+        <div class="list-row clickable">
+          <div class="icon-box orange">因</div>
+          <div class="row-body">
+            <div class="row-title">单位换算题</div>
+            <div class="row-desc">错因已归类为计算错误，建议继续练 2 道同类题。</div>
+            <div class="row-meta"><span class="tag orange">计算错误</span><span class="tag">待巩固</span></div>
+            <div class="progress-note"><strong>进步看点</strong> 已经能识别主要错因，下一步更容易针对练习。</div>
+          </div>
+          <div class="row-action">&#8250;</div>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>
+
+<!-- ========== 3. 试题练习详情页 ========== -->
+<div class="page-section" id="page-quiz">
+  <header class="page-head">
+    <nav class="nav"><button class="nav-btn">&#8249;</button><div class="nav-title">练习详情</div><button class="nav-btn">&#183;&#183;&#183;</button></nav>
+    <section class="hero">
+      <div class="hero-kicker">周报 04.28-05.04</div>
+      <h1 class="hero-title">答题越来越准了</h1>
+      <p class="hero-desc">这周数学答对 48 道题，正确率达到 92%，还连续答对了 12 题，进步明显。</p>
+    </section>
+  </header>
+  <section class="content">
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步概览</div><div class="section-sub">本周答题与成绩变化</div></div><span class="tag green">表现优秀</span></div>
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">答对题数</div><div class="metric-value"><span class="metric-num">48</span><span class="metric-unit">题</span></div></div>
+        <div class="metric-card"><div class="metric-label">正确率</div><div class="metric-value"><span class="metric-num">92</span><span class="metric-unit">%</span></div></div>
+        <div class="metric-card"><div class="metric-label">最高连对</div><div class="metric-value"><span class="metric-num">12</span><span class="metric-unit">题</span></div></div>
+      </div>
+      <div class="summary-bar">
+        <div class="summary-icon green">+9%</div>
+        <div class="summary-text">正确率比上周提升 <strong>9%</strong>，做题稳定性更好了</div>
+      </div>
+      <div class="insight">课时练习有 3 个达到 A 级，试卷得分率也超过 85%，专项练习正确率保持在 90% 以上，整体发挥出色。</div>
+      <div class="change-list">
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">课时练习 <strong>3 个</strong> 达到 A 级，掌握得很扎实。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">试卷得分率 <strong>85%</strong>，综合发挥比上次更稳。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">专项练习正确率 <strong>91%</strong>，针对性训练效果好。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">最高连续答对 <strong>12 题</strong>，解题状态很连贯。</div></div>
+      </div>
+      <div class="trend-row"><span class="trend-arrow up">^</span><span class="trend-text">正确率连续 <strong>3 周</strong> 上升，做题手感越来越好</span></div>
+    </article>
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步明细</div><div class="section-sub">练习与考试表现</div></div><span class="tag green">A 级</span></div>
+      <div class="tabs"><div class="tab active">课时练习 3</div><div class="tab">试卷 1</div><div class="tab">专项 2</div></div>
+      <div class="list">
+        <div class="list-row clickable">
+          <div class="icon-box green">A</div>
+          <div class="row-body">
+            <div class="row-title">圆的认识专项题包</div>
+            <div class="row-desc">20 题 · 正确率 95% · 04.30 完成</div>
+            <div class="row-meta"><span class="tag green">A 级</span><span class="tag blue">专项突破</span></div>
+            <div class="progress-note"><strong>进步看点</strong> 正确率从上次的 78% 提升到 95%，进步非常明显。</div>
+          </div>
+          <div class="row-action">&#8250;</div>
+        </div>
+        <div class="list-row clickable">
+          <div class="icon-box">卷</div>
+          <div class="row-body">
+            <div class="row-title">单元综合试卷</div>
+            <div class="row-desc">得分率 85% · 综合发挥稳定</div>
+            <div class="row-meta"><span class="tag blue">试卷</span><span class="tag green">超80%</span></div>
+            <div class="progress-note"><strong>进步看点</strong> 综合试卷表现稳定，知识点能灵活运用到整套题中。</div>
+          </div>
+          <div class="row-action">&#8250;</div>
+        </div>
+        <div class="list-row clickable">
+          <div class="icon-box blue">连</div>
+          <div class="row-body">
+            <div class="row-title">05.02 在「圆的认识」连对 12 题</div>
+            <div class="row-desc">解题手感太好了，状态很连贯。</div>
+            <div class="row-meta"><span class="tag blue">连对记录</span></div>
+            <div class="progress-note"><strong>进步看点</strong> 连续答对说明知识点掌握扎实，做题思路清晰。</div>
+          </div>
+          <div class="row-action">&#8250;</div>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>
+
+<!-- ========== 4. 课程任务详情页 ========== -->
+<div class="page-section" id="page-task">
+  <header class="page-head">
+    <nav class="nav"><button class="nav-btn">&#8249;</button><div class="nav-title">任务详情</div><button class="nav-btn">&#183;&#183;&#183;</button></nav>
+    <section class="hero">
+      <div class="hero-kicker">周报 04.28-05.04</div>
+      <h1 class="hero-title">学习节奏稳稳的</h1>
+      <p class="hero-desc">这周完成了数学、语文的 9 节学习任务，还提前预习了 2 节，节奏稳稳的。</p>
+    </section>
+  </header>
+  <section class="content">
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步概览</div><div class="section-sub">本周学习投入变化</div></div><span class="tag green">节奏稳定</span></div>
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">完成任务</div><div class="metric-value"><span class="metric-num">9</span><span class="metric-unit">节</span></div></div>
+        <div class="metric-card"><div class="metric-label">课程学习</div><div class="metric-value"><span class="metric-num">5</span><span class="metric-unit">个</span></div></div>
+        <div class="metric-card"><div class="metric-label">完成率</div><div class="metric-value"><span class="metric-num">90</span><span class="metric-unit">%</span></div></div>
+      </div>
+      <div class="summary-bar">
+        <div class="summary-icon">+3</div>
+        <div class="summary-text">比上周多完成 <strong>3 节</strong> 任务，学习投入更稳定</div>
+      </div>
+      <div class="insight">学习任务完成率持续提升，语文课程视频都能完整看完，预习也走在前面，每天都有固定的学习时间。</div>
+      <div class="change-list">
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">数学完成 <strong>6 节</strong> 学习任务，规划学任务全部闭环。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">语文看完 <strong>5 个</strong> 课程视频，学习很投入。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">预习完成 <strong>2 节</strong>，走在前面了。</div></div>
+      </div>
+      <div class="trend-row"><span class="trend-arrow stable">-</span><span class="trend-text">连续 <strong>4 周</strong> 完成率超过 85%，学习习惯已稳定</span></div>
+    </article>
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步明细</div><div class="section-sub">任务完成详情</div></div><span class="tag blue">任务</span></div>
+      <div class="tabs"><div class="tab active">学习任务 9</div><div class="tab">课程 5</div><div class="tab">预习 2</div></div>
+      <div class="stage-card clickable">
+        <div class="stage-time">04.28-04.30</div>
+        <div class="stage-title">数学：基础巩固阶段</div>
+        <div class="stage-desc">完成 3 节课时学习，系统复习圆的基本概念。</div>
+        <div class="progress"><div class="progress-fill green" style="width:100%"></div></div>
+        <div class="progress-note"><strong>进步看点</strong> 基础任务全部完成，学习节奏很稳定。</div>
+      </div>
+      <div class="stage-card orange clickable">
+        <div class="stage-time">05.01-05.03</div>
+        <div class="stage-title">数学：专项突破阶段</div>
+        <div class="stage-desc">完成 3 节专项练习，针对薄弱点集中训练。</div>
+        <div class="progress"><div class="progress-fill" style="width:75%"></div></div>
+        <div class="progress-note"><strong>进步看点</strong> 专项练习跟上计划，薄弱点正在被逐步补齐。</div>
+      </div>
+      <div class="divider"></div>
+      <div class="section-head"><div><div class="section-title">课程学习</div><div class="section-sub">语文课程投入</div></div><span class="tag green">5 个</span></div>
+      <div class="list">
+        <div class="list-row clickable">
+          <div class="icon-box blue">课</div>
+          <div class="row-body">
+            <div class="row-title">语文课程学习</div>
+            <div class="row-desc">本周看完 5 个视频课程，持续投入会带来扎实进步。</div>
+            <div class="row-meta"><span class="tag green">已完成</span></div>
+            <div class="progress-note"><strong>进步看点</strong> 视频学习基本都能完整看完，投入度比之前更好。</div>
+          </div>
+          <div class="row-action">&#8250;</div>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>
+
+<!-- ========== 5. 阅读详情页 ========== -->
+<div class="page-section" id="page-reading">
+  <header class="page-head">
+    <nav class="nav"><button class="nav-btn">&#8249;</button><div class="nav-title">阅读详情</div><button class="nav-btn">&#183;&#183;&#183;</button></nav>
+    <section class="hero">
+      <div class="hero-kicker">周报 04.28-05.04</div>
+      <h1 class="hero-title">阅读习惯在养成</h1>
+      <p class="hero-desc">这周阅读了 92 分钟，读了 4 本书，积累就是这样一点点来的。</p>
+    </section>
+  </header>
+  <section class="content">
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步概览</div><div class="section-sub">阅读投入与词汇积累</div></div><span class="tag blue">阅读</span></div>
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">本周阅读</div><div class="metric-value"><span class="metric-num">92</span><span class="metric-unit">分钟</span></div></div>
+        <div class="metric-card"><div class="metric-label">阅读书目</div><div class="metric-value"><span class="metric-num">4</span><span class="metric-unit">本</span></div></div>
+        <div class="metric-card"><div class="metric-label">累计词汇</div><div class="metric-value"><span class="metric-num">1,326</span><span class="metric-unit">个</span></div></div>
+      </div>
+      <div class="summary-bar">
+        <div class="summary-icon">+18</div>
+        <div class="summary-text">比上周多阅读 <strong>18 分钟</strong>，多读了 1 本书</div>
+      </div>
+      <div class="insight">本周阅读量持续提升，词汇积累稳步增长，好习惯正在养成中。</div>
+      <div class="change-list">
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">阅读时长 <strong>92 分钟</strong>，比上周多读了 18 分钟。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">完成 <strong>4 本</strong> 绘本，阅读主动性更好了。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">新增词汇 <strong>78 个</strong>，词汇量稳步增长。</div></div>
+      </div>
+      <div class="trend-row"><span class="trend-arrow up">^</span><span class="trend-text">连续 <strong>5 周</strong> 保持阅读习惯，每周都有进步</span></div>
+    </article>
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步明细</div><div class="section-sub">本周已读书目</div></div><span class="tag green">已读 4 本</span></div>
+      <div class="tabs"><div class="tab active">英语 4</div><div class="tab">语文 2</div></div>
+      <div class="book-list">
+        <div class="book-row clickable">
+          <div class="book-thumb">M</div>
+          <div class="book-info"><div class="book-name">The Mud Pie</div><div class="book-meta-line">Oxford Reading Tree · 38词</div><div class="book-badges"><span class="tag green">听读本</span><span class="tag green">跟读挑战</span></div><div class="book-meta-line">2026.04.29</div><div class="progress-note"><strong>进步看点</strong> 听读和跟读都完成了，阅读习惯保持得不错。</div></div>
+          <div class="book-time">12<span>分钟</span></div>
+        </div>
+        <div class="book-row clickable">
+          <div class="book-thumb" style="background:linear-gradient(145deg,#fff0d4,#ffc36d);color:#f0a500;">R</div>
+          <div class="book-info"><div class="book-name">一起去旅行</div><div class="book-meta-line">海尼曼 · 52词</div><div class="book-badges"><span class="tag green">听读本</span><span class="tag green">趣味测试</span></div><div class="book-meta-line">2026.05.01</div><div class="progress-note"><strong>进步看点</strong> 阅读后完成了测试，能把读到的内容用起来。</div></div>
+          <div class="book-time">18<span>分钟</span></div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="section-head"><div><div class="section-title">词汇掌握明细</div><div class="section-sub">本周新增词汇表现</div></div><span class="tag green">正确率 91%</span></div>
+      <div class="word-stats">
+        <div class="word-stat"><div class="word-stat-label">测试词数</div><div class="word-stat-value">22</div></div>
+        <div class="word-stat warn"><div class="word-stat-label">错误词数</div><div class="word-stat-value">2</div></div>
+        <div class="word-stat good"><div class="word-stat-label">正确率</div><div class="word-stat-value">91%</div></div>
+      </div>
+      <div class="word-grid">
+        <div class="word-cell">agree</div><div class="word-cell">France</div>
+        <div class="word-cell">teamwork</div><div class="word-cell">fly</div>
+        <div class="word-cell">sunshine</div><div class="word-cell">rainbow</div>
+        <div class="word-cell">kitchen</div><div class="word-cell wrong">nephew<span class="cross"></span></div>
+        <div class="word-cell">picnic</div><div class="word-cell">library</div>
+        <div class="word-cell">grateful</div><div class="word-cell">bridge</div>
+      </div>
+    </article>
+  </section>
+</div>
+
+<!-- ========== 6. 字词背诵详情页 ========== -->
+<div class="page-section" id="page-vocab">
+  <header class="page-head">
+    <nav class="nav"><button class="nav-btn">&#8249;</button><div class="nav-title">字词背诵</div><button class="nav-btn">&#183;&#183;&#183;</button></nav>
+    <section class="hero">
+      <div class="hero-kicker">周报 04.28-05.04</div>
+      <h1 class="hero-title">字词积累丰厚</h1>
+      <p class="hero-desc">本周累计识记 26 个字词，完成 3 篇课文背诵，基础稳步夯实。</p>
+    </section>
+  </header>
+  <section class="content">
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步概览</div><div class="section-sub">本周字词与背诵表现</div></div><span class="tag green">积累</span></div>
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">答对字词</div><div class="metric-value"><span class="metric-num">26</span><span class="metric-unit">个</span></div></div>
+        <div class="metric-card"><div class="metric-label">背诵课文</div><div class="metric-value"><span class="metric-num">3</span><span class="metric-unit">篇</span></div></div>
+        <div class="metric-card"><div class="metric-label">最高分</div><div class="metric-value"><span class="metric-num">96</span><span class="metric-unit">分</span></div></div>
+      </div>
+      <div class="summary-bar">
+        <div class="summary-icon green">+8</div>
+        <div class="summary-text">比上周多掌握 <strong>8 个</strong> 字词，词汇积累更扎实</div>
+      </div>
+      <div class="insight">字词报听写答对率保持在 90% 以上，课文背诵最高分 96 分，记得又快又牢。</div>
+      <div class="change-list">
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">掌握 <strong>26 个</strong> 字词，词汇积累更扎实。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">背诵完成 <strong>3 篇</strong> 课文，最高分 96 分，记得更熟。</div></div>
+      </div>
+      <div class="trend-row"><span class="trend-arrow up">^</span><span class="trend-text">连续 <strong>4 周</strong> 保持字词积累节奏，基础越来越牢</span></div>
+    </article>
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步明细</div><div class="section-sub">本周字词与背诵详情</div></div><span class="tag green">熟练</span></div>
+      <div class="tabs"><div class="tab active">语文 18</div><div class="tab">英语 8</div></div>
+      <div class="word-cloud"><span class="word">崎岖</span><span class="word">踌躇</span><span class="word">徜徉</span><span class="word">discipline</span><span class="word">progress</span><span class="word">掌握</span></div>
+      <div class="divider"></div>
+      <div class="section-head"><div><div class="section-title">背诵记录</div><div class="section-sub">课文背诵表现</div></div><span class="tag green">3 篇</span></div>
+      <div class="list">
+        <div class="list-row clickable">
+          <div class="icon-box green">背</div>
+          <div class="row-body">
+            <div class="row-title">《春》课文背诵</div>
+            <div class="row-desc">综合得分 96 分 · 04.29 完成</div>
+            <div class="row-meta"><span class="tag green">熟练背诵</span></div>
+            <div class="progress-note"><strong>进步看点</strong> 这篇课文背得很熟，朗读表达比之前更流畅。</div>
+          </div>
+          <div class="row-action">&#8250;</div>
+        </div>
+        <div class="list-row clickable">
+          <div class="icon-box green">背</div>
+          <div class="row-body">
+            <div class="row-title">《济南的冬天》课文背诵</div>
+            <div class="row-desc">综合得分 92 分 · 05.01 完成</div>
+            <div class="row-meta"><span class="tag green">熟练背诵</span></div>
+            <div class="progress-note"><strong>进步看点</strong> 背诵流畅度和准确度都很好，记忆力真棒。</div>
+          </div>
+          <div class="row-action">&#8250;</div>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>
+
+<!-- ========== 7. 作文详情页 ========== -->
+<div class="page-section" id="page-essay">
+  <header class="page-head">
+    <nav class="nav"><button class="nav-btn">&#8249;</button><div class="nav-title">作文详情</div><button class="nav-btn">&#183;&#183;&#183;</button></nav>
+    <section class="hero">
+      <div class="hero-kicker">周报 04.28-05.04</div>
+      <h1 class="hero-title">作文超出彩</h1>
+      <p class="hero-desc">一周写作成果很突出，完成 2 篇高分作文，表达力在进步。</p>
+    </section>
+  </header>
+  <section class="content">
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步概览</div><div class="section-sub">本周写作表现</div></div><span class="tag orange">作文</span></div>
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">高分作文</div><div class="metric-value"><span class="metric-num">2</span><span class="metric-unit">篇</span></div></div>
+        <div class="metric-card"><div class="metric-label">最高分</div><div class="metric-value"><span class="metric-num">91</span><span class="metric-unit">分</span></div></div>
+        <div class="metric-card"><div class="metric-label">平均分</div><div class="metric-value"><span class="metric-num">88</span><span class="metric-unit">分</span></div></div>
+      </div>
+      <div class="summary-bar">
+        <div class="summary-icon orange">+6</div>
+        <div class="summary-text">最高分比上次提升 <strong>6 分</strong>，写作输出更稳定</div>
+      </div>
+      <div class="insight">文章结构更完整，细节描写比之前更具体，表达和结构都有明显进步。</div>
+      <div class="change-list">
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">本周完成 <strong>2 篇</strong> 高质量作文，写作输出更稳定。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">最高分达到 <strong>91 分</strong>，表达和结构都有进步。</div></div>
+      </div>
+      <div class="trend-row"><span class="trend-arrow up">^</span><span class="trend-text">最近 <strong>3 次</strong> 写作评分持续上涨，表达力在增强</span></div>
+    </article>
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步明细</div><div class="section-sub">本周作文表现</div></div><span class="tag green">已批改</span></div>
+      <div class="essay-preview clickable">
+        <div class="essay-paper">这次写作围绕“我的一次成长经历”展开，结构完整，表达自然，细节描写比上一次更具体，能更好地围绕主题展开。</div>
+        <div class="score-row"><div><div class="row-title">《那一次我学会了坚持》</div><div class="row-desc">已批改 · 表达力提升明显</div></div><div class="score-num">91</div></div>
+        <div class="progress-note"><strong>进步看点</strong> 这篇作文结构更完整，细节描写比上一次更具体。</div>
+      </div>
+      <div class="insight">文章结构清楚，能围绕主题展开。下一步可以增加心理描写，让表达更有层次。</div>
+    </article>
+  </section>
+</div>
+
+<!-- ========== 8. 素养作品详情页 ========== -->
+<div class="page-section" id="page-creative">
+  <header class="page-head">
+    <nav class="nav"><button class="nav-btn">&#8249;</button><div class="nav-title">作品详情</div><button class="nav-btn">&#183;&#183;&#183;</button></nav>
+    <section class="hero">
+      <div class="hero-kicker">周报 04.28-05.04</div>
+      <h1 class="hero-title">创意满满</h1>
+      <p class="hero-desc">这周完成 4 个作品，和 AI 交流了 7 次，还通关了 4 个数独关卡，创作和思考都很活跃。</p>
+    </section>
+  </header>
+  <section class="content">
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步概览</div><div class="section-sub">本周创作与思维表现</div></div><span class="tag blue">作品</span></div>
+      <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">作品</div><div class="metric-value"><span class="metric-num">4</span><span class="metric-unit">个</span></div></div>
+        <div class="metric-card"><div class="metric-label">交流</div><div class="metric-value"><span class="metric-num">7</span><span class="metric-unit">次</span></div></div>
+        <div class="metric-card"><div class="metric-label">通关</div><div class="metric-value"><span class="metric-num">4</span><span class="metric-unit">关</span></div></div>
+      </div>
+      <div class="summary-bar">
+        <div class="summary-icon">+2</div>
+        <div class="summary-text">比上周多完成 <strong>2 个</strong> 作品，创作数量明显增加</div>
+      </div>
+      <div class="insight">绘画主题更完整，编程能独立调试运行，数独连续通关说明专注度和逻辑推理能力都在提升。</div>
+      <div class="change-list">
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">完成 <strong>4 个</strong> 作品，创作数量明显增加。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">创作交流 <strong>7 次</strong>，更愿意表达自己的想法。</div></div>
+        <div class="change-item"><span class="change-dot"></span><div class="change-text">数独通关 <strong>4 个</strong> 关卡，数理推理能力更强了。</div></div>
+      </div>
+      <div class="trend-row"><span class="trend-arrow up">^</span><span class="trend-text">创作频率连续 <strong>3 周</strong> 增长，兴趣驱动力很强</span></div>
+    </article>
+    <article class="card">
+      <div class="section-head"><div><div class="section-title">进步明细</div><div class="section-sub">本周作品展示</div></div><span class="tag green">创作</span></div>
+      <div class="work-grid">
+        <div class="work-card clickable"><div class="work-cover">画</div><div class="work-title">太空旅行</div><div class="work-meta">绘画作品 · 04.29</div><div class="progress-note"><strong>进步看点</strong> 画面主题更完整，细节表达更丰富。</div></div>
+        <div class="work-card clickable"><div class="work-cover" style="background:linear-gradient(135deg,#f4f0ff,#d7c7ff);color:#6f55d8;">码</div><div class="work-title">小车避障</div><div class="work-meta">编程作品 · 运行成功</div><div class="progress-note"><strong>进步看点</strong> 能独立调试并让作品运行成功。</div></div>
+        <div class="work-card clickable"><div class="work-cover" style="background:linear-gradient(135deg,#fff7e8,#ffd08a);color:#f0a500;">数</div><div class="work-title">数独挑战</div><div class="work-meta">4 个关卡</div><div class="progress-note"><strong>进步看点</strong> 连续完成关卡，专注度和逻辑推理都有提升。</div></div>
+      </div>
+    </article>
+  </section>
+</div>
+
+  <div class="footer-safe"><div class="home-bar"></div></div>
+</main>
+<script>
+function switchPage(id){
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.page-switcher button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+</script>
+</body>
+</html>
