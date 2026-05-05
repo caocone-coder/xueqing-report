@@ -52,7 +52,7 @@ button {
 
 .page-head {
   background: var(--header-grad);
-  padding: 10px 16px 18px;
+  padding: 10px 16px 24px;
 }
 
 .nav {
@@ -82,6 +82,7 @@ button {
 
 .hero {
   padding-top: 12px;
+  margin-bottom: 20px;
 }
 
 .hero-kicker {
@@ -121,6 +122,51 @@ button {
   background: var(--white);
   border-radius: 12px;
   padding: 16px;
+}
+
+/* 方案 A：渐进式融合样式 */
+.metric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.metric-card {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 14px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.insight {
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(10px);
+  border-left: 3px solid var(--blue);
+  padding: 12px;
+  font-size: 13px;
+  line-height: 21px;
+  color: var(--n700);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.insight strong {
+  color: var(--n900);
+  font-weight: 600;
+}
+
+.tag-inline {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  color: var(--blue-data);
+  background: rgba(255, 255, 255, 0.9);
+  margin: 0 2px;
 }
 
 .clickable:active {
