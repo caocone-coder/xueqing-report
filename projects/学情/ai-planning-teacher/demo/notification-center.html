@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"/>
+<title>消息 · AI 规划老师</title>
+<style>
+:root{
+  --c-warm:#FF8A3D; --c-warm-dark:#E8701E; --c-warm-soft:#FFF1E6;
+  --g-warm:linear-gradient(135deg,#FFA36B 0%,#FF8A3D 60%,#F2661A 100%);
+  --c-brand:#2E7BFF; --c-brand-dark:#1F5FE0; --c-brand-soft:#E8F1FF;
+  --c-ink:#1F2229; --c-ink2:#4A5160; --c-ink3:#7A818F; --c-ink4:#B8BDC6;
+  --c-bg:#FFF8F1; --c-card:#FFFFFF; --c-sub:#FBF4EB; --c-line:#EDE4D6;
+  --c-good:#18C089; --c-good-soft:#E3F8F0;
+  --c-warn:#F2A516; --c-warn-soft:#FFF3D6;
+  --sh-card:0 1px 2px rgba(40,25,10,.04),0 8px 20px rgba(40,25,10,.06);
+  --ff:'PingFang SC','Hiragino Sans GB',-apple-system,BlinkMacSystemFont,'Microsoft YaHei',sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;font-family:var(--ff);color:var(--c-ink);}
+body{min-height:100vh;background:#1A1410;display:flex;justify-content:center;align-items:flex-start;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;border:none;background:none;cursor:pointer;padding:0;color:inherit;}
+.app{width:100%;max-width:420px;min-height:100vh;background:var(--c-bg);position:relative;overflow-x:hidden;padding-bottom:80px;}
+@media(min-width:421px){body{padding:24px 0;}.app{min-height:calc(100vh - 48px);border-radius:32px;box-shadow:0 30px 80px rgba(0,0,0,.5);overflow:hidden;}}
+
+.sbar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:15px;font-weight:600;color:#fff;position:relative;z-index:5;}
+.sbar .r{display:flex;gap:6px;align-items:center;}
+.sbar .bat{width:24px;height:12px;border:1.5px solid currentColor;border-radius:3px;position:relative;opacity:.85;}
+.sbar .bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:4px;background:currentColor;border-radius:0 2px 2px 0;}
+.sbar .bat i{position:absolute;left:1px;top:1px;bottom:1px;width:72%;background:currentColor;border-radius:1px;display:block;}
+.sbar .signal{display:flex;align-items:flex-end;gap:2px;height:10px;}
+.sbar .signal i{width:3px;background:currentColor;border-radius:1px;display:block;}
+.sbar .signal i:nth-child(1){height:30%;}.sbar .signal i:nth-child(2){height:55%;}.sbar .signal i:nth-child(3){height:80%;}.sbar .signal i:nth-child(4){height:100%;}
+
+.head{background:var(--g-warm);color:#fff;padding:0 0 32px;position:relative;border-radius:0 0 28px 28px;}
+.head::after{content:'';position:absolute;left:24px;bottom:-12px;right:24px;height:12px;background:var(--g-warm);opacity:.25;filter:blur(10px);border-radius:50%;}
+.head-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 4px;}
+.head-back{width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;}
+.head-back:active{background:rgba(255,255,255,.3);}
+.head-act{width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;}
+.head-title{padding:14px 22px 0;}
+.head-title h1{font-size:24px;font-weight:700;line-height:32px;margin:0 0 6px;letter-spacing:-.2px;}
+.head-title p{font-size:13px;line-height:20px;margin:0;opacity:.92;}
+.head-stat{margin:18px 16px 0;padding:14px 16px;background:rgba(255,255,255,.18);border-radius:16px;display:flex;align-items:center;gap:12px;backdrop-filter:blur(8px);}
+.head-stat-ic{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.head-stat-tx{flex:1;}
+.head-stat-tx h3{font-size:14px;font-weight:600;margin:0 0 2px;}
+.head-stat-tx p{font-size:12px;margin:0;opacity:.88;line-height:18px;}
+
+.feed{padding:18px 16px 8px;}
+.feed-tag{display:flex;align-items:center;justify-content:space-between;padding:0 6px 12px;}
+.feed-tag h2{font-size:14px;font-weight:600;margin:0;color:var(--c-ink);}
+.feed-tag a{font-size:12px;color:var(--c-ink3);}
+
+.msg{background:var(--c-card);border-radius:20px;padding:16px;margin-bottom:12px;box-shadow:var(--sh-card);position:relative;transition:transform .12s;}
+.msg:active{transform:scale(.99);}
+.msg.unread::before{content:'';position:absolute;left:-1px;top:24px;bottom:24px;width:4px;background:var(--c-warm);border-radius:0 4px 4px 0;}
+.msg-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.msg-ic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.msg-ic.warm{background:var(--c-warm-soft);color:var(--c-warm-dark);}
+.msg-ic.brand{background:var(--c-brand-soft);color:var(--c-brand);}
+.msg-ic.warn{background:var(--c-warn-soft);color:var(--c-warn);}
+.msg-meta{flex:1;min-width:0;}
+.msg-from{display:flex;align-items:center;gap:6px;}
+.msg-from h3{font-size:14px;font-weight:600;margin:0;color:var(--c-ink);}
+.msg-from .pill{font-size:10px;padding:2px 7px;border-radius:8px;font-weight:600;}
+.msg-from .pill.urgent{background:var(--c-warm-soft);color:var(--c-warm-dark);}
+.msg-from .pill.tip{background:var(--c-brand-soft);color:var(--c-brand);}
+.msg-from .pill.late{background:#F1F3F7;color:var(--c-ink3);}
+.msg-time{font-size:11px;color:var(--c-ink4);margin-top:2px;}
+.msg-body{padding-left:48px;}
+.msg-body .ttl{font-size:15px;font-weight:600;line-height:22px;margin:0 0 6px;color:var(--c-ink);}
+.msg-body .desc{font-size:13px;line-height:20px;color:var(--c-ink2);margin:0 0 12px;}
+.msg-cta{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px dashed var(--c-line);}
+.msg-cta .l{font-size:12px;color:var(--c-ink3);}
+.msg-cta .r{font-size:13px;font-weight:600;color:var(--c-warm-dark);display:flex;align-items:center;gap:4px;}
+.msg.brandcta .msg-cta .r{color:var(--c-brand);}
+.msg.latecta .msg-cta .r{color:var(--c-ink2);}
+
+.empty{padding:32px 24px;text-align:center;background:var(--c-card);border-radius:20px;margin:0 16px 12px;box-shadow:var(--sh-card);}
+.empty .ic{width:60px;height:60px;margin:0 auto 12px;border-radius:20px;background:var(--c-sub);display:flex;align-items:center;justify-content:center;color:var(--c-ink4);}
+.empty p{font-size:13px;color:var(--c-ink3);margin:0;}
+
+.tabbar{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:420px;background:#fff;border-top:1px solid var(--c-line);display:flex;padding:6px 0 max(8px,env(safe-area-inset-bottom));z-index:50;}
+.tabbar .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--c-ink3);font-size:11px;font-weight:500;position:relative;}
+.tabbar .tab.on{color:var(--c-warm-dark);}
+.tabbar .tab .num{position:absolute;top:2px;right:50%;margin-right:-22px;background:var(--c-warm);color:#fff;font-size:9px;font-weight:700;border-radius:9px;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+
+.toast{position:fixed;left:50%;top:35%;transform:translateX(-50%);padding:12px 20px;background:rgba(20,16,10,.92);color:#fff;font-size:14px;border-radius:12px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;max-width:80%;text-align:center;}
+.toast.show{opacity:1;}
+
+@keyframes fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.fade{animation:fadein .3s ease;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sbar">
+    <span>9:41</span>
+    <div class="r">
+      <div class="signal"><i></i><i></i><i></i><i></i></div>
+      <div class="bat"><i></i></div>
+    </div>
+  </div>
+
+  <div class="head">
+    <div class="head-bar">
+      <a class="head-back" href="index-v2.html" aria-label="返回">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg>
+      </a>
+      <button class="head-act" onclick="showToast('已全部标为已读')" aria-label="全部已读">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
+    </div>
+    <div class="head-title">
+      <h1>消息</h1>
+      <p>来自天天和 AI 规划老师的提醒</p>
+    </div>
+    <div class="head-stat">
+      <div class="head-stat-ic">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-7h3zM3 19a2 2 0 0 0 2 2h1v-7H3z"/></svg>
+      </div>
+      <div class="head-stat-tx">
+        <h3>有 1 条待您处理</h3>
+        <p>孩子正在等您一起把这周的学习计划定下来</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="feed fade">
+    <div class="feed-tag"><h2>今天</h2><a>共 3 条</a></div>
+
+    <a class="msg unread" href="invite-response.html">
+      <div class="msg-head">
+        <div class="msg-ic warm">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7"/></svg>
+        </div>
+        <div class="msg-meta">
+          <div class="msg-from">
+            <h3>AI 规划老师</h3>
+            <span class="pill urgent">在等您</span>
+          </div>
+          <div class="msg-time">刚刚</div>
+        </div>
+      </div>
+      <div class="msg-body">
+        <p class="ttl">天天准备开始做学习规划啦</p>
+        <p class="desc">他在学习机上点了"和爸爸妈妈一起规划"，请您看一下，决定怎么参与。</p>
+        <div class="msg-cta">
+          <span class="l">点击进去看看</span>
+          <span class="r">去看看
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18"/></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+
+    <div class="feed-tag" style="margin-top:8px;"><h2>更早</h2><a></a></div>
+
+    <a class="msg latecta" href="learning-calendar.html?from=fallback">
+      <div class="msg-head">
+        <div class="msg-ic warn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+        </div>
+        <div class="msg-meta">
+          <div class="msg-from">
+            <h3>AI 规划老师</h3>
+            <span class="pill late">超时未回</span>
+          </div>
+          <div class="msg-time">昨天 19:42</div>
+        </div>
+      </div>
+      <div class="msg-body">
+        <p class="ttl">您没及时回复，孩子先自己排好了</p>
+        <p class="desc">天天等了一会儿没等到您，就自己上传了试卷、生成了一份计划。麻烦您抽空看一下，有问题再调整。</p>
+        <div class="msg-cta">
+          <span class="l">需要您确认</span>
+          <span class="r">去看一下
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18"/></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+
+    <a class="msg brandcta" href="learning-calendar.html">
+      <div class="msg-head">
+        <div class="msg-ic brand">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
+        </div>
+        <div class="msg-meta">
+          <div class="msg-from">
+            <h3>AI 规划老师</h3>
+            <span class="pill tip">已生效</span>
+          </div>
+          <div class="msg-time">5 月 5 日</div>
+        </div>
+      </div>
+      <div class="msg-body">
+        <p class="ttl">新的学习计划已经定好啦</p>
+        <p class="desc">这一周的安排已经同步到日历，每天孩子打卡完成情况都会提醒您。</p>
+        <div class="msg-cta">
+          <span class="l">长期跟进</span>
+          <span class="r">看日历
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 6 15 12 9 18"/></svg>
+          </span>
+        </div>
+      </div>
+    </a>
+
+    <div class="empty">
+      <div class="ic">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <p>更早的消息您都看过啦</p>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <a class="tab on" href="notification-center.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>消息</span>
+      <span class="num">1</span>
+    </a>
+    <a class="tab" href="learning-calendar.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
+      <span>计划</span>
+    </a>
+    <button class="tab" onclick="showToast('孩子档案 · 演示版本未实现')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>孩子</span>
+    </button>
+    <button class="tab" onclick="showToast('我的 · 演示版本未实现')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>
+      <span>我的</span>
+    </button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+function showToast(text){
+  var t = document.getElementById('toast');
+  t.textContent = text;
+  t.classList.add('show');
+  clearTimeout(window.__tt);
+  window.__tt = setTimeout(function(){t.classList.remove('show');}, 1600);
+}
+</script>
+</body>
+</html>

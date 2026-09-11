@@ -1,0 +1,2678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>督学看板预览 V2</title>
+<style>
+  :root {
+    --bg-top: #f6efe7;
+    --bg-bottom: #eef3ff;
+    --phone-bg: #f6f8fe;
+    --card-bg: rgba(255, 255, 255, 0.94);
+    --card-strong: #ffffff;
+    --line: #e8ebf5;
+    --line-strong: #d8ddf0;
+    --text-strong: #1f2758;
+    --text-main: #485071;
+    --text-soft: #8188a4;
+    --accent: #4f68d8;
+    --accent-deep: #384ea7;
+    --accent-soft: #edf1ff;
+    --accent-mint: #e9f7f0;
+    --success: #2fb36e;
+    --success-soft: #e8f8ef;
+    --warning: #f29c38;
+    --warning-soft: #fff3e5;
+    --danger: #e55f68;
+    --danger-soft: #ffedf0;
+    --shadow-lg: 0 30px 80px rgba(44, 62, 136, 0.18);
+    --shadow-md: 0 16px 34px rgba(45, 62, 128, 0.1);
+    --shadow-sm: 0 6px 16px rgba(65, 86, 172, 0.08);
+    --radius-xl: 28px;
+    --radius-lg: 20px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+    --safe-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+  }
+
+  body {
+    font-family: "SF Pro Display", "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background:
+      radial-gradient(circle at top left, rgba(255, 255, 255, 0.92) 0, rgba(255, 255, 255, 0) 34%),
+      linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+    color: var(--text-main);
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-x: hidden;
+  }
+
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    border-radius: 999px;
+    pointer-events: none;
+    filter: blur(10px);
+    opacity: 0.72;
+  }
+
+  body::before {
+    width: 260px;
+    height: 260px;
+    background: rgba(255, 227, 192, 0.48);
+    top: -120px;
+    right: -60px;
+  }
+
+  body::after {
+    width: 320px;
+    height: 320px;
+    background: rgba(178, 201, 255, 0.36);
+    left: -140px;
+    bottom: -120px;
+  }
+
+  .preview-shell {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .phone-shell {
+    width: min(100%, 414px);
+    min-height: calc(100vh - 48px);
+    background:
+      radial-gradient(circle at top right, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0) 28%),
+      linear-gradient(180deg, #f8faff 0%, var(--phone-bg) 100%);
+    border-radius: 34px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+  }
+
+  .phone-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 85% 8%, rgba(93, 124, 255, 0.14), rgba(93, 124, 255, 0) 22%),
+      radial-gradient(circle at 6% 24%, rgba(253, 189, 112, 0.14), rgba(253, 189, 112, 0) 20%);
+    pointer-events: none;
+  }
+
+  .app-root {
+    min-height: calc(100vh - 48px);
+    position: relative;
+  }
+
+  .view {
+    min-height: calc(100vh - 48px);
+    position: relative;
+  }
+
+  .report-view {
+    padding: 20px 16px calc(24px + var(--safe-bottom));
+  }
+
+  .script-view {
+    padding: 14px 16px calc(28px + var(--safe-bottom));
+  }
+
+  .hero-card {
+    position: relative;
+    overflow: hidden;
+    padding: 18px 18px 16px;
+    border-radius: 26px;
+    background:
+      linear-gradient(145deg, rgba(82, 108, 220, 0.98), rgba(61, 81, 175, 0.94)),
+      linear-gradient(180deg, #5f7df4 0%, #4157b7 100%);
+    color: #fff;
+    box-shadow: 0 20px 34px rgba(53, 72, 158, 0.26);
+    animation: rise-in 320ms ease;
+  }
+
+  .hero-card::before,
+  .hero-card::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    pointer-events: none;
+  }
+
+  .hero-card::before {
+    width: 180px;
+    height: 180px;
+    top: -92px;
+    right: -46px;
+  }
+
+  .hero-card::after {
+    width: 120px;
+    height: 120px;
+    bottom: -48px;
+    left: -24px;
+  }
+
+  .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+
+  .hero-title {
+    margin-top: 6px;
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 700;
+  }
+
+  .hero-subtitle {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.84);
+  }
+
+  .hero-time {
+    padding: 8px 10px;
+    min-width: 78px;
+    text-align: center;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    font-size: 12px;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  .hero-summary {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.13);
+    backdrop-filter: blur(10px);
+  }
+
+  .summary-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  .summary-pill::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12);
+  }
+
+  .summary-pill.danger {
+    color: #ffd3d8;
+  }
+
+  .summary-pill.warning {
+    color: #ffe4bf;
+  }
+
+  .summary-pill.good {
+    color: #d9ffe8;
+  }
+
+  .summary-title {
+    margin-top: 10px;
+    font-size: 18px;
+    line-height: 1.4;
+    font-weight: 600;
+  }
+
+  .summary-note {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.82);
+  }
+
+  .hero-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .hero-metric {
+    padding: 10px 10px 12px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(6px);
+  }
+
+  .hero-metric-value {
+    font-size: 18px;
+    line-height: 1.1;
+    font-weight: 700;
+  }
+
+  .hero-metric-label {
+    margin-top: 4px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .period-switcher {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 6px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .period-button,
+  .child-tab,
+  .dim-tab,
+  .scene-chip,
+  .alert-chip,
+  .ghost-button,
+  .primary-button,
+  .back-button,
+  .toggle-button,
+  .month-stat,
+  .calendar-cell,
+  .link-button,
+  .text-button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .period-button {
+    flex: 1;
+    padding: 11px 10px;
+    border-radius: 14px;
+    color: var(--text-soft);
+    text-align: left;
+    transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+  }
+
+  .period-button.active {
+    background: linear-gradient(180deg, #f8faff 0%, #eef2ff 100%);
+    color: var(--accent-deep);
+    box-shadow: inset 0 0 0 1px rgba(79, 104, 216, 0.14);
+  }
+
+  .period-name {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .period-range {
+    display: block;
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .period-button.active .period-range {
+    color: rgba(56, 78, 167, 0.74);
+  }
+
+  .child-strip {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .child-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .child-tab {
+    flex: 0 0 auto;
+    min-width: 124px;
+    padding: 14px 14px 13px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid transparent;
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+  }
+
+  .child-tab.active {
+    background: #fff;
+    border-color: rgba(79, 104, 216, 0.16);
+    transform: translateY(-1px);
+  }
+
+  .child-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .child-meta {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .child-state {
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .child-state.danger {
+    color: var(--danger);
+    background: var(--danger-soft);
+  }
+
+  .child-state.warning {
+    color: var(--warning);
+    background: var(--warning-soft);
+  }
+
+  .child-state.good {
+    color: var(--success);
+    background: var(--success-soft);
+  }
+
+  .card {
+    margin-top: 14px;
+    padding: 16px;
+    border-radius: 22px;
+    background: var(--card-bg);
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    animation: rise-in 320ms ease;
+  }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .card-title {
+    font-size: 17px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .card-subtitle {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--text-soft);
+  }
+
+  .head-chip {
+    flex-shrink: 0;
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: #f4f6fd;
+    color: var(--text-main);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .head-chip.warning {
+    background: var(--warning-soft);
+    color: var(--warning);
+  }
+
+  .head-chip.good {
+    background: var(--success-soft);
+    color: var(--success);
+  }
+
+  .calendar-legend {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .legend-dot.used {
+    background: var(--success);
+  }
+
+  .legend-dot.unused {
+    background: var(--danger);
+  }
+
+  .legend-dot.future {
+    background: #dfe4f1;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 8px 4px;
+  }
+
+  .weekday {
+    font-size: 12px;
+    color: var(--text-soft);
+    text-align: center;
+    padding-bottom: 4px;
+  }
+
+  .calendar-cell {
+    width: 100%;
+    min-height: 44px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    position: relative;
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+
+  .calendar-cell.empty {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .calendar-cell.used {
+    color: var(--success);
+    background: linear-gradient(180deg, #f0fbf5 0%, #e3f7eb 100%);
+    box-shadow: inset 0 0 0 1px rgba(47, 179, 110, 0.16);
+  }
+
+  .calendar-cell.unused {
+    color: var(--danger);
+    background: linear-gradient(180deg, #fff4f5 0%, #ffebee 100%);
+    box-shadow: inset 0 0 0 1px rgba(229, 95, 104, 0.14);
+  }
+
+  .calendar-cell.future {
+    color: #aab0c5;
+    background: linear-gradient(180deg, #f6f7fc 0%, #eef1f8 100%);
+    box-shadow: inset 0 0 0 1px rgba(170, 176, 197, 0.12);
+    cursor: default;
+  }
+
+  .calendar-cell.today::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border-radius: 12px;
+    border: 1px dashed rgba(79, 104, 216, 0.32);
+  }
+
+  .calendar-cell.used:hover,
+  .calendar-cell.unused:hover,
+  .period-button:hover,
+  .child-tab:hover,
+  .dim-tab:hover,
+  .scene-chip:hover,
+  .alert-chip:hover,
+  .ghost-button:hover,
+  .primary-button:hover,
+  .toggle-button:hover {
+    transform: translateY(-1px);
+  }
+
+  .calendar-summary {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .month-stat {
+    padding: 12px 10px;
+    border-radius: 18px;
+    text-align: left;
+    background: #f7f9ff;
+    box-shadow: inset 0 0 0 1px rgba(79, 104, 216, 0.05);
+    cursor: default;
+  }
+
+  .month-stat.highlight {
+    background: linear-gradient(180deg, #fff7f8 0%, #fff0f3 100%);
+    box-shadow: inset 0 0 0 1px rgba(229, 95, 104, 0.12);
+  }
+
+  .month-stat-value {
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .month-stat.highlight .month-stat-value {
+    color: var(--danger);
+  }
+
+  .month-stat-label {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--text-soft);
+  }
+
+  .metric-ribbon {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .metric-box {
+    padding: 12px;
+    border-radius: 18px;
+    background: #f7f9ff;
+  }
+
+  .metric-box-title {
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .metric-box-value {
+    margin-top: 6px;
+    font-size: 22px;
+    line-height: 1.1;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .metric-box-value.up {
+    color: var(--success);
+  }
+
+  .metric-box-value.down {
+    color: var(--warning);
+  }
+
+  .warning-banner {
+    padding: 11px 12px;
+    border-radius: 16px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    line-height: 1.55;
+    background: linear-gradient(180deg, #fff8eb 0%, #fff1df 100%);
+    color: #b56b15;
+    border: 1px solid rgba(242, 156, 56, 0.12);
+  }
+
+  .app-group + .app-group {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+
+  .group-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .group-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .group-meta {
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .app-row + .app-row {
+    margin-top: 12px;
+  }
+
+  .app-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .app-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: inset 0 -8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .app-icon.indigo {
+    background: linear-gradient(180deg, #6785ff 0%, #5268d8 100%);
+  }
+
+  .app-icon.blue {
+    background: linear-gradient(180deg, #5fb5ff 0%, #3d84df 100%);
+  }
+
+  .app-icon.mint {
+    background: linear-gradient(180deg, #5dc4b2 0%, #2ea289 100%);
+  }
+
+  .app-icon.orange {
+    background: linear-gradient(180deg, #ffb363 0%, #f08b2f 100%);
+  }
+
+  .app-icon.rose {
+    background: linear-gradient(180deg, #ff8f9a 0%, #e56576 100%);
+  }
+
+  .app-main {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .app-name-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: baseline;
+  }
+
+  .app-name-text {
+    min-width: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-strong);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .app-time {
+    flex-shrink: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .app-desc {
+    margin-top: 2px;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .bar-track {
+    margin-top: 8px;
+    height: 7px;
+    border-radius: 999px;
+    background: #edf0f8;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: inherit;
+  }
+
+  .bar-fill.learn {
+    background: linear-gradient(90deg, #6480ff 0%, #536ddf 100%);
+  }
+
+  .bar-fill.other {
+    background: linear-gradient(90deg, #ffb25f 0%, #f18f34 100%);
+  }
+
+  .toggle-button {
+    margin-top: 12px;
+    padding: 0;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .plan-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .plan-item {
+    padding: 14px;
+    border-radius: 18px;
+    background: #fbfcff;
+    box-shadow: inset 0 0 0 1px rgba(79, 104, 216, 0.06);
+  }
+
+  .plan-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .plan-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .plan-sub {
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .status-chip {
+    flex-shrink: 0;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .status-chip.done {
+    color: var(--success);
+    background: var(--success-soft);
+  }
+
+  .status-chip.ongoing {
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .status-chip.behind {
+    color: var(--warning);
+    background: var(--warning-soft);
+  }
+
+  .plan-progress {
+    margin-top: 12px;
+    height: 10px;
+    border-radius: 999px;
+    background: #ecf0f9;
+    overflow: hidden;
+  }
+
+  .plan-progress-fill {
+    height: 100%;
+    border-radius: inherit;
+  }
+
+  .plan-progress-fill.done {
+    background: linear-gradient(90deg, #43c983 0%, #29b06c 100%);
+  }
+
+  .plan-progress-fill.ongoing {
+    background: linear-gradient(90deg, #6687ff 0%, #4d67db 100%);
+  }
+
+  .plan-progress-fill.behind {
+    background: linear-gradient(90deg, #ffb765 0%, #f29c38 100%);
+  }
+
+  .plan-bottom {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .plan-overall {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, #f5f7ff 0%, #eef2ff 100%);
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .overall-label {
+    font-size: 13px;
+    color: var(--text-main);
+  }
+
+  .overall-value {
+    font-size: 22px;
+    line-height: 1.1;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .empty-card {
+    padding: 18px 14px;
+    border-radius: 18px;
+    background: #fafbff;
+    border: 1px dashed var(--line-strong);
+    text-align: center;
+    color: var(--text-soft);
+  }
+
+  .empty-emoji {
+    font-size: 24px;
+    line-height: 1;
+  }
+
+  .empty-title {
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .empty-desc {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .bottom-action {
+    position: sticky;
+    bottom: 10px;
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 10px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 10px 24px rgba(52, 70, 142, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+  }
+
+  .ghost-button,
+  .primary-button {
+    flex: 1;
+    padding: 14px 14px;
+    border-radius: 18px;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: center;
+    transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+  }
+
+  .ghost-button {
+    color: var(--accent);
+    background: #eef2ff;
+  }
+
+  .primary-button {
+    color: #fff;
+    background: linear-gradient(180deg, #6685ff 0%, #4c64d6 100%);
+    box-shadow: 0 12px 22px rgba(76, 100, 214, 0.22);
+  }
+
+  .nav-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .back-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: var(--shadow-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-strong);
+  }
+
+  .nav-title {
+    min-width: 0;
+    flex: 1;
+    text-align: center;
+  }
+
+  .nav-title-main {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .nav-title-sub {
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .nav-pill {
+    min-width: 40px;
+  }
+
+  .overview-card {
+    padding: 18px;
+    border-radius: 24px;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(250, 251, 255, 0.96) 100%);
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(255, 255, 255, 0.76);
+  }
+
+  .overview-label {
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .overview-headline {
+    margin-top: 8px;
+    font-size: 20px;
+    line-height: 1.45;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .overview-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .mini-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--text-main);
+    background: #f4f6fd;
+  }
+
+  .dimension-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .dim-tab {
+    padding: 12px 10px;
+    border-radius: 18px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-soft);
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: var(--shadow-sm);
+    transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+  }
+
+  .dim-tab.active {
+    color: #fff;
+    background: linear-gradient(180deg, #6886ff 0%, #5168d9 100%);
+    box-shadow: 0 12px 22px rgba(78, 102, 215, 0.24);
+  }
+
+  .tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    margin-left: 4px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--danger);
+  }
+
+  .chip-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 14px 2px 2px;
+    scrollbar-width: none;
+  }
+
+  .chip-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scene-chip,
+  .alert-chip {
+    flex: 0 0 auto;
+    padding: 10px 14px;
+    border-radius: 999px;
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.74);
+    box-shadow: var(--shadow-sm);
+    font-size: 13px;
+    font-weight: 600;
+    transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+  }
+
+  .scene-chip.active,
+  .alert-chip.active {
+    color: var(--accent-deep);
+    background: #eef2ff;
+    box-shadow: inset 0 0 0 1px rgba(79, 104, 216, 0.14);
+  }
+
+  .script-card {
+    margin-top: 14px;
+    padding: 16px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: var(--shadow-md);
+  }
+
+  .script-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .script-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: var(--accent-deep);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .script-badge::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .script-caption {
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .script-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .script-note {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .script-content {
+    margin-top: 12px;
+    padding: 16px;
+    border-radius: 20px;
+    background:
+      linear-gradient(180deg, #f9fbff 0%, #f3f6ff 100%);
+    color: #313a60;
+    font-size: 15px;
+    line-height: 1.82;
+    border: 1px solid rgba(79, 104, 216, 0.08);
+  }
+
+  .script-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .text-button {
+    flex: 1;
+    padding: 13px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 700;
+    transition: transform 160ms ease, background 160ms ease;
+  }
+
+  .text-button.secondary {
+    background: #f2f5ff;
+    color: var(--accent-deep);
+  }
+
+  .text-button.primary {
+    background: linear-gradient(180deg, #6684ff 0%, #4d67d9 100%);
+    color: #fff;
+    box-shadow: 0 12px 22px rgba(78, 102, 215, 0.22);
+  }
+
+  .summary-list {
+    display: grid;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .summary-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 12px;
+    border-radius: 18px;
+    background: #fafbff;
+  }
+
+  .summary-bullet {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #edf2ff;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .summary-text {
+    font-size: 13px;
+    line-height: 1.62;
+    color: var(--text-main);
+  }
+
+  .sheet-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(14, 20, 44, 0.42);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+  }
+
+  .sheet-mask.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .day-sheet {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    width: min(414px, calc(100vw - 32px));
+    padding: 18px;
+    border-radius: 26px;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 24px 60px rgba(15, 20, 48, 0.22);
+    transform: translate(-50%, 110%);
+    transition: transform 220ms ease;
+    z-index: 10;
+  }
+
+  .day-sheet.visible {
+    transform: translate(-50%, 0);
+  }
+
+  .sheet-handle {
+    width: 48px;
+    height: 5px;
+    border-radius: 999px;
+    background: #dfe4f2;
+    margin: 0 auto 14px;
+  }
+
+  .sheet-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .sheet-subtitle {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--text-soft);
+  }
+
+  .sheet-summary {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 18px;
+    background: #f7f9ff;
+  }
+
+  .sheet-summary-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  .sheet-summary-label {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-soft);
+  }
+
+  .sheet-list {
+    margin-top: 12px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .sheet-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: #fbfcff;
+  }
+
+  .sheet-item-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-strong);
+  }
+
+  .sheet-item-time {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  .sheet-foot {
+    margin-top: 14px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-soft);
+  }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 34px;
+    transform: translate(-50%, 18px);
+    padding: 11px 16px;
+    border-radius: 999px;
+    background: rgba(20, 28, 63, 0.92);
+    color: #fff;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 180ms ease;
+    z-index: 20;
+    white-space: nowrap;
+  }
+
+  .toast.visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 480px) {
+    body {
+      padding: 0;
+    }
+
+    .phone-shell,
+    .app-root,
+    .view {
+      width: 100%;
+      min-height: 100vh;
+      border-radius: 0;
+    }
+
+    .day-sheet {
+      width: calc(100vw - 16px);
+      bottom: 8px;
+      border-radius: 24px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="preview-shell">
+  <div class="phone-shell">
+    <div class="app-root" id="app"></div>
+  </div>
+</div>
+<div class="sheet-mask" id="sheetMask"></div>
+<div class="day-sheet" id="daySheet"></div>
+<div class="toast" id="toast"></div>
+<script>
+  const APP_DATA = {
+    parentName: "张小明妈妈",
+    lastSync: "2026-04-16 20:30",
+    periods: [
+      { id: "thisWeek", label: "本周", range: "4/13 - 4/19" },
+      { id: "lastWeek", label: "上周", range: "4/6 - 4/12" }
+    ],
+    children: [
+      {
+        id: "ming",
+        name: "张小明",
+        grade: "五年级",
+        purchaseDays: 12,
+        scriptDefaults: { dimension: "basic", scene: "remind" },
+        periods: {
+          thisWeek: {
+            hero: {
+              level: "danger",
+              levelLabel: "异常优先",
+              headline: "近 3 天未使用，建议优先联系家长",
+              note: "学习应用占比仅 34%，本周计划完成率 14%，需要尽快把节奏接回来。",
+              metrics: [
+                { label: "异常提醒", value: "2 条" },
+                { label: "本周使用", value: "1 天" },
+                { label: "计划完成", value: "14%" }
+              ]
+            },
+            calendar: {
+              year: 2026,
+              month: 4,
+              today: 16,
+              weekUsedDays: 1,
+              inactiveStreak: 3,
+              usedDays: {
+                "1": { totalMinutes: 36, apps: [{ name: "瑞恩熊AI英语", minutes: 18 }, { name: "数学同步练习", minutes: 12 }, { name: "分级阅读", minutes: 6 }], note: "完成英语启蒙和数学同步练习。" },
+                "2": { totalMinutes: 28, apps: [{ name: "瑞恩熊AI英语", minutes: 16 }, { name: "分级阅读", minutes: 12 }], note: "睡前完成英语和阅读打卡。" },
+                "3": { totalMinutes: 24, apps: [{ name: "数学同步练习", minutes: 14 }, { name: "口算天天练", minutes: 10 }], note: "数学训练连续打卡。" },
+                "5": { totalMinutes: 32, apps: [{ name: "瑞恩熊AI英语", minutes: 12 }, { name: "数学同步练习", minutes: 10 }, { name: "分级阅读", minutes: 10 }], note: "周末使用较稳定。" },
+                "7": { totalMinutes: 18, apps: [{ name: "分级阅读", minutes: 12 }, { name: "数学同步练习", minutes: 6 }], note: "当天只完成轻量阅读。" },
+                "8": { totalMinutes: 20, apps: [{ name: "瑞恩熊AI英语", minutes: 12 }, { name: "口算天天练", minutes: 8 }], note: "晚间短时打卡。" },
+                "9": { totalMinutes: 26, apps: [{ name: "瑞恩熊AI英语", minutes: 16 }, { name: "分级阅读", minutes: 10 }], note: "英语启蒙投入较多。" },
+                "11": { totalMinutes: 22, apps: [{ name: "数学同步练习", minutes: 12 }, { name: "分级阅读", minutes: 10 }], note: "周末开始前保持正常使用。" },
+                "12": { totalMinutes: 31, apps: [{ name: "乐读短视频", minutes: 17 }, { name: "瑞恩熊AI英语", minutes: 8 }, { name: "浏览器", minutes: 6 }], note: "23:28 仍有使用记录，时间偏晚。" },
+                "13": { totalMinutes: 16, apps: [{ name: "瑞恩熊AI英语", minutes: 10 }, { name: "分级阅读", minutes: 6 }], note: "本周仅周日完成一次使用。" }
+              }
+            },
+            apps: {
+              totalMinutes: 187,
+              learnMinutes: 64,
+              changePct: -58,
+              learnPct: 34,
+              groups: {
+                learn: [
+                  { name: "瑞恩熊AI英语", minutes: 26, detail: "英语启蒙", tone: "indigo" },
+                  { name: "数学同步练习", minutes: 18, detail: "同步巩固", tone: "blue" },
+                  { name: "分级阅读", minutes: 12, detail: "阅读训练", tone: "mint" },
+                  { name: "口算天天练", minutes: 8, detail: "口算练习", tone: "indigo" }
+                ],
+                other: [
+                  { name: "乐读短视频", minutes: 68, detail: "内容浏览", tone: "orange" },
+                  { name: "益智游戏", minutes: 35, detail: "娱乐休闲", tone: "rose" },
+                  { name: "浏览器", minutes: 20, detail: "网页访问", tone: "orange" }
+                ]
+              }
+            },
+            plans: {
+              overallDone: 3,
+              overallTotal: 21,
+              overallPct: 14,
+              items: [
+                { name: "语文每日一练", subtitle: "预计本周完成 7 次", done: 2, total: 7, status: "behind" },
+                { name: "英语单词打卡", subtitle: "预计本周完成 7 次", done: 1, total: 7, status: "behind" },
+                { name: "数学思维训练", subtitle: "预计本周完成 7 次", done: 0, total: 7, status: "behind" }
+              ]
+            },
+            scripts: {
+              basic: {
+                scenes: {
+                  praise: {
+                    label: "表扬鼓励",
+                    variants: [
+                      {
+                        text: "张小明妈妈您好，前一周小明使用学习机其实挺规律的，英语和数学都有持续打卡，这个习惯非常难得。等这周状态恢复后，建议继续保持每天固定一点点时间，孩子重新进入节奏会更轻松，我也会继续帮您关注。",
+                        summary: ["上周连续使用 6 天", "英语应用使用 1 小时 42 分", "上周计划完成率 57%"]
+                      },
+                      {
+                        text: "张小明妈妈您好，之前小明用学习机的状态是不错的，英语启蒙和数学同步都有稳定投入，说明孩子是有使用基础的。后面只要把这周断掉的几天接回来，整体节奏还是很有机会恢复的，咱们一起把这个好习惯稳住。",
+                        summary: ["上周总时长 7 小时 28 分", "数学同步练习 1 小时 26 分", "上周使用天数 6 天"]
+                      }
+                    ]
+                  },
+                  remind: {
+                    label: "提醒督促",
+                    variants: [
+                      {
+                        text: "张小明妈妈您好，我看了下小明这周的学习机使用情况，已经连续 3 天没有打开了，本周学习类应用累计用了 64 分钟，学习计划完成率只有 14%。担心节奏一断，后面更难接上，建议这两天先让孩子恢复每天 20 分钟左右的使用，我也会继续帮您盯一下。",
+                        summary: ["连续未使用 3 天", "学习类应用 64 分钟", "学习计划完成率 14%"]
+                      },
+                      {
+                        text: "张小明妈妈您好，帮您巡检了一下，小明本周设备使用明显变少，最近 3 天都没有新的学习记录，目前学习类应用占比 34%，三项计划一共只完成了 3 项。建议先把打开设备的习惯恢复起来，哪怕每天先完成一项任务，也会比一直停着更容易找回状态。",
+                        summary: ["学习应用占比 34%", "本周总时长较上周下降 58%", "计划完成 3/21"]
+                      }
+                    ]
+                  },
+                  care: {
+                    label: "关怀回访",
+                    variants: [
+                      {
+                        text: "张小明妈妈您好，小明购机刚 12 天，我这边做例行回访时看到这周总使用时长是 3 小时 7 分，最近 3 天没有继续打开。想确认一下是不是最近作息或使用上遇到问题了，如果您方便，我可以根据孩子的节奏帮您一起把前两周的使用习惯慢慢接回来。",
+                        summary: ["购机 12 天", "本周总时长 3 小时 7 分", "近 3 天暂无使用"]
+                      },
+                      {
+                        text: "张小明妈妈您好，想和您做个简单回访，小明最近的学习机使用比前几天少了一些，这周学习类应用一共用了 64 分钟，最近 3 天没有新的学习记录。如果您觉得孩子还没完全适应，我可以给您一个更轻量的跟进节奏，先从每天短时间使用开始。",
+                        summary: ["学习类应用 64 分钟", "最近 3 天无新记录", "本周计划完成率 14%"]
+                      }
+                    ]
+                  }
+                }
+              },
+              usage: {
+                variants: [
+                  {
+                    text: "张小明妈妈您好，小明这周学习类应用累计使用 64 分钟，虽然整体比上周下降了 58%，但瑞恩熊AI英语还是坚持用了 26 分钟，说明孩子对英语内容还有投入。当前语文和数学计划推进偏慢，建议先把每天固定学习时间找回来，再逐步补齐本周任务。",
+                    summary: ["学习类应用总时长 64 分钟", "瑞恩熊AI英语 26 分钟", "总时长较上周下降 58%"]
+                  },
+                  {
+                    text: "张小明妈妈您好，这周小明在学习机上的学习投入偏少，目前学习类应用共使用 64 分钟，其中英语启蒙使用时间最多，有 26 分钟。好的一点是孩子对英语内容还有持续兴趣，接下来可以优先把英语和数学两项固定下来，先把学习节奏重新建立起来。",
+                    summary: ["英语应用使用 26 分钟", "数学同步练习 18 分钟", "学习占比 34%"]
+                  }
+                ]
+              },
+              alerts: [
+                {
+                  type: "深夜使用",
+                  variants: [
+                    {
+                      text: "张小明妈妈您好，提醒您关注一下，小明在 4 月 12 日 23:28 还有学习机使用记录，时间偏晚了些。建议这两天留意下晚间使用时段，尽量把设备使用安排在睡前更早一点，既能保证休息，也更利于后续坚持学习节奏。",
+                      summary: ["异常时间 4 月 12 日 23:28", "当天总使用 31 分钟", "其中短视频浏览 17 分钟"]
+                    },
+                    {
+                      text: "张小明妈妈您好，这边巡检时发现，小明在 4 月 12 日晚上 23:28 还有学习机使用行为，作息时间可能需要多留意一下。建议家里这两天关注一下睡前使用安排，避免晚间拖得太久，影响第二天状态。",
+                      summary: ["4 月 12 日夜间使用", "23:28 仍有设备记录", "建议关注晚间使用时段"]
+                    }
+                  ]
+                },
+                {
+                  type: "其他应用偏高",
+                  variants: [
+                    {
+                      text: "张小明妈妈您好，这周小明在其他应用上的使用时间偏高，像乐读短视频一项就用了 68 分钟，其他应用总占比达到 66%。建议您最近留意一下设备里的非学习内容使用情况，尽量引导孩子把时间更多放回学习类应用上。",
+                      summary: ["乐读短视频 68 分钟", "其他应用占比 66%", "学习应用占比 34%"]
+                    },
+                    {
+                      text: "张小明妈妈您好，我这边看到小明本周学习机里其他应用使用比重比较高，短视频和游戏类内容累计超过 1 小时 40 分钟，占比接近三分之二。建议近期适当收一收非学习内容时长，帮助孩子先把设备重新用回学习节奏。",
+                      summary: ["短视频和游戏超 103 分钟", "其他应用占比约 66%", "本周学习类应用仅 64 分钟"]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          lastWeek: {
+            hero: {
+              level: "warning",
+              levelLabel: "需要关注",
+              headline: "上周整体有使用，但节奏已经开始下滑",
+              note: "学习计划完成率 57%，本周若继续放松，很容易转为明显掉线。",
+              metrics: [
+                { label: "异常提醒", value: "1 条" },
+                { label: "本周使用", value: "6 天" },
+                { label: "计划完成", value: "57%" }
+              ]
+            },
+            calendar: {
+              year: 2026,
+              month: 4,
+              today: 12,
+              weekUsedDays: 6,
+              inactiveStreak: 0,
+              usedDays: {
+                "1": { totalMinutes: 52, apps: [{ name: "瑞恩熊AI英语", minutes: 24 }, { name: "数学同步练习", minutes: 18 }, { name: "分级阅读", minutes: 10 }], note: "状态稳定。" },
+                "2": { totalMinutes: 44, apps: [{ name: "瑞恩熊AI英语", minutes: 20 }, { name: "分级阅读", minutes: 12 }, { name: "数学同步练习", minutes: 12 }], note: "保持正常学习节奏。" },
+                "3": { totalMinutes: 31, apps: [{ name: "数学同步练习", minutes: 19 }, { name: "口算天天练", minutes: 12 }], note: "数学投入较多。" },
+                "4": { totalMinutes: 0, apps: [], note: "当日未使用学习机。" },
+                "5": { totalMinutes: 48, apps: [{ name: "瑞恩熊AI英语", minutes: 18 }, { name: "数学同步练习", minutes: 18 }, { name: "分级阅读", minutes: 12 }], note: "周末前使用较稳。" },
+                "6": { totalMinutes: 67, apps: [{ name: "瑞恩熊AI英语", minutes: 27 }, { name: "数学同步练习", minutes: 20 }, { name: "分级阅读", minutes: 20 }], note: "单日时长较高。" },
+                "7": { totalMinutes: 58, apps: [{ name: "瑞恩熊AI英语", minutes: 22 }, { name: "数学同步练习", minutes: 16 }, { name: "分级阅读", minutes: 20 }], note: "开始周计划执行。" },
+                "8": { totalMinutes: 53, apps: [{ name: "瑞恩熊AI英语", minutes: 21 }, { name: "数学同步练习", minutes: 18 }, { name: "分级阅读", minutes: 14 }], note: "英语和数学并行。" },
+                "9": { totalMinutes: 0, apps: [], note: "当日未使用学习机。" },
+                "10": { totalMinutes: 42, apps: [{ name: "数学同步练习", minutes: 18 }, { name: "分级阅读", minutes: 14 }, { name: "口算天天练", minutes: 10 }], note: "练习节奏正常。" },
+                "11": { totalMinutes: 55, apps: [{ name: "瑞恩熊AI英语", minutes: 25 }, { name: "数学同步练习", minutes: 16 }, { name: "分级阅读", minutes: 14 }], note: "晚间使用较充分。" },
+                "12": { totalMinutes: 72, apps: [{ name: "乐读短视频", minutes: 28 }, { name: "瑞恩熊AI英语", minutes: 24 }, { name: "数学同步练习", minutes: 20 }], note: "晚间其他内容使用偏多。" }
+              }
+            },
+            apps: {
+              totalMinutes: 448,
+              learnMinutes: 273,
+              changePct: 12,
+              learnPct: 61,
+              groups: {
+                learn: [
+                  { name: "瑞恩熊AI英语", minutes: 102, detail: "英语启蒙", tone: "indigo" },
+                  { name: "数学同步练习", minutes: 86, detail: "同步巩固", tone: "blue" },
+                  { name: "分级阅读", minutes: 55, detail: "阅读训练", tone: "mint" },
+                  { name: "口算天天练", minutes: 30, detail: "口算练习", tone: "indigo" }
+                ],
+                other: [
+                  { name: "乐读短视频", minutes: 72, detail: "内容浏览", tone: "orange" },
+                  { name: "益智游戏", minutes: 61, detail: "娱乐休闲", tone: "rose" },
+                  { name: "浏览器", minutes: 42, detail: "网页访问", tone: "orange" }
+                ]
+              }
+            },
+            plans: {
+              overallDone: 12,
+              overallTotal: 21,
+              overallPct: 57,
+              items: [
+                { name: "语文每日一练", subtitle: "预计本周完成 7 次", done: 4, total: 7, status: "ongoing" },
+                { name: "英语单词打卡", subtitle: "预计本周完成 7 次", done: 5, total: 7, status: "ongoing" },
+                { name: "数学思维训练", subtitle: "预计本周完成 7 次", done: 3, total: 7, status: "behind" }
+              ]
+            },
+            scripts: {
+              basic: {
+                scenes: {
+                  praise: {
+                    label: "表扬鼓励",
+                    variants: [
+                      {
+                        text: "张小明妈妈您好，上周小明整体使用是在线的，一周里有 6 天都打开了学习机，英语应用累计使用了 1 小时 42 分。说明孩子是能进入学习节奏的，只要这周继续稳住，整体状态还是很有希望拉回来的。",
+                        summary: ["上周使用 6 天", "英语应用 1 小时 42 分", "计划完成率 57%"]
+                      }
+                    ]
+                  },
+                  remind: {
+                    label: "提醒督促",
+                    variants: [
+                      {
+                        text: "张小明妈妈您好，上周小明虽然有 6 天都使用了学习机，但计划整体只完成了 57%，而且周末其他应用使用时间开始增多。建议这周早点把每日任务先完成，再安排其他内容，能更稳地把节奏守住。",
+                        summary: ["计划完成率 57%", "周末短视频 28 分钟", "使用天数 6 天"]
+                      }
+                    ]
+                  },
+                  care: {
+                    label: "关怀回访",
+                    variants: [
+                      {
+                        text: "张小明妈妈您好，想和您做个简单回访。上周小明学习机整体还是有在用的，使用了 6 天，总时长 7 小时 28 分，只是计划进度和其他应用时间有些波动。后面如果您需要，我可以一起帮您盯一下每天的完成节奏。",
+                        summary: ["上周总时长 7 小时 28 分", "计划完成 12/21", "其他应用 2 小时 55 分"]
+                      }
+                    ]
+                  }
+                }
+              },
+              usage: {
+                variants: [
+                  {
+                    text: "张小明妈妈您好，上周小明学习类应用累计使用 4 小时 33 分，其中瑞恩熊AI英语用了 1 小时 42 分，数学同步练习用了 1 小时 26 分，投入还是有的。不过数学计划完成偏慢，建议这周优先把数学任务固定下来，避免继续掉节奏。",
+                    summary: ["学习类应用 4 小时 33 分", "瑞恩熊AI英语 1 小时 42 分", "数学计划完成 3/7"]
+                  }
+                ]
+              },
+              alerts: [
+                {
+                  type: "周末娱乐偏高",
+                  variants: [
+                    {
+                      text: "张小明妈妈您好，提醒您关注一下，小明在 4 月 12 日的其他应用使用比平时偏高，像乐读短视频当天用了 28 分钟。建议后面周末也尽量先完成学习内容，再安排放松，会更利于把学习节奏守住。",
+                      summary: ["4 月 12 日短视频 28 分钟", "当日总时长 72 分钟", "上周学习占比 61%"]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        id: "mei",
+        name: "张小美",
+        grade: "二年级",
+        purchaseDays: 9,
+        scriptDefaults: { dimension: "basic", scene: "praise" },
+        periods: {
+          thisWeek: {
+            hero: {
+              level: "good",
+              levelLabel: "表现稳定",
+              headline: "本周使用规律，适合发送鼓励型话术",
+              note: "学习应用占比 82%，计划完成率 86%，整体可继续保持当前节奏。",
+              metrics: [
+                { label: "异常提醒", value: "0 条" },
+                { label: "本周使用", value: "4 天" },
+                { label: "计划完成", value: "86%" }
+              ]
+            },
+            calendar: {
+              year: 2026,
+              month: 4,
+              today: 16,
+              weekUsedDays: 4,
+              inactiveStreak: 0,
+              usedDays: {
+                "1": { totalMinutes: 38, apps: [{ name: "分级阅读", minutes: 18 }, { name: "英语天天练", minutes: 12 }, { name: "数学口算", minutes: 8 }], note: "保持稳定使用。" },
+                "2": { totalMinutes: 42, apps: [{ name: "英语天天练", minutes: 18 }, { name: "分级阅读", minutes: 14 }, { name: "数学口算", minutes: 10 }], note: "英语和阅读均有投入。" },
+                "3": { totalMinutes: 39, apps: [{ name: "分级阅读", minutes: 17 }, { name: "数学口算", minutes: 12 }, { name: "英语天天练", minutes: 10 }], note: "完成日常练习。" },
+                "4": { totalMinutes: 46, apps: [{ name: "英语天天练", minutes: 20 }, { name: "分级阅读", minutes: 16 }, { name: "数学口算", minutes: 10 }], note: "连续打卡表现不错。" },
+                "5": { totalMinutes: 0, apps: [], note: "当日未使用学习机。" },
+                "7": { totalMinutes: 51, apps: [{ name: "分级阅读", minutes: 22 }, { name: "英语天天练", minutes: 17 }, { name: "数学口算", minutes: 12 }], note: "周中继续保持学习节奏。" },
+                "8": { totalMinutes: 47, apps: [{ name: "英语天天练", minutes: 21 }, { name: "数学口算", minutes: 14 }, { name: "分级阅读", minutes: 12 }], note: "晚间固定打卡。" },
+                "9": { totalMinutes: 36, apps: [{ name: "分级阅读", minutes: 18 }, { name: "英语天天练", minutes: 10 }, { name: "数学口算", minutes: 8 }], note: "轻量学习完成。" },
+                "10": { totalMinutes: 44, apps: [{ name: "英语天天练", minutes: 19 }, { name: "分级阅读", minutes: 15 }, { name: "数学口算", minutes: 10 }], note: "英语投入明显。" },
+                "11": { totalMinutes: 53, apps: [{ name: "分级阅读", minutes: 22 }, { name: "英语天天练", minutes: 19 }, { name: "数学口算", minutes: 12 }], note: "周末状态依旧稳定。" },
+                "12": { totalMinutes: 48, apps: [{ name: "英语天天练", minutes: 20 }, { name: "分级阅读", minutes: 16 }, { name: "数学口算", minutes: 12 }], note: "连续使用习惯良好。" },
+                "13": { totalMinutes: 56, apps: [{ name: "分级阅读", minutes: 26 }, { name: "英语天天练", minutes: 18 }, { name: "数学口算", minutes: 12 }], note: "本周起始状态很好。" },
+                "14": { totalMinutes: 52, apps: [{ name: "英语天天练", minutes: 21 }, { name: "分级阅读", minutes: 19 }, { name: "数学口算", minutes: 12 }], note: "打卡完整。" },
+                "15": { totalMinutes: 49, apps: [{ name: "分级阅读", minutes: 19 }, { name: "英语天天练", minutes: 18 }, { name: "数学口算", minutes: 12 }], note: "连续坚持表现不错。" },
+                "16": { totalMinutes: 50, apps: [{ name: "英语天天练", minutes: 20 }, { name: "分级阅读", minutes: 18 }, { name: "数学口算", minutes: 12 }], note: "当天已完成学习任务。" }
+              }
+            },
+            apps: {
+              totalMinutes: 324,
+              learnMinutes: 266,
+              changePct: 18,
+              learnPct: 82,
+              groups: {
+                learn: [
+                  { name: "分级阅读", minutes: 108, detail: "阅读训练", tone: "mint" },
+                  { name: "英语天天练", minutes: 82, detail: "英语启蒙", tone: "indigo" },
+                  { name: "数学口算", minutes: 56, detail: "口算训练", tone: "blue" },
+                  { name: "拼音闯关", minutes: 20, detail: "语文基础", tone: "mint" }
+                ],
+                other: [
+                  { name: "乐读故事", minutes: 32, detail: "内容浏览", tone: "orange" },
+                  { name: "相机", minutes: 16, detail: "拍照记录", tone: "rose" },
+                  { name: "浏览器", minutes: 10, detail: "网页访问", tone: "orange" }
+                ]
+              }
+            },
+            plans: {
+              overallDone: 12,
+              overallTotal: 14,
+              overallPct: 86,
+              items: [
+                { name: "英语单词打卡", subtitle: "预计本周完成 7 次", done: 7, total: 7, status: "done" },
+                { name: "数学口算练习", subtitle: "预计本周完成 7 次", done: 5, total: 7, status: "ongoing" }
+              ]
+            },
+            scripts: {
+              basic: {
+                scenes: {
+                  praise: {
+                    label: "表扬鼓励",
+                    variants: [
+                      {
+                        text: "张小明妈妈您好，小美这周使用学习机很稳定，已经连续 4 天完成学习打卡，学习类应用一共用了 4 小时 26 分，学习计划完成率也达到 86%。孩子的使用节奏和投入度都很不错，特别适合及时表扬一下，帮助她把这个好习惯继续保持下去。",
+                        summary: ["连续使用 4 天", "学习类应用 4 小时 26 分", "计划完成率 86%"]
+                      },
+                      {
+                        text: "张小明妈妈您好，帮您看了一下小美本周的学习机使用情况，整体非常棒，学习应用占比达到 82%，英语和阅读都有稳定投入，英语打卡已经全部完成。这个阶段特别适合给孩子一个正向反馈，能帮助她把现在的好状态继续稳住。",
+                        summary: ["学习应用占比 82%", "英语单词打卡 7/7", "分级阅读 1 小时 48 分"]
+                      }
+                    ]
+                  },
+                  remind: {
+                    label: "提醒督促",
+                    variants: [
+                      {
+                        text: "张小明妈妈您好，小美这周整体使用挺不错的，目前学习计划已经完成 86%，还差数学口算 2 次就更完整了。建议这两天继续把数学口算补齐，这样本周的学习节奏会更圆满，也更容易保持住现在的好状态。",
+                        summary: ["计划完成率 86%", "数学口算 5/7", "本周使用 4 天"]
+                      },
+                      {
+                        text: "张小明妈妈您好，小美本周学习机用得比较稳定，英语和阅读都保持得很好，现在主要是数学口算还差 2 次。可以趁着状态在线的时候把最后这部分补上，孩子完成整周任务后会更有成就感。",
+                        summary: ["英语打卡 7/7", "数学口算 5/7", "本周总时长 5 小时 24 分"]
+                      }
+                    ]
+                  },
+                  care: {
+                    label: "关怀回访",
+                    variants: [
+                      {
+                        text: "张小明妈妈您好，小美购机刚 9 天，我这边做个简单回访。最近她的使用习惯建立得很快，这周学习类应用已经用了 4 小时 26 分，英语打卡也都完成了。如果您在使用过程中有任何需要调整的地方，随时告诉我，我可以帮您一起看看。",
+                        summary: ["购机 9 天", "学习类应用 4 小时 26 分", "英语打卡 7/7"]
+                      },
+                      {
+                        text: "张小明妈妈您好，想和您简单回访一下，小美最近的学习机使用状态很好，阅读和英语都保持得很稳定，计划完成率已经达到 86%。如果您后面希望我继续帮您关注每日使用节奏，也可以随时和我说，我会持续跟进。",
+                        summary: ["计划完成率 86%", "分级阅读 1 小时 48 分", "本周无异常提醒"]
+                      }
+                    ]
+                  }
+                }
+              },
+              usage: {
+                variants: [
+                  {
+                    text: "张小明妈妈您好，小美这周学习类应用累计使用 4 小时 26 分，比上周增加了 18%，其中分级阅读用了 1 小时 48 分，英语天天练用了 1 小时 22 分，投入非常稳定。整体看，阅读和英语习惯已经建立得比较好，后面继续保持这个节奏就很理想。",
+                    summary: ["学习类应用 4 小时 26 分", "分级阅读 1 小时 48 分", "较上周增长 18%"]
+                  },
+                  {
+                    text: "张小明妈妈您好，这周小美在学习机上的学习状态很在线，学习类应用占比达到 82%，阅读和英语都是重点投入方向，数学口算也有持续跟进。孩子现在的节奏挺健康的，建议继续以表扬和鼓励为主，帮助她把这个好状态延续下去。",
+                    summary: ["学习占比 82%", "英语天天练 1 小时 22 分", "数学口算 56 分钟"]
+                  }
+                ]
+              },
+              alerts: []
+            }
+          },
+          lastWeek: {
+            hero: {
+              level: "good",
+              levelLabel: "表现稳定",
+              headline: "上周已形成初步使用习惯，可继续鼓励",
+              note: "购机初期就建立了较好的使用节奏，适合继续维持轻量、稳定的频率。",
+              metrics: [
+                { label: "异常提醒", value: "0 条" },
+                { label: "本周使用", value: "5 天" },
+                { label: "计划完成", value: "71%" }
+              ]
+            },
+            calendar: {
+              year: 2026,
+              month: 4,
+              today: 12,
+              weekUsedDays: 5,
+              inactiveStreak: 0,
+              usedDays: {
+                "1": { totalMinutes: 30, apps: [{ name: "分级阅读", minutes: 14 }, { name: "英语天天练", minutes: 10 }, { name: "数学口算", minutes: 6 }], note: "适应阶段，使用稳定。" },
+                "2": { totalMinutes: 34, apps: [{ name: "英语天天练", minutes: 14 }, { name: "分级阅读", minutes: 12 }, { name: "数学口算", minutes: 8 }], note: "开始形成习惯。" },
+                "3": { totalMinutes: 0, apps: [], note: "当日未使用学习机。" },
+                "4": { totalMinutes: 36, apps: [{ name: "分级阅读", minutes: 16 }, { name: "英语天天练", minutes: 12 }, { name: "数学口算", minutes: 8 }], note: "节奏平稳。" },
+                "5": { totalMinutes: 42, apps: [{ name: "英语天天练", minutes: 16 }, { name: "分级阅读", minutes: 14 }, { name: "数学口算", minutes: 12 }], note: "周末完成多项任务。" },
+                "6": { totalMinutes: 43, apps: [{ name: "分级阅读", minutes: 18 }, { name: "英语天天练", minutes: 15 }, { name: "数学口算", minutes: 10 }], note: "继续保持打卡。" },
+                "7": { totalMinutes: 39, apps: [{ name: "英语天天练", minutes: 16 }, { name: "分级阅读", minutes: 13 }, { name: "数学口算", minutes: 10 }], note: "英语投入明显。" },
+                "8": { totalMinutes: 0, apps: [], note: "当日未使用学习机。" },
+                "9": { totalMinutes: 48, apps: [{ name: "分级阅读", minutes: 20 }, { name: "英语天天练", minutes: 16 }, { name: "数学口算", minutes: 12 }], note: "使用节奏良好。" },
+                "10": { totalMinutes: 45, apps: [{ name: "英语天天练", minutes: 18 }, { name: "分级阅读", minutes: 15 }, { name: "数学口算", minutes: 12 }], note: "保持稳定。" },
+                "11": { totalMinutes: 40, apps: [{ name: "分级阅读", minutes: 16 }, { name: "英语天天练", minutes: 14 }, { name: "数学口算", minutes: 10 }], note: "周末继续完成任务。" },
+                "12": { totalMinutes: 41, apps: [{ name: "英语天天练", minutes: 16 }, { name: "分级阅读", minutes: 15 }, { name: "数学口算", minutes: 10 }], note: "整体表现平稳。" }
+              }
+            },
+            apps: {
+              totalMinutes: 274,
+              learnMinutes: 208,
+              changePct: 9,
+              learnPct: 76,
+              groups: {
+                learn: [
+                  { name: "分级阅读", minutes: 86, detail: "阅读训练", tone: "mint" },
+                  { name: "英语天天练", minutes: 72, detail: "英语启蒙", tone: "indigo" },
+                  { name: "数学口算", minutes: 38, detail: "口算训练", tone: "blue" },
+                  { name: "拼音闯关", minutes: 12, detail: "语文基础", tone: "mint" }
+                ],
+                other: [
+                  { name: "乐读故事", minutes: 32, detail: "内容浏览", tone: "orange" },
+                  { name: "相机", minutes: 18, detail: "拍照记录", tone: "rose" },
+                  { name: "浏览器", minutes: 16, detail: "网页访问", tone: "orange" }
+                ]
+              }
+            },
+            plans: {
+              overallDone: 10,
+              overallTotal: 14,
+              overallPct: 71,
+              items: [
+                { name: "英语单词打卡", subtitle: "预计本周完成 7 次", done: 5, total: 7, status: "ongoing" },
+                { name: "数学口算练习", subtitle: "预计本周完成 7 次", done: 5, total: 7, status: "ongoing" }
+              ]
+            },
+            scripts: {
+              basic: {
+                scenes: {
+                  praise: {
+                    label: "表扬鼓励",
+                    variants: [
+                      {
+                        text: "张小明妈妈您好，上周小美购机后很快就建立了使用节奏，一周里有 5 天都用了学习机，学习应用累计 3 小时 28 分，整体状态不错。这个阶段如果继续多表扬和鼓励，孩子会更容易把刚建立起来的好习惯稳住。",
+                        summary: ["上周使用 5 天", "学习类应用 3 小时 28 分", "计划完成率 71%"]
+                      }
+                    ]
+                  },
+                  remind: {
+                    label: "提醒督促",
+                    variants: [
+                      {
+                        text: "张小明妈妈您好，小美上周整体使用不错，目前英语和数学计划都完成了 5 次，还差最后 2 次就更完整了。建议继续保持每天轻量打卡，帮助她把新建立起来的使用习惯再巩固一下。",
+                        summary: ["英语打卡 5/7", "数学口算 5/7", "上周无异常提醒"]
+                      }
+                    ]
+                  },
+                  care: {
+                    label: "关怀回访",
+                    variants: [
+                      {
+                        text: "张小明妈妈您好，小美购机刚进入第 2 周，这边和您做个简单回访。孩子目前学习机使用状态不错，阅读和英语都已经逐步形成习惯，如果后续您想调整打卡节奏，也可以随时和我说，我会继续帮您关注。",
+                        summary: ["购机第 2 周", "阅读 1 小时 26 分", "英语 1 小时 12 分"]
+                      }
+                    ]
+                  }
+                }
+              },
+              usage: {
+                variants: [
+                  {
+                    text: "张小明妈妈您好，上周小美学习类应用累计使用 3 小时 28 分，阅读和英语两项投入最稳定，分别用了 1 小时 26 分和 1 小时 12 分。整体来看，孩子对阅读和英语内容的接受度都不错，继续保持当前节奏会比较理想。",
+                    summary: ["学习类应用 3 小时 28 分", "分级阅读 1 小时 26 分", "英语天天练 1 小时 12 分"]
+                  }
+                ]
+              },
+              alerts: []
+            }
+          }
+        }
+      }
+    ]
+  };
+
+  const state = {
+    currentView: "report",
+    currentPeriodId: APP_DATA.periods[0].id,
+    currentChildId: APP_DATA.children[0].id,
+    currentDimension: "basic",
+    currentScene: "remind",
+    currentAlertIndex: 0,
+    expandedGroups: {},
+    variantIndexMap: {},
+    activeDay: null
+  };
+
+  const root = document.getElementById("app");
+  const toast = document.getElementById("toast");
+  const sheetMask = document.getElementById("sheetMask");
+  const daySheet = document.getElementById("daySheet");
+
+  function getCurrentChild() {
+    return APP_DATA.children.find((child) => child.id === state.currentChildId) || APP_DATA.children[0];
+  }
+
+  function getCurrentPeriod() {
+    return APP_DATA.periods.find((period) => period.id === state.currentPeriodId) || APP_DATA.periods[0];
+  }
+
+  function getCurrentPeriodData() {
+    return getCurrentChild().periods[state.currentPeriodId];
+  }
+
+  function resetScriptStateForChild() {
+    const child = getCurrentChild();
+    state.currentDimension = child.scriptDefaults.dimension;
+    state.currentScene = child.scriptDefaults.scene;
+    state.currentAlertIndex = 0;
+  }
+
+  function applyQueryState() {
+    const params = new URLSearchParams(window.location.search);
+    const childId = params.get("child");
+    const periodId = params.get("period");
+    const view = params.get("view");
+
+    if (childId && APP_DATA.children.some((child) => child.id === childId)) {
+      state.currentChildId = childId;
+    }
+
+    if (periodId && APP_DATA.periods.some((period) => period.id === periodId)) {
+      state.currentPeriodId = periodId;
+    }
+
+    resetScriptStateForChild();
+
+    if (view === "script") {
+      state.currentView = "script";
+    }
+  }
+
+  function formatMinutes(minutes) {
+    const safe = Math.max(0, minutes || 0);
+    const hour = Math.floor(safe / 60);
+    const minute = safe % 60;
+    if (hour && minute) {
+      return hour + " 小时 " + minute + " 分";
+    }
+    if (hour) {
+      return hour + " 小时";
+    }
+    return minute + " 分钟";
+  }
+
+  function formatPct(pct) {
+    return (pct > 0 ? "+" : "") + pct + "%";
+  }
+
+  function getChildStateClass(level) {
+    if (level === "danger") return "danger";
+    if (level === "warning") return "warning";
+    return "good";
+  }
+
+  function getUsedCount(calendar) {
+    return Object.keys(calendar.usedDays).filter((day) => calendar.usedDays[day] && calendar.usedDays[day].totalMinutes > 0).length;
+  }
+
+  function getDaysInMonth(calendar) {
+    return new Date(calendar.year, calendar.month, 0).getDate();
+  }
+
+  function buildVariantKey() {
+    const base = [state.currentChildId, state.currentPeriodId, state.currentDimension];
+    if (state.currentDimension === "basic") {
+      base.push(state.currentScene);
+    }
+    if (state.currentDimension === "alert") {
+      base.push(String(state.currentAlertIndex));
+    }
+    return base.join(":");
+  }
+
+  function getActiveScriptModel() {
+    const scripts = getCurrentPeriodData().scripts;
+
+    if (state.currentDimension === "basic") {
+      const scene = scripts.basic.scenes[state.currentScene];
+      const variants = scene.variants;
+      const key = buildVariantKey();
+      const index = state.variantIndexMap[key] || 0;
+      const active = variants[index % variants.length];
+      return {
+        empty: false,
+        badge: scene.label,
+        title: "AI 已生成可转发话术",
+        note: "口语化、温和表达，可直接复制到企微发送。",
+        text: active.text,
+        summary: active.summary
+      };
+    }
+
+    if (state.currentDimension === "usage") {
+      const variants = scripts.usage.variants;
+      const key = buildVariantKey();
+      const index = state.variantIndexMap[key] || 0;
+      const active = variants[index % variants.length];
+      return {
+        empty: false,
+        badge: "使用情况跟踪",
+        title: "聚焦孩子近期学习投入与变化",
+        note: "突出投入亮点，也保留温和提醒。",
+        text: active.text,
+        summary: active.summary
+      };
+    }
+
+    if (!scripts.alerts.length) {
+      return {
+        empty: true,
+        badge: "异常提醒",
+        title: "暂无异常",
+        note: "当前没有可提示家长的风险行为。",
+        text: "",
+        summary: []
+      };
+    }
+
+    const alertItem = scripts.alerts[state.currentAlertIndex] || scripts.alerts[0];
+    const variants = alertItem.variants;
+    const key = buildVariantKey();
+    const index = state.variantIndexMap[key] || 0;
+    const active = variants[index % variants.length];
+    return {
+      empty: false,
+      badge: alertItem.type,
+      title: "聚焦当前最需要关注的异常行为",
+      note: "语气保持温和明确，不指责孩子。",
+      text: active.text,
+      summary: active.summary
+    };
+  }
+
+  function render() {
+    root.innerHTML = state.currentView === "report" ? renderReportView() : renderScriptView();
+  }
+
+  function renderReportView() {
+    const child = getCurrentChild();
+    const period = getCurrentPeriod();
+    const data = getCurrentPeriodData();
+    const childTabs = APP_DATA.children.length > 1 ? renderChildTabs() : "";
+
+    return `
+      <div class="view report-view">
+        <section class="hero-card">
+          <div class="hero-top">
+            <div>
+              <div class="eyebrow">Supervisor Dashboard</div>
+              <div class="hero-title">${APP_DATA.parentName}</div>
+              <div class="hero-subtitle">导购端督学报告 · 当前查看 ${child.name} · ${child.grade}</div>
+            </div>
+            <div class="hero-time">最近更新<br>${APP_DATA.lastSync.slice(5)}</div>
+          </div>
+          <div class="hero-summary">
+            <span class="summary-pill ${getChildStateClass(data.hero.level)}">${data.hero.levelLabel}</span>
+            <div class="summary-title">${data.hero.headline}</div>
+            <div class="summary-note">${data.hero.note}</div>
+            <div class="hero-metrics">
+              ${data.hero.metrics.map((metric) => `
+                <div class="hero-metric">
+                  <div class="hero-metric-value">${metric.value}</div>
+                  <div class="hero-metric-label">${metric.label}</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </section>
+
+        <div class="period-switcher">
+          ${APP_DATA.periods.map((item) => `
+            <button class="period-button ${item.id === period.id ? "active" : ""}" type="button" data-action="period" data-period-id="${item.id}">
+              <span class="period-name">${item.label}</span>
+              <span class="period-range">${item.range}</span>
+            </button>
+          `).join("")}
+        </div>
+
+        ${childTabs}
+
+        ${renderCalendarCard(data.calendar)}
+        ${renderAppsCard(data.apps)}
+        ${renderPlansCard(data.plans)}
+
+        <div class="bottom-action">
+          <button class="ghost-button" type="button" data-action="copy-script">复制当前话术</button>
+          <button class="primary-button" type="button" data-action="view" data-view="script">生成督学话术</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderChildTabs() {
+    return `
+      <div class="child-strip">
+        ${APP_DATA.children.map((child) => {
+          const level = child.periods[state.currentPeriodId].hero.level;
+          const label = child.periods[state.currentPeriodId].hero.levelLabel;
+          return `
+            <button class="child-tab ${child.id === state.currentChildId ? "active" : ""}" type="button" data-action="child" data-child-id="${child.id}">
+              <div class="child-name">${child.name}</div>
+              <div class="child-meta">${child.grade} · 购机 ${child.purchaseDays} 天</div>
+              <span class="child-state ${getChildStateClass(level)}">${label}</span>
+            </button>
+          `;
+        }).join("")}
+      </div>
+    `;
+  }
+
+  function renderCalendarCard(calendar) {
+    const firstWeekday = new Date(calendar.year, calendar.month - 1, 1).getDay();
+    const daysInMonth = getDaysInMonth(calendar);
+    const usedCount = getUsedCount(calendar);
+    const passedDays = calendar.today;
+    const weekdays = ["日", "一", "二", "三", "四", "五", "六"];
+    const cells = [];
+
+    for (let index = 0; index < firstWeekday; index += 1) {
+      cells.push('<div class="calendar-cell empty"></div>');
+    }
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const detail = calendar.usedDays[String(day)];
+      let status = "future";
+      if (day <= calendar.today) {
+        status = detail && detail.totalMinutes > 0 ? "used" : "unused";
+      }
+      const button = status === "future"
+        ? `<div class="calendar-cell ${status} ${day === calendar.today ? "today" : ""}">${day}</div>`
+        : `<button class="calendar-cell ${status} ${day === calendar.today ? "today" : ""}" type="button" data-action="open-day" data-day="${day}">${day}</button>`;
+      cells.push(button);
+    }
+
+    return `
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">日历打卡视图</div>
+            <div class="card-subtitle">${calendar.year} 年 ${calendar.month} 月 · 点击日期查看当天使用明细</div>
+          </div>
+          <div class="head-chip">月视图</div>
+        </div>
+        <div class="calendar-legend">
+          <span class="legend-item"><span class="legend-dot used"></span>已使用</span>
+          <span class="legend-item"><span class="legend-dot unused"></span>未使用</span>
+          <span class="legend-item"><span class="legend-dot future"></span>未到</span>
+        </div>
+        <div class="calendar-grid">
+          ${weekdays.map((day) => `<div class="weekday">${day}</div>`).join("")}
+          ${cells.join("")}
+        </div>
+        <div class="calendar-summary">
+          <div class="month-stat">
+            <div class="month-stat-value">${usedCount}/${passedDays} 天</div>
+            <div class="month-stat-label">本月已使用天数 / 已过天数</div>
+          </div>
+          <div class="month-stat">
+            <div class="month-stat-value">${calendar.weekUsedDays} 天</div>
+            <div class="month-stat-label">本周已使用天数</div>
+          </div>
+          <div class="month-stat ${calendar.inactiveStreak >= 3 ? "highlight" : ""}">
+            <div class="month-stat-value">${calendar.inactiveStreak} 天</div>
+            <div class="month-stat-label">连续未使用天数</div>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
+  function renderAppsCard(apps) {
+    const groups = [
+      { key: "learn", label: "学习应用", type: "learn", pct: apps.learnPct },
+      { key: "other", label: "其他应用", type: "other", pct: 100 - apps.learnPct }
+    ];
+    const changeClass = apps.changePct < 0 ? (apps.changePct <= -50 ? "down" : "") : "up";
+
+    return `
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">应用使用详情</div>
+            <div class="card-subtitle">按时长降序展示，默认仅展开每组 Top 3</div>
+          </div>
+          <div class="head-chip ${apps.changePct < 0 && apps.changePct <= -50 ? "warning" : apps.changePct > 0 ? "good" : ""}">
+            周环比 ${formatPct(apps.changePct)}
+          </div>
+        </div>
+        <div class="metric-ribbon">
+          <div class="metric-box">
+            <div class="metric-box-title">本周总时长</div>
+            <div class="metric-box-value">${formatMinutes(apps.totalMinutes)}</div>
+          </div>
+          <div class="metric-box">
+            <div class="metric-box-title">周环比变化</div>
+            <div class="metric-box-value ${changeClass}">${formatPct(apps.changePct)}</div>
+          </div>
+        </div>
+        ${apps.learnPct < 40 ? `
+          <div class="warning-banner">
+            学习应用占比低于 40%，当前仅 ${apps.learnPct}%。建议优先关注设备是否被其他内容占用，并及时提醒家长拉回学习节奏。
+          </div>
+        ` : ""}
+        ${groups.map((group) => renderAppGroup(group, apps.groups[group.key])).join("")}
+      </section>
+    `;
+  }
+
+  function renderAppGroup(group, items) {
+    const expandKey = state.currentChildId + ":" + state.currentPeriodId + ":" + group.key;
+    const expanded = Boolean(state.expandedGroups[expandKey]);
+    const visibleItems = expanded ? items : items.slice(0, 3);
+    const maxMinutes = Math.max.apply(null, items.map((item) => item.minutes));
+
+    return `
+      <div class="app-group">
+        <div class="group-head">
+          <div class="group-title">${group.label}</div>
+          <div class="group-meta">占比 ${group.pct}%</div>
+        </div>
+        ${visibleItems.map((item) => `
+          <div class="app-row">
+            <div class="app-icon ${item.tone}">${item.name.slice(0, 1)}</div>
+            <div class="app-main">
+              <div class="app-name-row">
+                <div class="app-name-text">${item.name}</div>
+                <div class="app-time">${formatMinutes(item.minutes)}</div>
+              </div>
+              <div class="app-desc">${item.detail}</div>
+              <div class="bar-track">
+                <div class="bar-fill ${group.type}" style="width: ${Math.round(item.minutes / maxMinutes * 100)}%"></div>
+              </div>
+            </div>
+          </div>
+        `).join("")}
+        ${items.length > 3 ? `
+          <button class="toggle-button" type="button" data-action="toggle-group" data-group-key="${group.key}">
+            ${expanded ? "收起" : "展开其余 " + (items.length - 3) + " 个应用"}
+          </button>
+        ` : ""}
+      </div>
+    `;
+  }
+
+  function renderPlansCard(plans) {
+    if (!plans.items.length) {
+      return `
+        <section class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">学习计划完成情况</div>
+              <div class="card-subtitle">当前暂无已报名计划</div>
+            </div>
+          </div>
+          <div class="empty-card">
+            <div class="empty-emoji">-</div>
+            <div class="empty-title">暂无学习计划</div>
+            <div class="empty-desc">当前孩子未报名任何学习计划，可先关注设备使用习惯与应用使用结构。</div>
+          </div>
+        </section>
+      `;
+    }
+
+    return `
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">学习计划完成情况</div>
+            <div class="card-subtitle">按计划逐项查看进度与状态</div>
+          </div>
+          <div class="head-chip ${plans.overallPct >= 80 ? "good" : plans.overallPct < 40 ? "warning" : ""}">
+            综合 ${plans.overallPct}%
+          </div>
+        </div>
+        <div class="plan-list">
+          ${plans.items.map((plan) => {
+            const pct = Math.round(plan.done / plan.total * 100);
+            const labelMap = { done: "完成", ongoing: "进行中", behind: "落后" };
+            return `
+              <div class="plan-item">
+                <div class="plan-top">
+                  <div>
+                    <div class="plan-name">${plan.name}</div>
+                    <div class="plan-sub">${plan.subtitle}</div>
+                  </div>
+                  <span class="status-chip ${plan.status}">${labelMap[plan.status]}</span>
+                </div>
+                <div class="plan-progress">
+                  <div class="plan-progress-fill ${plan.status}" style="width: ${pct}%"></div>
+                </div>
+                <div class="plan-bottom">
+                  <span>${plan.done}/${plan.total} 项</span>
+                  <span>${pct}%</span>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+        <div class="plan-overall">
+          <div>
+            <div class="overall-label">综合完成率</div>
+            <div class="card-subtitle">${plans.overallDone}/${plans.overallTotal} 项已完成</div>
+          </div>
+          <div class="overall-value">${plans.overallPct}%</div>
+        </div>
+      </section>
+    `;
+  }
+
+  function renderScriptView() {
+    const child = getCurrentChild();
+    const period = getCurrentPeriod();
+    const data = getCurrentPeriodData();
+    const model = getActiveScriptModel();
+    const alertCount = data.scripts.alerts.length;
+
+    return `
+      <div class="view script-view">
+        <div class="nav-bar">
+          <button class="back-button" type="button" data-action="view" data-view="report" aria-label="返回督学报告">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <path d="M10.5 4.5L6 9L10.5 13.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav-title">
+            <div class="nav-title-main">督学话术</div>
+            <div class="nav-title-sub">${child.name} · ${child.grade} · ${period.label} ${period.range}</div>
+          </div>
+          <div class="nav-pill"></div>
+        </div>
+
+        <section class="overview-card">
+          <div class="overview-label">当前督学结论</div>
+          <div class="overview-headline">${data.hero.headline}</div>
+          <div class="overview-tags">
+            <span class="mini-tag">${child.name}</span>
+            <span class="mini-tag">${data.hero.levelLabel}</span>
+            <span class="mini-tag">${period.label}</span>
+          </div>
+        </section>
+
+        <div class="dimension-tabs">
+          <button class="dim-tab ${state.currentDimension === "basic" ? "active" : ""}" type="button" data-action="dimension" data-dimension="basic">基础使用</button>
+          <button class="dim-tab ${state.currentDimension === "usage" ? "active" : ""}" type="button" data-action="dimension" data-dimension="usage">使用情况</button>
+          <button class="dim-tab ${state.currentDimension === "alert" ? "active" : ""}" type="button" data-action="dimension" data-dimension="alert">异常提醒${alertCount ? `<span class="tab-badge">${alertCount}</span>` : ""}</button>
+        </div>
+
+        ${state.currentDimension === "basic" ? renderSceneRow(data.scripts.basic.scenes) : ""}
+        ${state.currentDimension === "alert" && data.scripts.alerts.length ? renderAlertRow(data.scripts.alerts) : ""}
+
+        <section class="script-card">
+          <div class="script-card-top">
+            <div>
+              <div class="script-badge">${model.badge}</div>
+              <div class="script-title">${model.title}</div>
+              <div class="script-note">${model.note}</div>
+            </div>
+            <div class="script-caption">80-150 字 · 直接可发</div>
+          </div>
+          ${model.empty ? `
+            <div class="empty-card">
+              <div class="empty-emoji">-</div>
+              <div class="empty-title">暂无异常</div>
+              <div class="empty-desc">当前没有深夜使用、异常三方应用使用或风险内容提醒，可继续用鼓励型或使用情况型话术跟进。</div>
+            </div>
+          ` : `
+            <div class="script-content">${model.text}</div>
+            <div class="script-actions">
+              <button class="text-button secondary" type="button" data-action="refresh-script">换一换</button>
+              <button class="text-button primary" type="button" data-action="copy-script">复制话术</button>
+            </div>
+            <div class="summary-list">
+              ${model.summary.map((line, index) => `
+                <div class="summary-item">
+                  <span class="summary-bullet">${index + 1}</span>
+                  <div class="summary-text">${line}</div>
+                </div>
+              `).join("")}
+            </div>
+          `}
+        </section>
+      </div>
+    `;
+  }
+
+  function renderSceneRow(scenes) {
+    const sceneEntries = [
+      { key: "praise", label: scenes.praise.label },
+      { key: "remind", label: scenes.remind.label },
+      { key: "care", label: scenes.care.label }
+    ];
+    return `
+      <div class="chip-row">
+        ${sceneEntries.map((scene) => `
+          <button class="scene-chip ${scene.key === state.currentScene ? "active" : ""}" type="button" data-action="scene" data-scene="${scene.key}">
+            ${scene.label}
+          </button>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  function renderAlertRow(alerts) {
+    return `
+      <div class="chip-row">
+        ${alerts.map((item, index) => `
+          <button class="alert-chip ${index === state.currentAlertIndex ? "active" : ""}" type="button" data-action="alert" data-alert-index="${index}">
+            ${item.type}
+          </button>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  function openDay(day) {
+    const calendar = getCurrentPeriodData().calendar;
+    const detail = calendar.usedDays[String(day)];
+    const dateTitle = calendar.month + " 月 " + day + " 日";
+    const used = detail && detail.totalMinutes > 0;
+
+    if (day > calendar.today) {
+      return;
+    }
+
+    daySheet.innerHTML = used ? `
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">${dateTitle}</div>
+      <div class="sheet-subtitle">学习机当日使用详情</div>
+      <div class="sheet-summary">
+        <div class="sheet-summary-value">${formatMinutes(detail.totalMinutes)}</div>
+        <div class="sheet-summary-label">当日学习类应用总时长</div>
+      </div>
+      <div class="sheet-list">
+        ${detail.apps.map((app) => `
+          <div class="sheet-item">
+            <div class="sheet-item-name">${app.name}</div>
+            <div class="sheet-item-time">${formatMinutes(app.minutes)}</div>
+          </div>
+        `).join("")}
+      </div>
+      <div class="sheet-foot">${detail.note}</div>
+    ` : `
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">${dateTitle}</div>
+      <div class="sheet-subtitle">当天暂无学习机使用记录</div>
+      <div class="empty-card" style="margin-top: 16px;">
+        <div class="empty-emoji">-</div>
+        <div class="empty-title">当日未使用</div>
+        <div class="empty-desc">当天未达到学习类应用累计使用 5 分钟的判定标准，因此记为未使用。</div>
+      </div>
+    `;
+
+    sheetMask.classList.add("visible");
+    daySheet.classList.add("visible");
+    state.activeDay = day;
+  }
+
+  function closeDay() {
+    sheetMask.classList.remove("visible");
+    daySheet.classList.remove("visible");
+    state.activeDay = null;
+  }
+
+  function showToast(message) {
+    toast.textContent = message;
+    toast.classList.add("visible");
+    window.clearTimeout(showToast.timer);
+    showToast.timer = window.setTimeout(() => {
+      toast.classList.remove("visible");
+    }, 1600);
+  }
+
+  async function copyText(text) {
+    if (!text) {
+      showToast("当前没有可复制的话术");
+      return;
+    }
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        showToast("已复制到剪贴板");
+        return;
+      }
+    } catch (error) {
+      // Fallback below.
+    }
+
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "readonly");
+    textarea.style.position = "fixed";
+    textarea.style.top = "-1000px";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    textarea.setSelectionRange(0, text.length);
+
+    let copied = false;
+    try {
+      copied = document.execCommand("copy");
+    } catch (error) {
+      copied = false;
+    }
+
+    document.body.removeChild(textarea);
+    showToast(copied ? "已复制到剪贴板" : "复制失败，请手动长按选择");
+  }
+
+  function refreshScriptVariant() {
+    const model = getActiveScriptModel();
+    if (model.empty) {
+      showToast("当前维度暂无可切换内容");
+      return;
+    }
+
+    const key = buildVariantKey();
+    state.variantIndexMap[key] = (state.variantIndexMap[key] || 0) + 1;
+    render();
+    showToast("已切换一条新表述");
+  }
+
+  function copyCurrentScript() {
+    const model = getActiveScriptModel();
+    copyText(model.text);
+  }
+
+  root.addEventListener("click", (event) => {
+    const target = event.target.closest("[data-action]");
+    if (!target) {
+      return;
+    }
+
+    const action = target.getAttribute("data-action");
+
+    if (action === "period") {
+      state.currentPeriodId = target.getAttribute("data-period-id");
+      closeDay();
+      render();
+      return;
+    }
+
+    if (action === "child") {
+      state.currentChildId = target.getAttribute("data-child-id");
+      resetScriptStateForChild();
+      closeDay();
+      render();
+      return;
+    }
+
+    if (action === "view") {
+      state.currentView = target.getAttribute("data-view");
+      render();
+      return;
+    }
+
+    if (action === "open-day") {
+      openDay(Number(target.getAttribute("data-day")));
+      return;
+    }
+
+    if (action === "toggle-group") {
+      const key = state.currentChildId + ":" + state.currentPeriodId + ":" + target.getAttribute("data-group-key");
+      state.expandedGroups[key] = !state.expandedGroups[key];
+      render();
+      return;
+    }
+
+    if (action === "dimension") {
+      state.currentDimension = target.getAttribute("data-dimension");
+      state.currentAlertIndex = 0;
+      render();
+      return;
+    }
+
+    if (action === "scene") {
+      state.currentScene = target.getAttribute("data-scene");
+      render();
+      return;
+    }
+
+    if (action === "alert") {
+      state.currentAlertIndex = Number(target.getAttribute("data-alert-index"));
+      render();
+      return;
+    }
+
+    if (action === "refresh-script") {
+      refreshScriptVariant();
+      return;
+    }
+
+    if (action === "copy-script") {
+      copyCurrentScript();
+    }
+  });
+
+  sheetMask.addEventListener("click", closeDay);
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeDay();
+    }
+  });
+
+  applyQueryState();
+  render();
+</script>
+</body>
+</html>

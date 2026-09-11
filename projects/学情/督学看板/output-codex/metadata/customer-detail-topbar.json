@@ -1,0 +1,18 @@
+{
+  "fileKey": "woetItQ1KMfNGFziYpzxTA",
+  "nodeId": "23:2469",
+  "slug": "customer-detail-topbar",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "<frame id=\"23:2469\" name=\"Container\" x=\"513\" y=\"0\" width=\"414\" height=\"44\">\n  <frame id=\"23:2470\" name=\"Button\" x=\"16\" y=\"7.5\" width=\"18\" height=\"29\">\n    <frame id=\"23:2471\" name=\"Icon\" x=\"4\" y=\"4\" width=\"10\" height=\"18\" />\n  </frame>\n  <frame id=\"23:2473\" name=\"Text\" x=\"168\" y=\"10\" width=\"68\" height=\"24\">\n    <text id=\"23:2474\" name=\"客户详情\" x=\"0\" y=\"0\" width=\"68\" height=\"21\" />\n  </frame>\n  <frame id=\"23:2475\" name=\"Button\" x=\"370\" y=\"6.5\" width=\"28\" height=\"31\">\n    <frame id=\"23:2476\" name=\"Icon\" x=\"4\" y=\"4\" width=\"20\" height=\"20\" />\n  </frame>\n</frame>"
+      },
+      {
+        "type": "text",
+        "text": "IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design."
+      }
+    ],
+    "structured_content": null
+  }
+}

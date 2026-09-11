@@ -1,0 +1,149 @@
+:root {
+  --page-bg: #eef2f7;
+  --card-bg: #ffffff;
+  --text-main: #1f2a44;
+  --text-sub: #647089;
+  --accent: #3f76ff;
+  --accent-soft: rgba(63, 118, 255, 0.12);
+  --accent-strong: rgba(63, 118, 255, 0.24);
+  --shadow: 0 22px 60px rgba(31, 42, 68, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "PingFang SC", "SF Pro Display", "Microsoft YaHei", sans-serif;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0) 34%),
+    linear-gradient(180deg, #f5f7fb 0%, var(--page-bg) 100%);
+  color: var(--text-main);
+}
+
+.page-shell {
+  width: min(100%, 470px);
+  margin: 0 auto;
+  padding: 24px 12px 36px;
+}
+
+.page-header {
+  margin-bottom: 14px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.page-subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+.preview-frame {
+  width: 100%;
+  background: var(--card-bg);
+  border-radius: 32px;
+  padding: 10px;
+  box-shadow: var(--shadow);
+}
+
+.artboard {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 24px;
+  background: #ffffff;
+}
+
+.artboard.with-phone {
+  border: 1px solid rgba(31, 42, 68, 0.06);
+}
+
+.artboard-layer {
+  position: absolute;
+  inset: auto;
+  display: block;
+  object-fit: fill;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.artboard-hotspot {
+  position: absolute;
+  display: block;
+  border-radius: 18px;
+  background: rgba(63, 118, 255, 0);
+  transition: background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.artboard-hotspot:hover {
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px rgba(63, 118, 255, 0.32);
+}
+
+.artboard-hotspot:active {
+  background: var(--accent-strong);
+}
+
+.artboard-hotspot.back-hotspot {
+  border-radius: 999px;
+}
+
+.page-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.page-link {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 8px 22px rgba(63, 118, 255, 0.08);
+}
+
+.page-link.active {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+@media (max-width: 480px) {
+  .page-shell {
+    padding: 16px 8px 28px;
+  }
+
+  .preview-frame {
+    padding: 8px;
+    border-radius: 24px;
+  }
+
+  .artboard {
+    border-radius: 18px;
+  }
+}

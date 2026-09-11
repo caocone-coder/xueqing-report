@@ -1,0 +1,71 @@
+<h2>家长-孩子握手机制：三种场景模式</h2>
+<p class="subtitle">基于小学生群体特征和家长实际参与能力，设计三种握手场景</p>
+
+<div class="options">
+  <div class="option" data-choice="scenario1" onclick="toggleSelect(this)">
+    <div class="letter">1</div>
+    <div class="content">
+      <h3>同屏共规划（主模式）</h3>
+      <p><strong>触发条件：</strong>家长在家、在孩子身边</p>
+      <p><strong>流程：</strong>孩子和家长都在学习机前 → AI 引导双方对话式输入 → 实时生成规划 → 双方当场确认 → 规划生效</p>
+      <div style="margin-top: 12px; padding: 12px; background: #f5f5f5; border-radius: 6px;">
+        <p style="margin: 0; font-size: 14px;"><strong>特点：</strong></p>
+        <ul style="margin: 8px 0 0 0; font-size: 14px;">
+          <li>最完整的体验：AI 老师同时和家长、孩子对话</li>
+          <li>最强的仪式感：双方共同参与决策</li>
+          <li>最高的教育价值：家长了解孩子学情，孩子学会规划</li>
+        </ul>
+      </div>
+      <p style="margin-top: 12px;"><strong>适用场景：</strong>周末、寒暑假、首次激活、重大规划调整</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="scenario2" onclick="toggleSelect(this)">
+    <div class="letter">2</div>
+    <div class="content">
+      <h3>远程共规划（兜底模式）</h3>
+      <p><strong>触发条件：</strong>家长在公司/出差，但能抽 2-3 分钟</p>
+      <p><strong>流程：</strong>孩子在学习机完成操作 → 学习机发起"邀请家长加入" → 家长 App 收到推送 → 进入极简远程共规划页 → 只回答关键约束和确认项 → 规划生效</p>
+      <div style="margin-top: 12px; padding: 12px; background: #fff3cd; border-radius: 6px;">
+        <p style="margin: 0; font-size: 14px;"><strong>设计原则：</strong></p>
+        <ul style="margin: 8px 0 0 0; font-size: 14px;">
+          <li>不把完整主流程搬到手机上</li>
+          <li>只问关键约束（如"每天学多久""周末要不要加量"）</li>
+          <li>预设合理默认值，家长可快速确认</li>
+          <li>2-3 分钟内完成，不打断家长工作</li>
+        </ul>
+      </div>
+      <p style="margin-top: 12px;"><strong>适用场景：</strong>工作日放学后、家长晚归但能响应手机</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="scenario3" onclick="toggleSelect(this)">
+    <div class="letter">3</div>
+    <div class="content">
+      <h3>临时规划待补签（应急模式）</h3>
+      <p><strong>触发条件：</strong>家长当前完全没空（开会/飞行/深度工作）</p>
+      <p><strong>流程：</strong>孩子在学习机完成操作 → AI 检测家长无响应 → 生成保守型临时计划（仅当天） → 孩子可先学 → 家长晚些时候补确认 → 临时计划升级为正式规划</p>
+      <div style="margin-top: 12px; padding: 12px; background: #f8d7da; border-radius: 6px;">
+        <p style="margin: 0; font-size: 14px;"><strong>安全约束：</strong></p>
+        <ul style="margin: 8px 0 0 0; font-size: 14px;">
+          <li>只生成当天计划，不做周/月规划</li>
+          <li>采用保守策略：基于历史数据，不做高风险改动</li>
+          <li>不涉及科目比例调整、时长大幅变化等关键决策</li>
+          <li>家长补签时可修改，已执行部分保留</li>
+          <li>如家长当日未补签，次日重新发起</li>
+        </ul>
+      </div>
+      <p style="margin-top: 12px;"><strong>适用场景：</strong>家长开会/出差/深度工作，孩子急需开始学习</p>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 24px; padding: 16px; background: #e7f3ff; border-radius: 8px;">
+  <h4 style="margin: 0 0 8px 0;">三种模式的关系</h4>
+  <p style="margin: 0; font-size: 14px; line-height: 1.6;">
+    <strong>场景 1（同屏共规划）</strong>是主模式，提供完整体验和最强仪式感。<br>
+    <strong>场景 2（远程共规划）</strong>是兜底，保证家长不在场时仍能参与关键决策。<br>
+    <strong>场景 3（临时规划待补签）</strong>是应急，防止孩子因等待而放弃使用。<br><br>
+    产品会根据家长响应情况自动降级：场景 1 → 场景 2（家长 N 分钟未到学习机前）→ 场景 3（家长 M 分钟未响应 App 推送）。
+  </p>
+</div>

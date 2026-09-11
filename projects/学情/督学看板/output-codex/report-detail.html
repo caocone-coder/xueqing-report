@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>学习计划</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="page-header">
+      <div id="page-title" class="page-title"></div>
+      <div id="page-subtitle" class="page-subtitle"></div>
+    </header>
+    <section class="preview-frame">
+      <div id="artboard" class="artboard"></div>
+    </section>
+    <nav id="page-links" class="page-links" aria-label="页面导航"></nav>
+  </main>
+  <script>
+    window.PAGE_CONFIG = {
+      id: "report",
+      title: "报告详情页",
+      subtitle: "学习计划报告按手机 frame 原图展示，点击左上角返回督学看板。",
+      designWidth: 375,
+      designHeight: 1049,
+      phoneFrame: true,
+      layers: [
+        { src: "./assets/report-detail-phone.png", alt: "报告详情", x: 0, y: 0, width: 375, height: 1049 }
+      ],
+      hotspots: [
+        {
+          label: "返回督学看板",
+          href: "./supervisor-dashboard.html",
+          back: true,
+          className: "back-hotspot",
+          x: 12,
+          y: 44,
+          width: 48,
+          height: 44
+        }
+      ],
+      nav: [
+        { id: "customer", label: "客户详情", href: "./customer-detail.html" },
+        { id: "supervisor", label: "督学看板", href: "./supervisor-dashboard.html" },
+        { id: "footprint", label: "足迹详情", href: "./footprint-detail.html" },
+        { id: "report", label: "报告详情", href: "./report-detail.html" }
+      ]
+    };
+  </script>
+  <script src="./app.js"></script>
+</body>
+</html>

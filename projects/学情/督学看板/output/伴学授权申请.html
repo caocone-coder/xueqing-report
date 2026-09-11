@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>伴学服务授权</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-50: #f0fdf4;
+    --green-100: #dcfce7;
+    --green-400: #4ade80;
+    --green-500: #22c55e;
+    --green-600: #16a34a;
+    --green-700: #15803d;
+    --blue-50: #eff6ff;
+    --blue-500: #3b82f6;
+    --orange-50: #fff7ed;
+    --orange-500: #f97316;
+    --slate-50: #f8fafc;
+    --slate-100: #f1f5f9;
+    --slate-200: #e2e8f0;
+    --slate-400: #94a3b8;
+    --slate-500: #64748b;
+    --slate-600: #475569;
+    --slate-700: #334155;
+    --slate-800: #1e293b;
+    --slate-900: #0f172a;
+    --radius: 16px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+    background: #ededed;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 24px 16px;
+    color: var(--slate-800);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 360px;
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  /* ── Header ── */
+  .card-header {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    padding: 12px 24px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-header::after {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+  .card-header::before {
+    content: '';
+    position: absolute;
+    bottom: -40px; left: -20px;
+    width: 100px; height: 100px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+
+  .header-close {
+    width: 32px; height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(4px);
+    border-radius: 8px;
+    padding: 0;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+  }
+  .header-close svg { width: 18px; height: 18px; color: #fff; }
+  .header-close:active { background: rgba(255,255,255,0.25); }
+
+  .header-icon {
+    width: 48px; height: 48px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    backdrop-filter: blur(4px);
+  }
+  .header-icon svg { width: 26px; height: 26px; color: #fff; }
+
+  .card-header h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .card-header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.6;
+    position: relative;
+  }
+
+  /* ── Body ── */
+  .card-body { padding: 20px; }
+
+  .section-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--slate-700);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section-label .dot {
+    width: 6px; height: 6px;
+    background: var(--green-500);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Permission Items ── */
+  .perm-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .perm-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1.5px solid var(--slate-200);
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .perm-item:hover { border-color: var(--green-400); background: var(--green-50); }
+  .perm-item:active { transform: scale(0.985); }
+  .perm-item.checked {
+    border-color: var(--green-500);
+    background: var(--green-50);
+  }
+
+  /* Custom checkbox */
+  .check-box {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 2px solid var(--slate-300);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+  .check-box svg {
+    width: 14px; height: 14px;
+    color: #fff;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.2s ease;
+  }
+  .perm-item.checked .check-box {
+    background: var(--green-500);
+    border-color: var(--green-500);
+  }
+  .perm-item.checked .check-box svg {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .perm-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .perm-icon svg { width: 18px; height: 18px; }
+  .perm-icon.time   { background: #dbeafe; color: #3b82f6; }
+  .perm-icon.report { background: #dcfce7; color: #22c55e; }
+  .perm-icon.shield { background: #fff7ed; color: #f97316; }
+
+  .perm-text { flex: 1; min-width: 0; }
+  .perm-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--slate-800);
+    line-height: 1.4;
+    margin-bottom: 3px;
+  }
+  .perm-desc {
+    font-size: 12px;
+    color: var(--slate-500);
+    line-height: 1.5;
+  }
+
+  /* ── Tag ── */
+  .perm-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+  .perm-tag.blue   { background: #dbeafe; color: #2563eb; }
+  .perm-tag.green  { background: #dcfce7; color: #16a34a; }
+  .perm-tag.orange { background: #fff7ed; color: #ea580c; }
+
+  /* ── Footer ── */
+  .card-footer { padding: 4px 20px 20px; }
+
+  .btn-confirm {
+    width: 100%;
+    height: 48px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-confirm:hover { filter: brightness(1.05); box-shadow: 0 4px 14px rgba(22,163,74,0.3); }
+  .btn-confirm:active { transform: scale(0.98); }
+  .btn-confirm:disabled {
+    background: var(--slate-200);
+    color: var(--slate-400);
+    cursor: not-allowed;
+    box-shadow: none;
+    filter: none;
+  }
+  .btn-confirm svg { width: 18px; height: 18px; }
+
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--slate-400);
+    margin-top: 12px;
+    line-height: 1.5;
+  }
+  .footer-note svg {
+    width: 12px; height: 12px;
+    display: inline-block;
+    vertical-align: -2px;
+    margin-right: 2px;
+    color: var(--slate-400);
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 100;
+    text-align: center;
+    backdrop-filter: blur(8px);
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <!-- Header -->
+    <div class="card-header">
+      <button class="header-close" onclick="window.location.href='企微聊天页.html'" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="header-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <h1>开启1v1伴学服务</h1>
+      <p>授权后，专属督学老师可查看孩子学习数据，为您提供个性化伴学指导，助力孩子高效学习。</p>
+    </div>
+
+    <!-- Body -->
+    <div class="card-body">
+      <div class="section-label">
+        请选择您愿意开放的权益
+      </div>
+
+      <div class="perm-list">
+        <!-- Item 1 -->
+        <div class="perm-item" onclick="toggle(this)" role="checkbox" aria-checked="false" tabindex="0">
+          <div class="perm-icon time">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="perm-text">
+            <div class="perm-title">学习时长与应用使用情况</div>
+            <div class="perm-desc">老师可了解每日学习时长和常用应用，帮助制定合理学习计划</div>
+            <span class="perm-tag blue">科学规划学习节奏</span>
+          </div>
+          <div class="check-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="perm-item" onclick="toggle(this)" role="checkbox" aria-checked="false" tabindex="0">
+          <div class="perm-icon report">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <div class="perm-text">
+            <div class="perm-title">学科学习情况</div>
+            <div class="perm-desc">老师可以查看孩子的学习报告与知识薄弱点，方便进行有针对性的学习指导。</div>
+            <span class="perm-tag green">精准定位薄弱知识点</span>
+          </div>
+          <div class="check-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="perm-item" onclick="toggle(this)" role="checkbox" aria-checked="false" tabindex="0">
+          <div class="perm-icon shield">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="perm-text">
+            <div class="perm-title">辅助管控与风险预警</div>
+            <div class="perm-desc">老师会关注孩子使用设备的时长与习惯，如发现沉迷、过度使用，会及时提醒家长关注</div>
+            <span class="perm-tag orange">守护健康用机习惯</span>
+          </div>
+          <div class="check-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="card-footer">
+      <button class="btn-confirm" id="confirmBtn" disabled onclick="handleConfirm()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        确认授权
+      </button>
+      <div class="footer-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        以上授权完全自愿，您可随时在设置中修改
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    function toggle(el) {
+      el.classList.toggle('checked');
+      el.setAttribute('aria-checked', el.classList.contains('checked'));
+      updateBtn();
+    }
+
+    function updateBtn() {
+      const checked = document.querySelectorAll('.perm-item.checked').length;
+      const btn = document.getElementById('confirmBtn');
+
+      btn.disabled = checked === 0;
+      btn.innerHTML = checked > 0
+        ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>确认授权（已选 ${checked} 项）`
+        : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>确认授权`;
+    }
+
+    function handleConfirm() {
+      const items = document.querySelectorAll('.perm-item.checked');
+      if (items.length === 0) return;
+      showToast('授权成功，督学老师将为您提供专属服务');
+      setTimeout(() => {
+        window.location.href = '/Users/a1-6/CC_project/projects/%E5%AD%A6%E6%83%85/%E7%9D%A3%E5%AD%A6%E7%9C%8B%E6%9D%BF/output/customer-detail.html';
+      }, 1500);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    // Keyboard support
+    document.querySelectorAll('.perm-item').forEach(item => {
+      item.addEventListener('keydown', e => {
+        if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(item); }
+      });
+    });
+  </script>
+</body>
+</html>

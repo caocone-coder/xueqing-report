@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>督学看板</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="page-shell">
+    <header class="page-header">
+      <div id="page-title" class="page-title"></div>
+      <div id="page-subtitle" class="page-subtitle"></div>
+    </header>
+    <section class="preview-frame">
+      <div id="artboard" class="artboard"></div>
+    </section>
+    <nav id="page-links" class="page-links" aria-label="页面导航"></nav>
+  </main>
+  <script>
+    window.PAGE_CONFIG = {
+      id: "supervisor",
+      title: "督学看板页",
+      subtitle: "点击今日使用应用进入足迹详情，点击学习计划进入报告详情。",
+      designWidth: 414,
+      designHeight: 1517,
+      layers: [
+        { src: "./assets/supervisor-dashboard-top.png", alt: "督学看板顶栏", x: 0, y: 0, width: 414, height: 112 },
+        { src: "./assets/supervisor-dashboard-body.png", alt: "督学看板内容", x: 0, y: 112, width: 414, height: 1405 }
+      ],
+      hotspots: [
+        {
+          label: "查看今日使用应用足迹",
+          href: "./footprint-detail.html",
+          x: 12,
+          y: 473,
+          width: 390,
+          height: 446
+        },
+        {
+          label: "查看学习计划报告",
+          href: "./report-detail.html",
+          x: 12,
+          y: 930,
+          width: 390,
+          height: 303
+        }
+      ],
+      nav: [
+        { id: "customer", label: "客户详情", href: "./customer-detail.html" },
+        { id: "supervisor", label: "督学看板", href: "./supervisor-dashboard.html" },
+        { id: "footprint", label: "足迹详情", href: "./footprint-detail.html" },
+        { id: "report", label: "报告详情", href: "./report-detail.html" }
+      ]
+    };
+  </script>
+  <script src="./app.js"></script>
+</body>
+</html>

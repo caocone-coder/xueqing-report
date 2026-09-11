@@ -1,0 +1,18 @@
+{
+  "fileKey": "woetItQ1KMfNGFziYpzxTA",
+  "nodeId": "23:805",
+  "slug": "supervisor-dashboard-top",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "<frame id=\"23:805\" name=\"Container\" x=\"513\" y=\"0\" width=\"414\" height=\"111.5\">\n  <frame id=\"23:806\" name=\"Container\" x=\"16\" y=\"16\" width=\"382\" height=\"40.5\">\n    <frame id=\"23:807\" name=\"Container\" x=\"0\" y=\"0\" width=\"85\" height=\"40.5\">\n      <frame id=\"23:808\" name=\"Container\" x=\"0\" y=\"0\" width=\"85\" height=\"24\">\n        <text id=\"23:809\" name=\"张小明妈妈\" x=\"0\" y=\"0\" width=\"85\" height=\"21\" />\n      </frame>\n      <frame id=\"23:810\" name=\"Container\" x=\"0\" y=\"24\" width=\"85\" height=\"16.5\">\n        <text id=\"23:811\" name=\"督学看板\" x=\"0\" y=\"0\" width=\"85\" height=\"17\" />\n      </frame>\n    </frame>\n  </frame>\n  <frame id=\"23:812\" name=\"Container\" x=\"16\" y=\"68.5\" width=\"382\" height=\"42\">\n    <frame id=\"23:813\" name=\"Container\" x=\"0\" y=\"0\" width=\"120.6640625\" height=\"42\">\n      <text id=\"23:814\" name=\"张小美 二年级\" x=\"16\" y=\"10\" width=\"89\" height=\"20\" />\n    </frame>\n    <text id=\"23:815\" name=\"张小明 五年级\" x=\"146\" y=\"8.5\" width=\"89\" height=\"20\" />\n    <rounded-rectangle id=\"23:816\" name=\"Rectangle 34626311\" x=\"143\" y=\"40.5\" width=\"96\" height=\"2\" />\n  </frame>\n  <frame id=\"23:817\" name=\"Text\" x=\"154\" y=\"20\" width=\"70.953125\" height=\"29\">\n    <text id=\"23:818\" name=\"新购机用户\" x=\"6\" y=\"6\" width=\"60\" height=\"17\" />\n  </frame>\n  <frame id=\"23:819\" name=\"Text\" x=\"230\" y=\"20\" width=\"84\" height=\"29\">\n    <text id=\"23:820\" name=\"学情深度关注\" x=\"6\" y=\"6\" width=\"72\" height=\"17\" />\n  </frame>\n  <frame id=\"23:821\" name=\"Text\" x=\"319\" y=\"20\" width=\"84\" height=\"29\">\n    <text id=\"23:822\" name=\"小程序高活跃\" x=\"6\" y=\"6\" width=\"72\" height=\"17\" />\n  </frame>\n</frame>"
+      },
+      {
+        "type": "text",
+        "text": "IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design."
+      }
+    ],
+    "structured_content": null
+  }
+}

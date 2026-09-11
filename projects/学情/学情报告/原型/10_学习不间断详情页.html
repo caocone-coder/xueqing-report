@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>学习不间断详情页</title>
+  <link rel="stylesheet" href="mobile-detail-v2.css">
+  <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
+  <style>
+    .metric-grid {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      grid-auto-flow: row !important;
+      gap: 10px !important;
+      margin-bottom: 16px !important;
+      width: 100% !important;
+    }
+    .metric-card {
+      box-sizing: border-box !important;
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+    }
+    .streak-calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .calendar-day {
+      aspect-ratio: 1;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      background: var(--n100);
+      color: var(--n500);
+    }
+    .calendar-day.active {
+      background: linear-gradient(135deg, #7dd8ff 0%, #38afff 100%);
+      color: white;
+      font-weight: 600;
+    }
+    .calendar-day.today {
+      border: 2px solid var(--blue);
+    }
+    .calendar-label {
+      font-size: 10px;
+      color: var(--n500);
+      margin-bottom: 2px;
+    }
+    .calendar-num {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .streak-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #fff4e6 0%, #ffe7ba 100%);
+      border: 1px solid rgba(240, 165, 0, 0.2);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gold);
+      margin-top: 12px;
+    }
+    .streak-icon {
+      font-size: 16px;
+    }
+
+    /* 柱状图样式 */
+    .chart-container {
+      margin-top: 16px;
+      padding: 16px 0;
+    }
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 160px;
+      gap: 4px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    .chart-y-axis {
+      position: absolute;
+      left: -8px;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--n500);
+    }
+    .chart-bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .chart-bar-wrapper {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 140px;
+    }
+    .chart-bar {
+      width: 100%;
+      border-radius: 4px 4px 0 0;
+      transition: all 0.3s ease;
+    }
+    .chart-bar.primary {
+      background: linear-gradient(180deg, #7dd8ff 0%, #38afff 100%);
+    }
+    .chart-bar.secondary {
+      background: linear-gradient(180deg, #95de64 0%, #52c41a 100%);
+      margin-top: 2px;
+    }
+    .chart-date {
+      font-size: 11px;
+      color: var(--n700);
+      margin-top: 6px;
+      white-space: nowrap;
+    }
+    .chart-date.today {
+      font-weight: 600;
+      color: var(--blue);
+    }
+
+    /* 今日统计 */
+    .today-stats {
+      margin-top: 20px;
+      padding: 16px;
+      background: linear-gradient(135deg, #f6ffed 0%, #ffffff 100%);
+      border: 1px solid rgba(82, 196, 26, 0.18);
+      border-radius: 12px;
+    }
+    .today-total {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .today-total-num {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--n900);
+      line-height: 1;
+    }
+    .today-total-unit {
+      font-size: 16px;
+      color: var(--n700);
+    }
+    .today-compare {
+      font-size: 12px;
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+    }
+    .today-breakdown {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+    }
+    .breakdown-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .breakdown-label {
+      font-size: 11px;
+      color: var(--n500);
+    }
+    .breakdown-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--n900);
+    }
+    .breakdown-value span {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--n700);
+    }
+
+    /* 今日使用情况 */
+    .usage-list {
+      margin-top: 16px;
+    }
+    .usage-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--n100);
+    }
+    .usage-item:last-child {
+      border-bottom: none;
+    }
+    .usage-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: linear-gradient(135deg, #e8f5ff 0%, #d9efff 100%);
+    }
+    .usage-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .usage-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--n900);
+      margin-bottom: 6px;
+    }
+    .usage-bar {
+      height: 4px;
+      background: var(--n100);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+    .usage-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #7dd8ff 0%, #38afff 100%);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    .usage-time {
+      font-size: 11px;
+      color: var(--n500);
+    }
+    .usage-arrow {
+      font-size: 18px;
+      color: var(--n200);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <main class="phone">
+    <header class="page-head">
+      <nav class="nav"><button class="nav-btn">‹</button><div class="nav-title">学习成果详情</div><button class="nav-btn">···</button></nav>
+      <section class="hero">
+        <div class="hero-kicker">周报 05.04-05.10</div>
+        <h1 class="hero-title">学习不间断</h1>
+        <p class="hero-desc">本周学习了 <strong>6 天</strong>，持续的投入会带来扎实的进步。已经连续学习 <strong>12 天</strong>，继续保持！</p>
+      </section>
+      <div>
+        <div class="metric-grid">
+          <div class="metric-card"><div class="metric-label">本周学习天数</div><div class="metric-value"><span class="metric-num">6</span><span class="metric-unit">天</span></div><div class="metric-change positive">坚持得很好</div></div>
+          <div class="metric-card"><div class="metric-label">连续学习天数</div><div class="metric-value"><span class="metric-num">12</span><span class="metric-unit">天</span></div><div class="metric-change positive">创新高</div></div>
+          <div class="metric-card"><div class="metric-label">本周学习时长</div><div class="metric-value"><span class="metric-num">8.5</span><span class="metric-unit">小时</span></div><div class="metric-change positive">较上周 +1.2小时</div></div>
+          <div class="metric-card"><div class="metric-label">完成任务数</div><div class="metric-value"><span class="metric-num">42</span><span class="metric-unit">个</span></div><div class="metric-change positive">效率提升</div></div>
+        </div>
+        <div class="insight">本周学习 <strong>6 天</strong>，已经连续学习 <strong>12 天</strong>。持续的投入正在带来扎实的进步，继续保持这个节奏！</div>
+      </div>
+    </header>
+
+    <section class="content">
+      <article class="card">
+        <div class="section-head"><div><div class="section-title">本周学习日历</div><div class="section-sub">每一天的坚持都值得记录</div></div><span class="tag blue">本周 6/7 天</span></div>
+        <div class="streak-calendar">
+          <div class="calendar-day active">
+            <div class="calendar-label">周一</div>
+            <div class="calendar-num">5</div>
+          </div>
+          <div class="calendar-day active">
+            <div class="calendar-label">周二</div>
+            <div class="calendar-num">6</div>
+          </div>
+          <div class="calendar-day active">
+            <div class="calendar-label">周三</div>
+            <div class="calendar-num">7</div>
+          </div>
+          <div class="calendar-day active">
+            <div class="calendar-label">周四</div>
+            <div class="calendar-num">8</div>
+          </div>
+          <div class="calendar-day">
+            <div class="calendar-label">周五</div>
+            <div class="calendar-num">9</div>
+          </div>
+          <div class="calendar-day active">
+            <div class="calendar-label">周六</div>
+            <div class="calendar-num">10</div>
+          </div>
+          <div class="calendar-day active today">
+            <div class="calendar-label">周日</div>
+            <div class="calendar-num">11</div>
+          </div>
+        </div>
+        <div class="streak-badge">
+          <span class="streak-icon">🔥</span>
+          <span>已连续学习 12 天</span>
+        </div>
+        <div class="insight" style="margin-top:12px;">本周只有周五休息了一天，其他 6 天都有学习记录。<strong>连续 12 天的坚持</strong>已经形成了很好的学习习惯。</div>
+      </article>
+
+      <article class="card">
+        <div class="section-head"><div><div class="section-title">每日学习时长</div><div class="section-sub">时间投入带来扎实进步</div></div></div>
+
+        <div class="chart-container">
+          <div class="chart-bars">
+            <div class="chart-bar-group">
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar primary" style="height: 45%;"></div>
+                <div class="chart-bar secondary" style="height: 30%;"></div>
+              </div>
+              <div class="chart-date">5.05</div>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar primary" style="height: 25%;"></div>
+                <div class="chart-bar secondary" style="height: 15%;"></div>
+              </div>
+              <div class="chart-date">5.06</div>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar primary" style="height: 60%;"></div>
+                <div class="chart-bar secondary" style="height: 25%;"></div>
+              </div>
+              <div class="chart-date">5.07</div>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar primary" style="height: 35%;"></div>
+                <div class="chart-bar secondary" style="height: 50%;"></div>
+              </div>
+              <div class="chart-date">5.08</div>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar primary" style="height: 0%;"></div>
+                <div class="chart-bar secondary" style="height: 0%;"></div>
+              </div>
+              <div class="chart-date">5.09</div>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar primary" style="height: 75%;"></div>
+                <div class="chart-bar secondary" style="height: 45%;"></div>
+              </div>
+              <div class="chart-date">5.10</div>
+            </div>
+            <div class="chart-bar-group">
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar primary" style="height: 55%;"></div>
+                <div class="chart-bar secondary" style="height: 30%;"></div>
+              </div>
+              <div class="chart-date today">5.11</div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 16px; justify-content: center; font-size: 11px; margin-top: 12px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <div style="width: 12px; height: 12px; border-radius: 2px; background: linear-gradient(135deg, #7dd8ff 0%, #38afff 100%);"></div>
+              <span style="color: var(--n700);">课程学习</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <div style="width: 12px; height: 12px; border-radius: 2px; background: linear-gradient(135deg, #95de64 0%, #52c41a 100%);"></div>
+              <span style="color: var(--n700);">自主练习</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="today-stats">
+          <div style="font-size: 12px; color: var(--n500); margin-bottom: 8px;">今日已学习</div>
+          <div class="today-total">
+            <span class="today-total-num">1</span>
+            <span class="today-total-unit">小时</span>
+            <span class="today-total-num">42</span>
+            <span class="today-total-unit">分钟</span>
+          </div>
+          <div class="today-compare">
+            <span>↑</span>
+            <span>相比昨天多学 18 分钟</span>
+          </div>
+
+          <div class="today-breakdown">
+            <div class="breakdown-item">
+              <div class="breakdown-label">课程学习</div>
+              <div class="breakdown-value">58<span> 分钟</span></div>
+            </div>
+            <div class="breakdown-item">
+              <div class="breakdown-label">自主练习</div>
+              <div class="breakdown-value">44<span> 分钟</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="section-head"><div><div class="section-title">今日学习情况</div><div class="section-sub">各科目时长分布</div></div></div>
+
+        <div class="usage-list">
+          <div class="usage-item">
+            <div class="usage-icon">📚</div>
+            <div class="usage-info">
+              <div class="usage-name">语文课文背诵</div>
+              <div class="usage-bar"><div class="usage-bar-fill" style="width: 75%;"></div></div>
+              <div class="usage-time">32 分钟</div>
+            </div>
+            <div class="usage-arrow">›</div>
+          </div>
+
+          <div class="usage-item">
+            <div class="usage-icon" style="background: linear-gradient(135deg, #fff4e6 0%, #ffe7ba 100%);">🔢</div>
+            <div class="usage-info">
+              <div class="usage-name">数学练习</div>
+              <div class="usage-bar"><div class="usage-bar-fill" style="width: 60%;"></div></div>
+              <div class="usage-time">26 分钟</div>
+            </div>
+            <div class="usage-arrow">›</div>
+          </div>
+
+          <div class="usage-item">
+            <div class="usage-icon" style="background: linear-gradient(135deg, #f6ffed 0%, #d9f7be 100%);">🌍</div>
+            <div class="usage-info">
+              <div class="usage-name">英语分级阅读</div>
+              <div class="usage-bar"><div class="usage-bar-fill" style="width: 50%;"></div></div>
+              <div class="usage-time">22 分钟</div>
+            </div>
+            <div class="usage-arrow">›</div>
+          </div>
+
+          <div class="usage-item">
+            <div class="usage-icon" style="background: linear-gradient(135deg, #fff0f6 0%, #ffd6e7 100%);">✍️</div>
+            <div class="usage-info">
+              <div class="usage-name">字词背诵</div>
+              <div class="usage-bar"><div class="usage-bar-fill" style="width: 40%;"></div></div>
+              <div class="usage-time">18 分钟</div>
+            </div>
+            <div class="usage-arrow">›</div>
+          </div>
+        </div>
+
+        <div style="text-align: center; padding: 12px 0; color: var(--n500); font-size: 12px; cursor: pointer;">
+          查看全部 ›
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="section-head"><div><div class="section-title">学习习惯分析</div><div class="section-sub">持续投入带来的改变</div></div><span class="tag green">习惯养成中</span></div>
+        <div class="change-list">
+          <div class="change-item"><span class="change-dot"></span><div class="change-text">已经连续学习 <strong>12 天</strong>，这是一个很好的开始。研究表明，21 天可以初步养成习惯。</div></div>
+          <div class="change-item"><span class="change-dot"></span><div class="change-text">本周学习 <strong>6 天</strong>，只有周五休息。这种规律性说明学习已经融入日常生活。</div></div>
+          <div class="change-item"><span class="change-dot"></span><div class="change-text">每天平均学习 <strong>1.4 小时</strong>，时间投入比较稳定，没有大起大落。</div></div>
+          <div class="change-item"><span class="change-dot"></span><div class="change-text">建议继续保持这个节奏，<strong>稳定比冲刺更重要</strong>。偶尔休息一天也没关系，关键是整体的持续性。</div></div>
+        </div>
+      </article>
+    </section>
+
+    <div class="footer-safe"><div class="home-bar"></div></div>
+  </main>
+</body>
+</html>

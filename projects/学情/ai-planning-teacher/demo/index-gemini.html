@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI 规划老师 - 家长端</title>
+    <style>
+        :root {
+            --primary: #4A90E2;
+            --primary-dark: #357ABD;
+            --bg-color: #F4F6F9;
+            --card-bg: #FFFFFF;
+            --text-main: #333333;
+            --text-secondary: #666666;
+            --text-light: #999999;
+            --border-color: #E5E9F2;
+            --danger: #FF6B6B;
+            --warning-bg: #FFF9E6;
+            --warning-text: #D48806;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            display: flex;
+            justify-content: center;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            position: relative;
+            overflow-x: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            padding-bottom: 80px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 顶部导航 */
+        .navbar {
+            background: #fff;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .navbar .back-btn {
+            position: absolute;
+            left: 16px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 16px;
+            padding: 8px;
+            margin-left: -8px;
+        }
+
+        .navbar h1 {
+            font-size: 17px;
+            font-weight: 500;
+        }
+
+        /* 通用布局与组件 */
+        .container {
+            padding: 16px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        .btn:active {
+            opacity: 0.8;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: #fff;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            margin-top: 12px;
+        }
+
+        .btn-ghost {
+            background-color: transparent;
+            color: var(--primary);
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        /* 通知流 */
+        .notification-item {
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            background: #fff;
+            margin-bottom: 8px;
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .notif-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .notif-time {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .notif-body {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal {
+            background: #fff;
+            width: 80%;
+            max-width: 320px;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .modal-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .code-display {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            color: var(--primary);
+            background: var(--bg-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafafa;
+        }
+        textarea.form-control {
+            resize: none;
+            height: 80px;
+        }
+        
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .tag {
+            padding: 6px 12px;
+            background: var(--bg-color);
+            border-radius: 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        .tag.selected {
+            background: #E6F0FA;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* 草案审核样式 */
+        .summary-box {
+            background: #E6F0FA;
+            padding: 12px;
+            border-radius: 8px;
+            color: var(--primary-dark);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .timeline {
+            border-left: 2px solid var(--border-color);
+            margin-left: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+        .timeline-item {
+            margin-bottom: 16px;
+            position: relative;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 4px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+        .timeline-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .timeline-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* 同步页样式 */
+        .warning-banner {
+            background: var(--warning-bg);
+            color: var(--warning-text);
+            padding: 10px 16px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            margin: 12px 0;
+        }
+        .progress-segment {
+            height: 100%;
+        }
+        
+        .calendar-strip {
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            padding: 4px 0;
+            scrollbar-width: none;
+        }
+        .calendar-strip::-webkit-scrollbar {
+            display: none;
+        }
+        .day-card {
+            min-width: 60px;
+            padding: 10px 0;
+            text-align: center;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+        }
+        .day-card.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .day-card.active .day-date { color: rgba(255,255,255,0.8); }
+        .day-name { font-size: 14px; font-weight: 500; }
+        .day-date { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+
+    <!-- ==================== 页面 1: 消息与通知中心 ==================== -->
+    <div id="page-notification" class="page active">
+        <div class="navbar">
+            <h1>消息通知</h1>
+        </div>
+        <div class="notification-list">
+            <div class="notification-item" onclick="navTo('page-invite')">
+                <div class="notif-header">
+                    <span class="notif-title">学习规划邀请</span>
+                    <span class="notif-time">刚刚</span>
+                </div>
+                <div class="notif-body">
+                    天天发起了学习规划，正在等您参与确认。
+                </div>
+            </div>
+            
+            <div class="notification-item" onclick="navToResult(true)">
+                <div class="notif-header">
+                    <span class="notif-title">自动生成规划通知</span>
+                    <span class="notif-time">昨天</span>
+                </div>
+                <div class="notif-body">
+                    由于一直未回复，孩子已自行完成规划，点击查看详情。
+                </div>
+            </div>
+            
+            <div class="notification-item" onclick="navToResult(false)">
+                <div class="notif-header">
+                    <span class="notif-title">规划生效通知</span>
+                    <span class="notif-time">3天前</span>
+                </div>
+                <div class="notif-body">
+                    您的确认已通过，学习规划已生成，点击查看详情。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 页面 2: 规划邀请响应页 ==================== -->
+    <div id="page-invite" class="page">
+        <!-- 通栏头部 -->
+        <div style="background: linear-gradient(135deg, #4A90E2, #357ABD); color: white; padding: 40px 20px 30px; position: relative;">
+            <a href="javascript:navTo('page-notification')" style="position: absolute; top: 16px; left: 16px; color: white; text-decoration: none; font-size: 16px; display: flex; align-items: center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M15 18l-6-6 6-6"/></svg>
+                返回
+            </a>
+            <div style="width: 64px; height: 64px; background: rgba(255,255,255,0.2); border-radius: 50%; margin: 20px auto 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; backdrop-filter: blur(4px);">
+                AI
+            </div>
+            <h2 style="font-size: 22px; text-align: center; margin-bottom: 8px; font-weight: 600; line-height: 1.4;">小宝邀请你一起规划这段时间的学习</h2>
+        </div>
+        
+        <div class="container" style="margin-top: -24px; position: relative; z-index: 2;">
+            <div class="card" style="padding: 24px 20px;">
+                <h3 style="font-size: 16px; margin-bottom: 20px; color: var(--text-main); text-align: center; font-weight: 500;">接下来会发生什么？</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 20px; margin-bottom: 32px;">
+                    <div style="display: flex; align-items: flex-start;">
+                        <div style="width: 24px; height: 24px; background: #E6F0FA; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-right: 12px; flex-shrink: 0;">1</div>
+                        <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; padding-top: 2px;">获取下方确认码，请在学习机上输入确认码。</div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start;">
+                        <div style="width: 24px; height: 24px; background: #E6F0FA; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-right: 12px; flex-shrink: 0;">2</div>
+                        <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; padding-top: 2px;">输完就可以和孩子一起在学习机上规划了。</div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start;">
+                        <div style="width: 24px; height: 24px; background: #E6F0FA; color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-right: 12px; flex-shrink: 0;">3</div>
+                        <div style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; padding-top: 2px;">这里会同步最终的结果。</div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="showModal('codeModal')" style="margin-bottom: 12px;">获取确认码，参与规划</button>
+                <button class="btn btn-ghost" onclick="navTo('page-remote')">我不在孩子身边，远程协助</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 页面 3: 远程约束条件输入页 ==================== -->
+    <div id="page-remote" class="page">
+        <div class="navbar">
+            <a href="javascript:navTo('page-invite')" class="back-btn">返回</a>
+            <h1>远程指导建议</h1>
+        </div>
+        <div class="container">
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px;">
+                请提供您的要求，AI 老师将结合您的建议为孩子定制专属计划。
+            </p>
+            
+            <div class="card">
+                <div class="form-group">
+                    <label class="form-label">最晚学习结束时间</label>
+                    <input type="time" class="form-control" value="21:30">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">中途休息要求</label>
+                    <select class="form-control">
+                        <option>每 40 分钟休息 10 分钟</option>
+                        <option>每 30 分钟休息 5 分钟</option>
+                        <option>连续完成任务后休息</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">本阶段是否参与其他补习班？</label>
+                    <select class="form-control">
+                        <option>无补习班，全天可规划</option>
+                        <option>周末有补习班</option>
+                        <option>工作日晚上有补习班</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">希望本次规划的侧重点 (选填)</label>
+                    <div class="tag-group" id="tags">
+                        <div class="tag" onclick="this.classList.toggle('selected')">注重基础巩固</div>
+                        <div class="tag" onclick="this.classList.toggle('selected')">强化易错题</div>
+                        <div class="tag" onclick="this.classList.toggle('selected')">适当培优拓展</div>
+                        <div class="tag" onclick="this.classList.toggle('selected')">提高书写质量</div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">其他想对孩子/AI老师说的话</label>
+                    <textarea class="form-control" placeholder="例如：希望每天留出半小时阅读时间..."></textarea>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="submitRemote()">提交建议，让孩子扫卷</button>
+        </div>
+    </div>
+
+    <!-- ==================== 页面 4: 规划草案审核与确认页 ==================== -->
+    <div id="page-review" class="page">
+        <div class="navbar">
+            <a href="javascript:navTo('page-notification')" class="back-btn">关闭</a>
+            <h1>计划草案确认</h1>
+        </div>
+        <div class="container">
+            <div class="summary-box">
+                <strong>AI 学情分析总结：</strong><br>
+                近期错题集中在“函数”与“几何”，整体正确率 82%。建议在复习阶段重点突破综合应用题。
+            </div>
+            
+            <div class="card">
+                <h3 style="font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                    本次规划概览
+                    <span style="font-size: 12px; font-weight: normal; color: var(--text-light);">天天的档案 | 人教版 | 北京</span>
+                </h3>
+                
+                <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; background: #fafafa; padding: 12px; border-radius: 8px;">
+                    <strong>AI 老师笔记：</strong><br>
+                    天天想在寒假通过30天的努力，提前预习下册重点内容。图形和综合应用题是核心突破口，同时安排了适度培优拓展，保持良好状态！
+                </div>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-title">第一阶段：基础巩固 (第1-10天)</div>
+                        <div class="timeline-desc">每日核心：复习本学期错题，梳理知识网络。预计每日用时 1.5 小时。</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-title">第二阶段：专项突破 (第11-20天)</div>
+                        <div class="timeline-desc">每日核心：函数与几何综合题专练。预计每日用时 2 小时。</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-title">第三阶段：预习与培优 (第21-30天)</div>
+                        <div class="timeline-desc">每日核心：下册第一二章预习及适度拓展。预计每日用时 1.5 小时。</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-outline" style="flex: 1; margin-top: 0;" onclick="alert('已将修改请求发送至学习机，请孩子重新调整。')">要求修改</button>
+                <button class="btn btn-primary" style="flex: 2;" onclick="confirmPlan()">同意并生效计划</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 页面 5: 规划方案同步页 ==================== -->
+    <div id="page-result" class="page">
+        <div class="navbar">
+            <a href="javascript:navTo('page-notification')" class="back-btn">返回</a>
+            <h1>学习进度与规划</h1>
+        </div>
+        
+        <div id="self-plan-banner" class="warning-banner" style="display: none;">
+            <span>提示：本次规划因长时间未收到您的回复，已由孩子独立完成。请您了解当前计划。</span>
+        </div>
+
+        <div class="container">
+            <!-- 日历打卡区域 -->
+            <div class="calendar-strip" style="margin-bottom: 24px;">
+                <div class="day-card">
+                    <div class="day-name">周一</div>
+                    <div class="day-date">10/12</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">周二</div>
+                    <div class="day-date">10/13</div>
+                </div>
+                <div class="day-card active">
+                    <div class="day-name">今天</div>
+                    <div class="day-date">10/14</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">周四</div>
+                    <div class="day-date">10/15</div>
+                </div>
+                <div class="day-card">
+                    <div class="day-name">周五</div>
+                    <div class="day-date">10/16</div>
+                </div>
+            </div>
+
+            <!-- 模块占比 -->
+            <div class="card">
+                <h3 style="font-size: 16px; margin-bottom: 8px;">整体模块占比</h3>
+                <div class="progress-bar">
+                    <div class="progress-segment" style="width: 40%; background: #4A90E2;" title="复习"></div>
+                    <div class="progress-segment" style="width: 40%; background: #50E3C2;" title="预习"></div>
+                    <div class="progress-segment" style="width: 20%; background: #F5A623;" title="培优"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary);">
+                    <span><span style="color: #4A90E2;">●</span> 查漏补缺 40%</span>
+                    <span><span style="color: #50E3C2;">●</span> 新课预习 40%</span>
+                    <span><span style="color: #F5A623;">●</span> 培优拓展 20%</span>
+                </div>
+            </div>
+
+            <!-- 今日任务 -->
+            <h3 style="font-size: 16px; margin: 24px 0 12px; padding: 0 4px;">今日任务单</h3>
+            
+            <div class="card" style="padding: 12px 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 15px; font-weight: 500;">函数基础概念复习</span>
+                    <span style="font-size: 12px; color: #52C41A; background: #F6FFED; padding: 2px 8px; border-radius: 4px; border: 1px solid #B7EB8F;">已完成</span>
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary);">预计用时：30分钟</div>
+            </div>
+            
+            <div class="card" style="padding: 12px 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 15px; font-weight: 500;">错题重练 (精选5题)</span>
+                    <span style="font-size: 12px; color: var(--primary); background: #E6F0FA; padding: 2px 8px; border-radius: 4px; border: 1px solid #BAE7FF;">进行中</span>
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary);">预计用时：40分钟</div>
+            </div>
+            
+            <div class="card" style="padding: 12px 16px; opacity: 0.7;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 15px; font-weight: 500;">几何拓展挑战</span>
+                    <span style="font-size: 12px; color: var(--text-light); background: #f0f0f0; padding: 2px 8px; border-radius: 4px;">待开始</span>
+                </div>
+                <div style="font-size: 13px; color: var(--text-secondary);">预计用时：20分钟</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 模态框组件 ==================== -->
+    <div class="modal-overlay" id="codeModal">
+        <div class="modal">
+            <div class="modal-title">您的确认码</div>
+            <div class="modal-desc">请在学习机上输入此验证码，确认您就在孩子身边。</div>
+            <div class="code-display" id="randomCode">8462</div>
+            <button class="btn btn-primary" onclick="hideModal('codeModal'); navTo('page-notification'); alert('已在学习机端确认成功，等待扫描试卷出结果。')">我已在学习机上输入</button>
+            <button class="btn btn-ghost" onclick="hideModal('codeModal')">稍后再说</button>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="loadingModal">
+        <div class="modal">
+            <div class="modal-title">正在等待孩子操作</div>
+            <div class="modal-desc" style="margin-bottom: 0;">您的要求已发送。请等待孩子在学习机上扫描试卷，系统分析完成后将给您推送草案...</div>
+            <div style="margin-top: 20px; color: var(--primary);">Loading...</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // 页面导航逻辑
+    function navTo(pageId) {
+        document.querySelectorAll('.page').forEach(function(el) {
+            el.classList.remove('active');
+        });
+        document.getElementById(pageId).classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    // 弹窗控制
+    function showModal(modalId) {
+        if(modalId === 'codeModal') {
+            document.getElementById('randomCode').innerText = Math.floor(1000 + Math.random() * 9000);
+        }
+        document.getElementById(modalId).classList.add('active');
+    }
+    
+    function hideModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    // 提交远程要求 -> 模拟等待后进入审核页
+    function submitRemote() {
+        showModal('loadingModal');
+        // 模拟等待 2 秒
+        setTimeout(function() {
+            hideModal('loadingModal');
+            navTo('page-review');
+        }, 2000);
+    }
+    
+    // 确认草案 -> 跳转结果页
+    function confirmPlan() {
+        navToResult(false);
+    }
+    
+    // 进入同步结果页 (带兜底标识控制)
+    function navToResult(isSelfPlanned) {
+        navTo('page-result');
+        var banner = document.getElementById('self-plan-banner');
+        if (isSelfPlanned) {
+            banner.style.display = 'flex';
+        } else {
+            banner.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>

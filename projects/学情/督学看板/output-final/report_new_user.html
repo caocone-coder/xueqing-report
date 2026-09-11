@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>新手期报告 - 破冰与习惯养成</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+    background: #f7f9fc;
+    color: #333;
+    line-height: 1.5;
+    padding-bottom: 30px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app-container {
+    max-width: 414px;
+    margin: 0 auto;
+    background: #f7f9fc;
+    min-height: 100vh;
+  }
+  
+  /* --- 头部（温暖/鼓励基调） --- */
+  .header {
+    background: linear-gradient(135deg, #FF9A44, #FF6A00);
+    padding: 40px 20px 60px;
+    color: white;
+    border-radius: 0 0 30px 30px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+  }
+  .greeting { font-size: 16px; opacity: 0.9; margin-bottom: 8px; }
+  .title { font-size: 26px; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
+  .subtitle { font-size: 14px; opacity: 0.85; display: flex; align-items: center; gap: 6px; }
+  
+  /* --- 核心卡片区 --- */
+  .content {
+    padding: 0 16px;
+    margin-top: -40px;
+    position: relative;
+    z-index: 10;
+  }
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::before {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 16px;
+    background: #FF6A00;
+    border-radius: 2px;
+  }
+  
+  /* --- 习惯养成（大字号时长与坚持天数） --- */
+  .habit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .habit-item {
+    background: #fff5eb;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid #ffe8d6;
+  }
+  .habit-val { font-size: 28px; font-weight: 700; color: #FF6A00; margin-bottom: 4px; }
+  .habit-val span { font-size: 14px; font-weight: 400; }
+  .habit-label { font-size: 13px; color: #666; }
+  .praise-text {
+    margin-top: 16px;
+    font-size: 14px;
+    color: #4a4a4a;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    line-height: 1.6;
+  }
+  .praise-text strong { color: #FF6A00; }
+
+  /* --- 探索地图（模块发现） --- */
+  .explore-list { display: flex; flex-direction: column; gap: 12px; }
+  .explore-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .explore-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .explore-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: #eef2ff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .explore-info { flex: 1; }
+  .explore-name { font-size: 15px; font-weight: 500; color: #333; margin-bottom: 4px; }
+  .explore-desc { font-size: 12px; color: #888; }
+  .explore-tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    background: #eef2ff;
+    color: #4B7BF5;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+
+  /* --- 安全护航（让家长放心） --- */
+  .safe-stats {
+    display: flex;
+    justify-content: space-around;
+    padding: 16px 0 8px;
+  }
+  .safe-item { text-align: center; }
+  .safe-icon { margin-bottom: 8px; font-size: 24px; }
+  .safe-val { font-size: 18px; font-weight: 600; color: #2ecc71; margin-bottom: 2px; }
+  .safe-label { font-size: 12px; color: #999; }
+  
+  /* --- 底部行动号召 --- */
+  .action-btn {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, #FF9A44, #FF6A00);
+    color: white;
+    text-align: center;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 24px;
+    box-shadow: 0 8px 20px rgba(255, 106, 0, 0.25);
+    border: none;
+  }
+</style>
+</head>
+<body>
+<div class="app-container">
+  
+  <!-- Header -->
+  <div class="header">
+    <div class="greeting">小明妈妈，您好！</div>
+    <div class="title">这是小明使用学习机的<br>第 7 天里程碑 🎉</div>
+    <div class="subtitle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      伴学记录周期：10.01 - 10.07
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    
+    <!-- 习惯养成卡片 -->
+    <div class="card">
+      <div class="card-title">超棒的开局习惯</div>
+      <div class="habit-grid">
+        <div class="habit-item">
+          <div class="habit-val">5<span>天</span></div>
+          <div class="habit-label">坚持打卡学习</div>
+        </div>
+        <div class="habit-item">
+          <div class="habit-val">3.5<span>小时</span></div>
+          <div class="habit-label">累计专注时长</div>
+        </div>
+      </div>
+      <div class="praise-text">
+        小明在第一周就展现出了很好的自律性，<strong>坚持学习的天数超过了 85% 的新同学</strong>。万事开头难，请一定要给孩子一个大大的拥抱！
+      </div>
+    </div>
+
+    <!-- 探索地图卡片 -->
+    <div class="card">
+      <div class="card-title">小明的探索偏好</div>
+      <p style="font-size: 13px; color: #666; margin-bottom: 16px;">这周孩子主动尝试了以下新模块，看得出他对这些内容很感兴趣哦：</p>
+      <div class="explore-list">
+        <div class="explore-item">
+          <div class="explore-icon" style="background:#eef8ff; color:#0ea5e9;">📖</div>
+          <div class="explore-info">
+            <div class="explore-name">瑞恩熊AI英语</div>
+            <div class="explore-desc">共阅读 4 篇绘本，学习兴趣浓厚</div>
+          </div>
+          <div class="explore-tag">最爱模块</div>
+        </div>
+        <div class="explore-item">
+          <div class="explore-icon" style="background:#fef2f2; color:#ef4444;">🔢</div>
+          <div class="explore-info">
+            <div class="explore-name">数学同步天天练</div>
+            <div class="explore-desc">完成了 3 次口算挑战</div>
+          </div>
+          <div class="explore-tag">新发现</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 绿网守护卡片 -->
+    <div class="card">
+      <div class="card-title">安全与护眼守护</div>
+      <div class="safe-stats">
+        <div class="safe-item">
+          <div class="safe-icon">🛡️</div>
+          <div class="safe-val">0 <span>次</span></div>
+          <div class="safe-label">游戏/娱乐下载</div>
+        </div>
+        <div class="safe-item">
+          <div class="safe-icon">👁️</div>
+          <div class="safe-val">100<span>%</span></div>
+          <div class="safe-label">护眼模式覆盖率</div>
+        </div>
+        <div class="safe-item">
+          <div class="safe-icon">🌙</div>
+          <div class="safe-val">0 <span>次</span></div>
+          <div class="safe-label">深夜熬夜使用</div>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: #888; text-align: center; margin-top: 12px; background: #f8f9fa; padding: 8px; border-radius: 6px;">
+        设备使用全程纯净，无任何不良内容干扰，请您放心。
+      </p>
+    </div>
+
+    <!-- 导购落地动作 -->
+    <button class="action-btn" onclick="alert('已发送到企微')">
+      发送本周专属《学习规划建议》
+    </button>
+    <p style="text-align: center; font-size: 12px; color: #999; margin-top: 16px;">
+      * 建议邀约家长携设备进店，为您提供 1V1 规划解读
+    </p>
+
+  </div>
+</div>
+</body>
+</html>

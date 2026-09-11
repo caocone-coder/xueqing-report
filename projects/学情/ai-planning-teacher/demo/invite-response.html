@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"/>
+<title>一起规划 · AI 规划老师</title>
+<style>
+:root{
+  --c-warm:#FF8A3D; --c-warm-dark:#E8701E; --c-warm-soft:#FFF1E6;
+  --g-warm:linear-gradient(135deg,#FFA36B 0%,#FF8A3D 60%,#F2661A 100%);
+  --c-brand:#2E7BFF; --c-brand-dark:#1F5FE0; --c-brand-soft:#E8F1FF;
+  --c-ink:#1F2229; --c-ink2:#4A5160; --c-ink3:#7A818F; --c-ink4:#B8BDC6;
+  --c-bg:#FFF8F1; --c-card:#FFFFFF; --c-sub:#FBF4EB; --c-line:#EDE4D6;
+  --sh-card:0 1px 2px rgba(40,25,10,.04),0 8px 20px rgba(40,25,10,.06);
+  --ff:'PingFang SC','Hiragino Sans GB',-apple-system,BlinkMacSystemFont,'Microsoft YaHei',sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;font-family:var(--ff);color:var(--c-ink);}
+body{min-height:100vh;background:#1A1410;display:flex;justify-content:center;align-items:flex-start;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;border:none;background:none;cursor:pointer;padding:0;color:inherit;}
+.app{width:100%;max-width:420px;min-height:100vh;background:var(--c-bg);position:relative;overflow-x:hidden;padding-bottom:32px;}
+@media(min-width:421px){body{padding:24px 0;}.app{min-height:calc(100vh - 48px);border-radius:32px;box-shadow:0 30px 80px rgba(0,0,0,.5);overflow:hidden;}}
+
+.sbar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:15px;font-weight:600;color:#fff;position:absolute;top:0;left:0;right:0;z-index:5;}
+.sbar .r{display:flex;gap:6px;align-items:center;}
+.sbar .bat{width:24px;height:12px;border:1.5px solid currentColor;border-radius:3px;position:relative;opacity:.85;}
+.sbar .bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:4px;background:currentColor;border-radius:0 2px 2px 0;}
+.sbar .bat i{position:absolute;left:1px;top:1px;bottom:1px;width:72%;background:currentColor;border-radius:1px;display:block;}
+
+.hero{background:var(--g-warm);color:#fff;padding:44px 0 0;position:relative;border-radius:0 0 32px 32px;overflow:hidden;}
+.hero::after{content:'';position:absolute;left:28px;bottom:-16px;right:28px;height:16px;background:var(--g-warm);opacity:.22;filter:blur(12px);border-radius:50%;}
+.hero-back{position:absolute;top:52px;left:16px;width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;z-index:2;}
+.hero-back:active{background:rgba(255,255,255,.3);}
+.hero-art{padding:28px 24px 0;display:flex;justify-content:center;}
+.hero-art svg{width:120px;height:120px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.12));}
+.hero-tx{padding:20px 24px 32px;text-align:center;}
+.hero-tx h1{font-size:24px;font-weight:700;line-height:32px;margin:0 0 8px;letter-spacing:-.2px;}
+.hero-tx p{font-size:14px;line-height:22px;margin:0;opacity:.92;}
+
+.card{background:var(--c-card);border-radius:20px;margin:0 16px 12px;padding:20px;box-shadow:var(--sh-card);}
+.card-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.card-head h2{font-size:16px;font-weight:600;margin:0;flex:1;}
+.card-head .tag{font-size:11px;padding:4px 10px;border-radius:12px;font-weight:600;background:var(--c-warm-soft);color:var(--c-warm-dark);}
+
+.feat{display:flex;gap:12px;align-items:flex-start;padding:12px 0;}
+.feat:not(:last-child){border-bottom:1px dashed var(--c-line);}
+.feat-ic{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.feat-ic.a{background:var(--c-brand-soft);color:var(--c-brand);}
+.feat-ic.b{background:var(--c-warm-soft);color:var(--c-warm-dark);}
+.feat-ic.c{background:#E3F8F0;color:#18C089;}
+.feat-body{flex:1;}
+.feat-body h3{font-size:14px;font-weight:600;margin:0 0 4px;line-height:20px;}
+.feat-body p{font-size:13px;line-height:19px;color:var(--c-ink2);margin:0;}
+
+.info{background:var(--c-sub);border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;}
+.info-av{width:48px;height:48px;border-radius:50%;background:var(--g-warm);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700;flex-shrink:0;}
+.info-tx{flex:1;}
+.info-tx h3{font-size:15px;font-weight:600;margin:0 0 3px;}
+.info-tx p{font-size:12px;color:var(--c-ink3);margin:0;}
+
+.cta{padding:0 16px 16px;}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:14px;font-weight:600;transition:transform .1s,opacity .15s;font-size:16px;height:52px;width:100%;}
+.btn:active{transform:scale(.98);opacity:.9;}
+.btn-primary{background:var(--c-warm);color:#fff;box-shadow:0 6px 16px rgba(255,138,61,.28);}
+.btn-ghost{background:transparent;color:var(--c-ink2);text-decoration:underline;text-underline-offset:3px;height:44px;margin-top:4px;}
+
+.mask{position:fixed;inset:0;background:rgba(10,8,5,.6);backdrop-filter:blur(4px);z-index:200;display:none;align-items:center;justify-content:center;}
+.mask.active{display:flex;animation:maskin .2s;}
+@keyframes maskin{from{opacity:0;}to{opacity:1;}}
+.modal{width:calc(100% - 48px);max-width:340px;background:var(--c-card);border-radius:24px;padding:28px 24px;animation:popup .25s cubic-bezier(.2,.9,.3,1);text-align:center;}
+@keyframes popup{from{opacity:0;transform:scale(.92);}to{opacity:1;transform:scale(1);}}
+.modal-ic{width:64px;height:64px;margin:0 auto 16px;border-radius:20px;background:var(--c-warm-soft);display:flex;align-items:center;justify-content:center;color:var(--c-warm-dark);}
+.modal h3{font-size:18px;font-weight:700;margin:0 0 8px;}
+.modal p{font-size:13px;line-height:20px;color:var(--c-ink2);margin:0 0 20px;}
+.code{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}
+.code span{width:56px;height:72px;border-radius:14px;background:var(--g-warm);color:#fff;font-size:36px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(255,138,61,.3);letter-spacing:-1px;}
+.modal .hint{font-size:12px;color:var(--c-ink3);margin:0 0 24px;}
+.modal .btn{height:48px;background:var(--c-sub);color:var(--c-ink);box-shadow:none;}
+
+@keyframes fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.fade{animation:fadein .3s ease;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sbar">
+    <span>9:41</span>
+    <div class="r">
+      <div class="bat"><i></i></div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <a class="hero-back" href="notification-center.html" aria-label="返回">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg>
+    </a>
+    <div class="hero-art">
+      <svg viewBox="0 0 120 120" fill="none">
+        <rect x="20" y="30" width="70" height="60" rx="4" fill="white" opacity=".9"/>
+        <rect x="28" y="38" width="54" height="3" rx="1.5" fill="#FF8A3D" opacity=".6"/>
+        <rect x="28" y="46" width="54" height="3" rx="1.5" fill="#FF8A3D" opacity=".4"/>
+        <rect x="28" y="54" width="40" height="3" rx="1.5" fill="#FF8A3D" opacity=".4"/>
+        <circle cx="85" cy="45" r="22" fill="white" opacity=".95"/>
+        <path d="M75 45 L80 50 L95 35" stroke="#2E7BFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="hero-tx">
+      <h1>一起陪天天<br/>做个学习计划</h1>
+      <p>AI 规划老师会帮您分析试卷、找出重点、安排每天的任务</p>
+    </div>
+  </div>
+
+  <div class="fade" style="padding-top:16px;">
+    <div class="card">
+      <div class="card-head">
+        <h2>AI 规划老师会做什么</h2>
+        <span class="tag">三步走</span>
+      </div>
+      <div class="feat">
+        <div class="feat-ic a">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="feat-body">
+          <h3>看孩子的试卷</h3>
+          <p>扫一扫试卷，AI 就能知道哪些地方掌握得好、哪些还要加强</p>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-ic b">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6M5.6 5.6l4.2 4.2m4.2 4.2l4.2 4.2M1 12h6m6 0h6M5.6 18.4l4.2-4.2m4.2-4.2l4.2-4.2"/></svg>
+        </div>
+        <div class="feat-body">
+          <h3>给出重点方向</h3>
+          <p>告诉您孩子接下来应该复习什么、预习什么、哪里要重点突破</p>
+        </div>
+      </div>
+      <div class="feat">
+        <div class="feat-ic c">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="feat-body">
+          <h3>排好每天的任务</h3>
+          <p>把学习内容分成一天天的小目标，孩子每天照着做就行</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>孩子的信息</h2>
+      </div>
+      <div class="info">
+        <div class="info-av">天</div>
+        <div class="info-tx">
+          <h3>天天 · 五年级</h3>
+          <p>人教版 · 数学</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <button class="btn btn-primary" onclick="showCode()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <span>拿确认码，过去陪他一起规划</span>
+    </button>
+    <a class="btn btn-ghost" href="remote-constraints.html">我现在不在家，远程帮他把把关</a>
+  </div>
+
+  <div class="mask" id="mask" onclick="if(event.target===this)hideCode()">
+    <div class="modal">
+      <div class="modal-ic">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h3>您的确认码</h3>
+      <p>到学习机上输入这个码就行</p>
+      <div class="code">
+        <span id="d1">8</span>
+        <span id="d2">3</span>
+        <span id="d3">7</span>
+        <span id="d4">2</span>
+      </div>
+      <p class="hint">这个码 10 分钟内有效，过期了再点一次就能拿到新的</p>
+      <button class="btn" onclick="hideCode()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function showCode(){
+  var d=['0','1','2','3','4','5','6','7','8','9'];
+  document.getElementById('d1').textContent=d[Math.floor(Math.random()*10)];
+  document.getElementById('d2').textContent=d[Math.floor(Math.random()*10)];
+  document.getElementById('d3').textContent=d[Math.floor(Math.random()*10)];
+  document.getElementById('d4').textContent=d[Math.floor(Math.random()*10)];
+  document.getElementById('mask').classList.add('active');
+}
+function hideCode(){
+  document.getElementById('mask').classList.remove('active');
+}
+</script>
+</body>
+</html>

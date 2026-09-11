@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover" />
+<title>AI 规划老师 · 家长端</title>
+<style>
+:root{
+  --c-gray1:#1F2229;--c-gray2:#656A73;--c-gray3:#999DA6;--c-gray4:#C3C6CB;
+  --c-gray5:#E4E5E7;--c-gray6:#EDEEF0;--c-gray7:#F3F4F6;--c-gray8:#F8F8FA;
+  --c-white:#fff;
+  --c-brand:#38AFFF;--c-brand-dis:#C3E7FF;--c-brand-tint:#EBF7FF;
+  --c-red:#FF6262;--c-orange:#FA772A;--c-yellow:#FF961E;--c-green:#0CCC8C;
+  --c-purple:#AF63E6;--c-link:#2D5992;
+  --c-mask:rgba(0,0,0,.45);
+  --tp:var(--c-gray1);--ts:var(--c-gray2);--th:var(--c-gray3);--td:var(--c-gray4);
+  --bg:var(--c-gray7);--card:var(--c-white);--input:var(--c-gray6);--sub:var(--c-gray8);
+  --bd:var(--c-gray5);
+  --ff:'PingFang SC',-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;font-family:var(--ff);color:var(--tp);}
+body{min-height:100vh;background:#0E0F12;display:flex;justify-content:center;align-items:flex-start;}
+button{font-family:inherit;border:none;background:none;cursor:pointer;padding:0;color:inherit;}
+input,textarea{font-family:inherit;}
+ul{list-style:none;margin:0;padding:0;}
+.app{width:100%;max-width:420px;min-height:100vh;background:var(--bg);position:relative;overflow-x:hidden;}
+@media(min-width:421px){
+  body{padding:24px 0;}
+  .app{min-height:calc(100vh - 48px);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.4);overflow:hidden;}
+}
+.statusbar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;font-size:15px;font-weight:600;background:var(--bg);position:sticky;top:0;z-index:50;}
+.statusbar .r{display:flex;gap:6px;align-items:center;}
+.statusbar .bat{width:24px;height:12px;border:1px solid var(--tp);border-radius:3px;position:relative;}
+.statusbar .bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:4px;background:var(--tp);border-radius:0 2px 2px 0;}
+.statusbar .bat i{position:absolute;left:1px;top:1px;bottom:1px;width:70%;background:var(--tp);border-radius:1px;display:block;}
+.nav{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:var(--bg);position:sticky;top:44px;z-index:40;}
+.nav .t{font-size:17px;font-weight:500;}
+.nav .b,.nav .a{width:32px;height:32px;display:flex;align-items:center;justify-content:center;}
+.page{display:none;padding-bottom:24px;}
+.page.active{display:block;}
+.section-title{padding:20px 16px 12px;font-size:14px;color:var(--ts);font-weight:500;}
+.card{background:var(--card);border-radius:12px;margin:0 16px 12px;padding:16px;}
+.card.tight{padding:12px 16px;}
+.divider{height:1px;background:var(--bd);margin:12px 0;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:12px;font-weight:500;transition:opacity .15s;}
+.btn:active{opacity:.82;}
+.btn-primary{background:var(--c-brand);color:#fff;}
+.btn-ghost{background:var(--c-brand-tint);color:var(--c-brand);}
+.btn-gray{background:var(--c-gray7);color:var(--tp);}
+.btn-text{background:transparent;color:var(--ts);}
+.btn-lg{height:48px;padding:0 24px;font-size:16px;width:100%;}
+.btn-md{height:40px;padding:0 20px;font-size:14px;}
+.btn-sm{height:32px;padding:0 14px;font-size:13px;}
+.mask{position:fixed;inset:0;background:var(--c-mask);z-index:100;display:none;align-items:center;justify-content:center;padding:24px;}
+.mask.active{display:flex;}
+.modal{width:100%;max-width:360px;background:var(--card);border-radius:16px;padding:24px 20px;}
+.toast{position:fixed;left:50%;top:30%;transform:translateX(-50%);padding:12px 20px;background:rgba(31,34,41,.92);color:#fff;font-size:14px;border-radius:8px;z-index:200;opacity:0;transition:opacity .2s;pointer-events:none;}
+.toast.show{opacity:1;}
+.row{display:flex;align-items:center;}.col{display:flex;flex-direction:column;}
+.gap-4{gap:4px;}.gap-8{gap:8px;}.gap-12{gap:12px;}.gap-16{gap:16px;}
+.between{justify-content:space-between;}
+.h1{font-size:24px;line-height:34px;font-weight:500;}
+.h2{font-size:20px;line-height:28px;font-weight:500;}
+.h3{font-size:18px;line-height:24px;font-weight:500;}
+.p1m{font-size:16px;line-height:22px;font-weight:500;}
+.p1{font-size:16px;line-height:22px;}
+.p2m{font-size:14px;line-height:20px;font-weight:500;}
+.p2{font-size:14px;line-height:20px;}
+.t3{font-size:12px;line-height:16px;}
+.cs{color:var(--ts);}.ch{color:var(--th);}.cb{color:var(--c-brand);}
+.cr{color:var(--c-red);}.cg{color:var(--c-green);}.co{color:var(--c-orange);}
+.mb-4{margin-bottom:4px;}.mb-8{margin-bottom:8px;}.mb-12{margin-bottom:12px;}.mb-16{margin-bottom:16px;}
+.chip{padding:8px 14px;border-radius:18px;background:var(--c-gray7);color:var(--tp);font-size:13px;border:1px solid transparent;}
+.chip.active{background:var(--c-brand-tint);color:var(--c-brand);border-color:var(--c-brand);}
+.pulse-ring{position:absolute;inset:0;border-radius:50%;border:2px solid var(--c-brand);animation:pulse 1.8s ease-out infinite;}
+@keyframes pulse{0%{transform:scale(1);opacity:.6;}100%{transform:scale(1.4);opacity:0;}}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:13px;position:relative;}
+.cal-cell.empty{visibility:hidden;}
+.cal-cell.done{background:#EDFBF4;color:var(--c-green);font-weight:500;}
+.cal-cell.doing{background:var(--c-brand);color:#fff;font-weight:500;}
+.cal-cell.todo{background:var(--c-gray7);color:var(--ts);}
+.cal-dot{display:inline-block;width:8px;height:8px;border-radius:50%;}
+.task-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--c-gray4);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.task-check.done{background:var(--c-green);border-color:var(--c-green);}
+.task-check.doing{border-color:var(--c-brand);background:#fff;position:relative;}
+.task-check.doing::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--c-brand);}
+.reject-opt{width:100%;padding:12px 16px;border-radius:10px;background:var(--sub);color:var(--tp);font-size:14px;text-align:left;border:1.5px solid transparent;}
+.reject-opt.active{background:var(--c-brand-tint);border-color:var(--c-brand);color:var(--c-brand);}
+</style>
+<script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script></head>
+<body>
+<div class="app">
+<div class="statusbar">
+  <div>9:41</div>
+  <div class="r">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5" width="3" height="7" rx="1"/><rect x="10" y="2" width="3" height="10" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <div class="bat"><i></i></div>
+  </div>
+</div>
+<!-- P1 消息中心 -->
+<div class="page" data-page="notify">
+  <div class="nav"><div style="width:32px"></div><div class="t">消息</div><div style="width:32px"></div></div>
+  <div class="section-title">待办</div>
+  <div class="card" onclick="go('invite')" style="cursor:pointer;">
+    <div class="row between mb-8">
+      <div class="row gap-8">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--c-brand-tint);display:flex;align-items:center;justify-content:center;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#38AFFF" stroke-width="1.8" stroke-linecap="round"><path d="M3 7h18M3 12h18M3 17h12"/></svg>
+        </div>
+        <div class="col gap-4">
+          <div class="p1m">小宝发起了学习规划</div>
+          <div class="t3 cs">AI 规划老师 · 刚刚</div>
+        </div>
+      </div>
+      <span style="width:8px;height:8px;border-radius:50%;background:var(--c-red);"></span>
+    </div>
+    <div class="p2 cs mb-12">小宝想请你一起制定这次的学习计划，一起看看这段时间怎么安排最合适。</div>
+    <div class="row between">
+      <span class="t3 co">等待你的参与</span>
+      <span class="t3 cb">立即查看 ›</span>
+    </div>
+  </div>
+
+  <div class="section-title">历史消息</div>
+  <div class="card tight" onclick="go('result')" style="cursor:pointer;margin-bottom:12px;">
+    <div class="row gap-8">
+      <div style="width:36px;height:36px;border-radius:10px;background:#EDFBF4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0CCC8C" stroke-width="2" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <div class="col gap-4" style="flex:1;min-width:0;">
+        <div class="p1m">学习规划已生成</div>
+        <div class="t3 cs">点击查看小宝最新的学习安排</div>
+      </div>
+      <span class="t3 ch">昨天</span>
+    </div>
+  </div>
+  <div class="card tight" onclick="go('result-self')" style="cursor:pointer;">
+    <div class="row gap-8">
+      <div style="width:36px;height:36px;border-radius:10px;background:#FFF3EA;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FA772A" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      </div>
+      <div class="col gap-4" style="flex:1;min-width:0;">
+        <div class="p1m">孩子已自行完成规划</div>
+        <div class="t3 cs">由于一直未回复，小宝独立完成了这次规划</div>
+      </div>
+      <span class="t3 ch">3天前</span>
+    </div>
+  </div>
+</div>
+
+<!-- P2 规划邀请响应页 -->
+<div class="page" data-page="invite">
+  <div class="nav"><button class="b" onclick="go('notify')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="t">规划邀请</div><div style="width:32px"></div></div>
+  <div style="margin:12px 16px 16px;padding:20px;border-radius:16px;background:linear-gradient(135deg,#EBF7FF 0%,#F3F4F6 100%);position:relative;overflow:hidden;">
+    <div style="position:absolute;right:-20px;top:-20px;width:120px;height:120px;border-radius:50%;background:rgba(56,175,255,.15);"></div>
+    <div style="position:relative;">
+      <div class="t3 cb mb-8" style="font-weight:500;">AI 规划老师</div>
+      <div class="h2 mb-12">小宝邀请你一起<br/>规划这段时间的学习</div>
+      <div class="p2 cs">用 AI 帮孩子看清"学什么、学多少、怎么学"，<br/>避免盲目学、摸黑学、断档学。</div>
+    </div>
+  </div>
+  <div class="section-title">它能帮到什么</div>
+  <div class="card" style="margin-bottom:16px;">
+    <div class="row gap-12 mb-12">
+      <div style="width:32px;height:32px;border-radius:8px;background:#EBF7FF;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38AFFF" stroke-width="2" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      </div>
+      <div class="col gap-4" style="flex:1;">
+        <div class="p2m">扫描近期试卷，找出薄弱点</div>
+        <div class="t3 cs">不再靠感觉学，一眼看清哪里会哪里不会</div>
+      </div>
+    </div>
+    <div class="row gap-12 mb-12">
+      <div style="width:32px;height:32px;border-radius:8px;background:#FFF3EA;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FA772A" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      </div>
+      <div class="col gap-4" style="flex:1;">
+        <div class="p2m">按天安排，学什么一目了然</div>
+        <div class="t3 cs">每天学多久、学哪块，孩子照着做就行</div>
+      </div>
+    </div>
+    <div class="row gap-12">
+      <div style="width:32px;height:32px;border-radius:8px;background:#EDFBF4;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0CCC8C" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      </div>
+      <div class="col gap-4" style="flex:1;">
+        <div class="p2m">家长参与，心里更有底</div>
+        <div class="t3 cs">重要节点你来拍板，不把孩子丢给机器</div>
+      </div>
+    </div>
+  </div>
+  <div style="padding:0 16px;">
+    <button class="btn btn-primary btn-lg mb-12" onclick="showCode()">获取确认码，参与规划</button>
+    <button class="btn btn-text btn-md" style="width:100%;" onclick="go('constraints')">我不在孩子身边，远程协助 ›</button>
+  </div>
+</div>
+
+<!-- P3 远程约束输入 -->
+<div class="page" data-page="constraints">
+  <div class="nav"><button class="b" onclick="go('invite')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="t">告诉 AI 你的想法</div><div style="width:32px"></div></div>
+  <div style="padding:12px 16px 4px;"><div class="p2 cs">填一下这几项，AI 会结合你的建议帮小宝安排这段时间的学习。</div></div>
+  <div class="card" style="margin-top:16px;">
+    <div class="p1m mb-12">作息安排</div>
+    <div class="row between mb-12">
+      <div class="p2">最晚学到几点</div>
+      <input type="time" value="21:30" id="bedtime" style="border:none;background:var(--input);padding:6px 10px;border-radius:6px;font-size:14px;color:var(--tp);" />
+    </div>
+    <div class="divider"></div>
+    <div class="row between">
+      <div class="p2">中途怎么休息</div>
+      <select id="rest" style="border:none;background:var(--input);padding:6px 10px;border-radius:6px;font-size:14px;color:var(--tp);">
+        <option>每 40 分钟休 10 分钟</option><option>每 30 分钟休 5 分钟</option><option>做完一项再休</option>
+      </select>
+    </div>
+  </div>
+  <div class="card">
+    <div class="p1m mb-12">线下安排</div>
+    <div class="p2 cs mb-12">最近有报补习班吗？告诉 AI 可以避开这些时间。</div>
+    <div class="row gap-8" style="flex-wrap:wrap;" data-multi="cramschool">
+      <button class="chip" data-v="none">没报班</button>
+      <button class="chip active" data-v="math">数学班</button>
+      <button class="chip active" data-v="english">英语班</button>
+      <button class="chip" data-v="chinese">语文班</button>
+      <button class="chip" data-v="other">其他</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="p1m mb-4">希望重点补哪里</div>
+    <div class="p2 cs mb-12">可多选，也可以什么都不选，让 AI 自己判断。</div>
+    <div class="row gap-8" style="flex-wrap:wrap;" data-multi="focus">
+      <button class="chip active" data-v="math-geo">数学·图形</button>
+      <button class="chip active" data-v="math-app">数学·应用题</button>
+      <button class="chip" data-v="chn-read">语文·阅读</button>
+      <button class="chip" data-v="chn-write">语文·作文</button>
+      <button class="chip" data-v="eng-word">英语·单词</button>
+      <button class="chip" data-v="eng-grammar">英语·语法</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="p1m mb-8">想对小宝说点什么</div>
+    <textarea id="note" placeholder="比如：寒假想超前学一点下册，也想挑战一下培优题。不写也没关系。" style="width:100%;min-height:80px;border:none;outline:none;resize:none;background:var(--input);padding:12px;border-radius:8px;font-size:14px;line-height:20px;color:var(--tp);"></textarea>
+  </div>
+  <div style="padding:16px;">
+    <button class="btn btn-primary btn-lg" onclick="submitConstraints()">提交建议，让孩子扫卷</button>
+    <div class="t3 ch" style="text-align:center;margin-top:12px;">提交后小宝就能开始扫卷分析</div>
+  </div>
+</div>
+
+<!-- P4 等待分析 -->
+<div class="page" data-page="waiting">
+  <div class="nav"><button class="b" onclick="go('notify')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="t">等待中</div><div style="width:32px"></div></div>
+  <div style="padding:48px 24px 24px;text-align:center;">
+    <div style="width:96px;height:96px;margin:0 auto 20px;border-radius:50%;background:var(--c-brand-tint);display:flex;align-items:center;justify-content:center;position:relative;">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#38AFFF" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      <div class="pulse-ring"></div>
+    </div>
+    <div class="h2 mb-12">已收到你的建议</div>
+    <div class="p2 cs" style="max-width:280px;margin:0 auto;">小宝正在扫卷分析，分析完成后会把规划草案发给你。你可以先去忙别的，有消息会通知你。</div>
+  </div>
+  <div class="card" style="margin-top:24px;">
+    <div class="p1m mb-12">你提交的建议</div>
+    <div class="col gap-12">
+      <div class="row between"><span class="p2 cs">最晚学到</span><span class="p2" id="w-bed">21:30</span></div>
+      <div class="row between"><span class="p2 cs">中途休息</span><span class="p2" id="w-rest">每 40 分钟休 10 分钟</span></div>
+      <div class="row between"><span class="p2 cs">线下班</span><span class="p2" id="w-cram">数学班、英语班</span></div>
+      <div class="row between"><span class="p2 cs">重点补</span><span class="p2" id="w-focus">图形、应用题</span></div>
+    </div>
+  </div>
+  <div style="padding:16px;">
+    <button class="btn btn-gray btn-lg" onclick="go('review')">模拟：AI 分析完成，查看草案</button>
+  </div>
+</div>
+
+<!-- P5 草案审核 -->
+<div class="page" data-page="review">
+  <div class="nav"><button class="b" onclick="go('notify')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="t">规划草案</div><div style="width:32px"></div></div>
+  <div style="padding:12px 16px 0;"><div class="p2 cs">AI 老师基于小宝的试卷和你的建议，拟了这份计划，你看看有没有要调整的地方。</div></div>
+  <div class="card" style="margin-top:16px;">
+    <div class="row between mb-12">
+      <div class="p1m">孩子档案</div>
+      <div style="padding:2px 8px;border-radius:4px;background:var(--c-brand-tint);" class="t3 cb">天天</div>
+    </div>
+    <div class="col gap-8">
+      <div class="row between"><span class="p2 cs">年级</span><span class="p2">五年级（下册）</span></div>
+      <div class="row between"><span class="p2 cs">教材版本</span><span class="p2">人教版</span></div>
+      <div class="row between"><span class="p2 cs">所在地区</span><span class="p2">安徽·合肥</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="p1m mb-12">AI 看到了什么</div>
+    <div style="padding:12px;border-radius:8px;background:var(--sub);">
+      <div class="p2 mb-8">最近 3 次数学卷整体正确率 <span class="cb" style="font-weight:500;">80%</span>，错题主要集中在"图形与几何""综合应用题"。</div>
+      <div class="p2 cs">基础计算、数的运算都比较稳，可以尝试培优拓展。</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="p1m mb-12">这次规划怎么安排</div>
+    <div class="col gap-12">
+      <div class="row between"><span class="p2 cs">规划天数</span><span class="p2">30 天（寒假）</span></div>
+      <div class="row between"><span class="p2 cs">每日时长</span><span class="p2">约 90 分钟</span></div>
+      <div class="row between"><span class="p2 cs">规划场景</span><span class="p2">寒假提前学</span></div>
+      <div class="row between"><span class="p2 cs">线下班</span><span class="p2">数学班（避开周二四 19:00）</span></div>
+      <div class="row between"><span class="p2 cs">核心薄弱点</span><span class="p2">图形、综合应用题</span></div>
+    </div>
+  </div>
+  <div class="card" style="background:linear-gradient(135deg,#EBF7FF 0%,#F8F8FA 100%);">
+    <div class="row gap-8 mb-8">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38AFFF" stroke-width="2" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+      <div class="p2m">AI 老师的笔记</div>
+    </div>
+    <div class="p2" style="line-height:22px;">天天想在寒假通过 30 天的努力，提前多学下册重点内容，图形和综合应用题要重点突破，还想搞点培优拓展挑战一下，保持在第一梯队。</div>
+  </div>
+  <div class="card">
+    <div class="p1m mb-12">大致节奏</div>
+    <div class="col gap-12">
+      <div class="row gap-12"><div style="width:24px;height:24px;border-radius:50%;background:var(--c-brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;">1</div><div style="flex:1;"><div class="p2m">第 1-10 天 · 打基础</div><div class="t3 cs">先把图形和应用题的薄弱点梳理一遍</div></div></div>
+      <div class="row gap-12"><div style="width:24px;height:24px;border-radius:50%;background:var(--c-brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;">2</div><div style="flex:1;"><div class="p2m">第 11-22 天 · 学下册</div><div class="t3 cs">按课本顺序预习重点章节，每天做 10 道练习</div></div></div>
+      <div class="row gap-12"><div style="width:24px;height:24px;border-radius:50%;background:var(--c-brand);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;">3</div><div style="flex:1;"><div class="p2m">第 23-30 天 · 冲培优</div><div class="t3 cs">精选拓展题挑战，保持状态</div></div></div>
+    </div>
+  </div>
+  <div style="padding:16px;display:flex;gap:12px;">
+    <button class="btn btn-gray btn-lg" style="flex:1;" onclick="openReject()">我想调整</button>
+    <button class="btn btn-primary btn-lg" style="flex:2;" onclick="confirmPlan()">就这么定</button>
+  </div>
+</div>
+
+<!-- P6 结果日历 -->
+<div class="page active" data-page="result">
+  <div class="nav"><button class="b" onclick="go('notify')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="t">小宝的学习计划</div><div style="width:32px"></div></div>
+  <div class="card" style="background:linear-gradient(135deg,#38AFFF 0%,#2D5992 100%);color:#fff;margin-top:12px;">
+    <div class="row between mb-8"><div class="p2m" style="opacity:.9;">正在进行</div><div class="t3" style="opacity:.8;">第 7 天 / 30 天</div></div>
+    <div class="h2 mb-8" style="color:#fff;">寒假冲刺 · 数学培优</div>
+    <div class="p2" style="opacity:.9;">已打卡 6 天，今天还剩 45 分钟学习任务</div>
+    <div style="height:6px;background:rgba(255,255,255,.25);border-radius:3px;margin-top:16px;overflow:hidden;"><div style="width:23%;height:100%;background:#fff;border-radius:3px;"></div></div>
+  </div>
+  <div class="card">
+    <div class="row between mb-12"><div class="p1m">学习打卡簿</div><div class="t3 cs">2026年2月</div></div>
+    <div class="row mb-8" style="justify-content:space-between;">
+      <span class="t3 ch" style="flex:1;text-align:center;">一</span><span class="t3 ch" style="flex:1;text-align:center;">二</span><span class="t3 ch" style="flex:1;text-align:center;">三</span><span class="t3 ch" style="flex:1;text-align:center;">四</span><span class="t3 ch" style="flex:1;text-align:center;">五</span><span class="t3 ch" style="flex:1;text-align:center;">六</span><span class="t3 ch" style="flex:1;text-align:center;">日</span>
+    </div>
+    <div class="cal-grid" id="calendar"></div>
+    <div class="row gap-16" style="margin-top:16px;padding-top:12px;border-top:1px solid var(--bd);flex-wrap:wrap;">
+      <div class="row gap-4"><span class="cal-dot" style="background:var(--c-green);"></span><span class="t3 cs">已完成</span></div>
+      <div class="row gap-4"><span class="cal-dot" style="background:var(--c-brand);"></span><span class="t3 cs">进行中</span></div>
+      <div class="row gap-4"><span class="cal-dot" style="background:var(--c-gray5);"></span><span class="t3 cs">待完成</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="p1m mb-12">规划总览</div>
+    <div class="t3 cs mb-12">AI 是这样分配的：</div>
+    <div style="height:12px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:12px;">
+      <div style="width:35%;background:var(--c-brand);"></div><div style="width:45%;background:#0CCC8C;"></div><div style="width:20%;background:#FA772A;"></div>
+    </div>
+    <div class="row gap-16" style="flex-wrap:wrap;">
+      <div class="row gap-4"><span class="cal-dot" style="background:var(--c-brand);"></span><span class="t3">复习 35%</span></div>
+      <div class="row gap-4"><span class="cal-dot" style="background:#0CCC8C;"></span><span class="t3">预习 45%</span></div>
+      <div class="row gap-4"><span class="cal-dot" style="background:#FA772A;"></span><span class="t3">培优 20%</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="p1m mb-12">分阶段看</div>
+    <div style="border-left:3px solid var(--c-green);padding-left:12px;margin-bottom:16px;">
+      <div class="row between mb-4"><div class="p2m">第一阶段 · 打基础</div><span class="t3 cg">已完成</span></div>
+      <div class="t3 cs mb-8">第 1-10 天</div>
+      <div class="p2">重点梳理图形与几何、综合应用题的薄弱知识点</div>
+    </div>
+    <div style="border-left:3px solid var(--c-brand);padding-left:12px;margin-bottom:16px;">
+      <div class="row between mb-4"><div class="p2m">第二阶段 · 学下册</div><span class="t3 cb">进行中</span></div>
+      <div class="t3 cs mb-8">第 11-22 天</div>
+      <div class="p2">按课本顺序预习下册重点章节，每天 10 道练习题</div>
+    </div>
+    <div style="border-left:3px solid var(--c-gray5);padding-left:12px;">
+      <div class="row between mb-4"><div class="p2m cs">第三阶段 · 冲培优</div><span class="t3 ch">待开始</span></div>
+      <div class="t3 cs mb-8">第 23-30 天</div>
+      <div class="p2 cs">精选拓展题挑战，保持第一梯队状态</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="p1m mb-12">今日任务</div>
+    <div class="row between" style="padding:12px 0;">
+      <div class="row gap-8"><span class="task-check done"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg></span><div class="col"><div class="p2m">图形单元小测复习</div><div class="t3 cs">已完成 · 15 分钟</div></div></div><span class="t3 cs">上午</span>
+    </div>
+    <div class="divider"></div>
+    <div class="row between" style="padding:12px 0;">
+      <div class="row gap-8"><span class="task-check doing"></span><div class="col"><div class="p2m">下册第三章预习</div><div class="t3 cs">进行中 · 还剩 30 分钟</div></div></div><span class="t3 cb">现在</span>
+    </div>
+    <div class="divider"></div>
+    <div class="row between" style="padding:12px 0;">
+      <div class="row gap-8"><span class="task-check"></span><div class="col"><div class="p2m cs">综合应用题精练</div><div class="t3 ch">待开始 · 约 15 分钟</div></div></div><span class="t3 ch">晚上</span>
+    </div>
+  </div>
+</div>
+
+<!-- P6' 兜底：孩子自行规划 -->
+<div class="page" data-page="result-self">
+  <div class="nav"><button class="b" onclick="go('notify')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="t">小宝的学习计划</div><div style="width:32px"></div></div>
+  <div style="margin:12px 16px 16px;padding:16px;border-radius:12px;background:#FFF3EA;border:1px solid #FFD9BB;">
+    <div class="row gap-8 mb-8">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FA772A" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9v4M12 17h.01"/></svg>
+      <div class="p2m" style="color:#FA772A;">本次规划由小宝独立完成</div>
+    </div>
+    <div class="p2" style="color:#8A4A1F;margin-bottom:12px;">因一直没收到你的回复，小宝自己扫卷并确认了这份计划。你可以看看是否合适，有问题可以和孩子商量调整。</div>
+    <div class="row gap-8">
+      <button class="btn btn-sm" style="background:#FA772A;color:#fff;padding:6px 14px;border-radius:8px;" onclick="go('review')">查看并确认</button>
+      <button class="btn btn-sm" style="background:#fff;color:#FA772A;padding:6px 14px;border-radius:8px;border:1px solid #FA772A;" onclick="toast('已通知孩子重新规划')">想要调整</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="h3 mb-8">寒假数学冲刺计划</div>
+    <div class="p2 cs">30 天 · 每天约 90 分钟 · 已执行 3 天</div>
+  </div>
+  <div class="card">
+    <div class="p1m mb-12">规划总览</div>
+    <div style="height:12px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:12px;">
+      <div style="width:40%;background:var(--c-brand);"></div><div style="width:50%;background:#0CCC8C;"></div><div style="width:10%;background:#FA772A;"></div>
+    </div>
+    <div class="row gap-16" style="flex-wrap:wrap;">
+      <div class="row gap-4"><span class="cal-dot" style="background:var(--c-brand);"></span><span class="t3">复习 40%</span></div>
+      <div class="row gap-4"><span class="cal-dot" style="background:#0CCC8C;"></span><span class="t3">预习 50%</span></div>
+      <div class="row gap-4"><span class="cal-dot" style="background:#FA772A;"></span><span class="t3">培优 10%</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- P7 同屏等待 -->
+<div class="page" data-page="waiting-coscreen">
+  <div class="nav"><button class="b" onclick="go('invite')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button><div class="t">等待中</div><div style="width:32px"></div></div>
+  <div style="padding:48px 24px 24px;text-align:center;">
+    <div style="width:96px;height:96px;margin:0 auto 20px;border-radius:50%;background:var(--c-brand-tint);display:flex;align-items:center;justify-content:center;position:relative;">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#38AFFF" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
+      <div class="pulse-ring"></div>
+    </div>
+    <div class="h2 mb-12">等你在学习机上确认</div>
+    <div class="p2 cs" style="max-width:280px;margin:0 auto;">在小宝的学习机上输入确认码后，你们就可以一起和 AI 老师规划学习计划了。</div>
+  </div>
+  <div style="padding:16px;"><button class="btn btn-gray btn-lg" onclick="go('result')">模拟：已在学习机确认，查看结果</button></div>
+</div>
+
+<!-- 遮罩 -->
+<div class="mask" id="mask-code">
+  <div class="modal" style="text-align:center;">
+    <div class="h3 mb-8">你的确认码</div>
+    <div class="p2 cs mb-16">在学习机上输入这组数字，确认到场参与规划</div>
+    <div id="invite-code" style="font-size:44px;font-weight:500;letter-spacing:8px;padding:16px 0;background:var(--sub);border-radius:12px;margin-bottom:16px;font-family:'SF Mono',Menlo,monospace;">482931</div>
+    <div class="t3 ch mb-16">确认码 10 分钟内有效</div>
+    <button class="btn btn-primary btn-lg" onclick="closeMask('mask-code');go('waiting-coscreen');">我知道了</button>
+  </div>
+</div>
+<div class="mask" id="mask-reject">
+  <div class="modal">
+    <div class="h3 mb-12">想调整哪里？</div>
+    <div class="p2 cs mb-12">选一个原因，AI 老师会据此重新生成</div>
+    <div class="col gap-8 mb-16" id="reject-list">
+      <button class="reject-opt" data-v="days">调整规划天数</button>
+      <button class="reject-opt" data-v="hours">每天学习时长太长</button>
+      <button class="reject-opt" data-v="focus">希望换一个侧重点</button>
+      <button class="reject-opt" data-v="difficulty">难度不合适</button>
+    </div>
+    <textarea id="reject-note" placeholder="补充说明（选填）" style="width:100%;min-height:60px;border:none;outline:none;resize:none;background:var(--input);padding:12px;border-radius:8px;font-size:14px;margin-bottom:16px;"></textarea>
+    <div class="row gap-12">
+      <button class="btn btn-gray btn-md" style="flex:1;" onclick="closeMask('mask-reject')">取消</button>
+      <button class="btn btn-primary btn-md" style="flex:2;" onclick="submitReject()">发回重做</button>
+    </div>
+  </div>
+</div>
+<div class="mask" id="mask-success">
+  <div class="modal" style="text-align:center;">
+    <div style="width:64px;height:64px;margin:0 auto 16px;border-radius:50%;background:#EDFBF4;display:flex;align-items:center;justify-content:center;">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0CCC8C" stroke-width="2.4" stroke-linecap="round"><path d="M5 13l4 4L19 7"/></svg>
+    </div>
+    <div class="h3 mb-8">计划已生效</div>
+    <div class="p2 cs mb-16">小宝可以开始按计划学习了，后续进度会同步在这里</div>
+    <button class="btn btn-primary btn-lg" onclick="closeMask('mask-success');go('result');">去看计划</button>
+  </div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>function go(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=document.querySelector('[data-page="'+name+'"]');
+  if(el){el.classList.add('active');window.scrollTo(0,0);}
+  if(name==='result') renderCalendar();
+}
+function showCode(){
+  const code=String(Math.floor(100000+Math.random()*900000));
+  document.getElementById('invite-code').textContent=code;
+  document.getElementById('mask-code').classList.add('active');
+}
+function closeMask(id){document.getElementById(id).classList.remove('active');}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt=setTimeout(()=>t.classList.remove('show'),2000);
+}
+function submitConstraints(){
+  const bed=document.getElementById('bedtime').value||'21:30';
+  const rest=document.getElementById('rest').value;
+  const cram=[...document.querySelectorAll('[data-multi="cramschool"] .chip.active')].map(c=>c.textContent).join('、')||'没报班';
+  const focus=[...document.querySelectorAll('[data-multi="focus"] .chip.active')].map(c=>c.textContent).join('、')||'由 AI 判断';
+  document.getElementById('w-bed').textContent=bed;
+  document.getElementById('w-rest').textContent=rest;
+  document.getElementById('w-cram').textContent=cram;
+  document.getElementById('w-focus').textContent=focus;
+  go('waiting');
+  toast('建议已提交');
+}
+function openReject(){document.getElementById('mask-reject').classList.add('active');}
+function submitReject(){
+  const sel=document.querySelector('#reject-list .reject-opt.active');
+  if(!sel){toast('请选择一个原因');return;}
+  closeMask('mask-reject');
+  toast('已发回 AI 重新生成');
+  setTimeout(()=>go('waiting'),300);
+}
+function confirmPlan(){document.getElementById('mask-success').classList.add('active');}
+
+// chip multi-select
+document.addEventListener('click',e=>{
+  const chip=e.target.closest('[data-multi] .chip');
+  if(chip){
+    chip.classList.toggle('active');
+    // "没报班" 与其他互斥
+    if(chip.parentElement.dataset.multi==='cramschool'){
+      if(chip.dataset.v==='none' && chip.classList.contains('active')){
+        chip.parentElement.querySelectorAll('.chip').forEach(c=>{if(c!==chip)c.classList.remove('active');});
+      }else if(chip.classList.contains('active')){
+        const none=chip.parentElement.querySelector('[data-v="none"]');
+        if(none) none.classList.remove('active');
+      }
+    }
+    return;
+  }
+  const rj=e.target.closest('#reject-list .reject-opt');
+  if(rj){
+    document.querySelectorAll('#reject-list .reject-opt').forEach(o=>o.classList.remove('active'));
+    rj.classList.add('active');
+  }
+  // 点击遮罩外关闭
+  if(e.target.classList.contains('mask')) e.target.classList.remove('active');
+});
+
+// 生成日历：30天，前6已完成，第7进行中，其余待完成；假设1号=周一
+function renderCalendar(){
+  const grid=document.getElementById('calendar');
+  if(!grid||grid.dataset.built) return;
+  grid.dataset.built='1';
+  const startWeekday=0; // 0=周一
+  for(let i=0;i<startWeekday;i++){
+    const e=document.createElement('div');e.className='cal-cell empty';grid.appendChild(e);
+  }
+  for(let d=1;d<=30;d++){
+    const c=document.createElement('div');
+    c.className='cal-cell '+(d<=6?'done':d===7?'doing':'todo');
+    c.textContent=d;
+    grid.appendChild(c);
+  }
+}</script>
+<script>setTimeout(() => { if(typeof renderCalendar === "function") renderCalendar(); }, 100);</script></body>
+</html>

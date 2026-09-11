@@ -1,0 +1,1715 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>家长端 AI 规划老师</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f0f5f4;
+      --ink: #172033;
+      --muted: #657084;
+      --line: #dfe5ee;
+      --primary: #2f6fed;
+      --primary-deep: #1f55c7;
+      --teal: #17816d;
+      --orange: #b66813;
+      --red: #c33b32;
+      --green-soft: #e8f5ef;
+      --blue-soft: #eaf1ff;
+      --amber-soft: #fff3d9;
+      --radius: 8px;
+      --shadow: 0 16px 42px rgba(24, 34, 51, 0.12);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: #dfe5ee;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100svh;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(240, 245, 250, 0.96), rgba(230, 236, 244, 0.96)),
+        #e8edf5;
+      letter-spacing: 0;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .app {
+      position: relative;
+      width: 100%;
+      max-width: 430px;
+      min-height: 100svh;
+      margin: 0 auto;
+      background: var(--bg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: grid;
+      grid-template-columns: 76px 1fr 76px;
+      align-items: center;
+      min-height: 58px;
+      padding: 8px 16px;
+      padding-top: max(8px, env(safe-area-inset-top, 0px));
+      background: rgba(245, 247, 251, 0.92);
+      border-bottom: 1px solid rgba(223, 229, 238, 0.86);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.25;
+      color: #192235;
+    }
+
+    .topbar-action {
+      justify-self: start;
+      width: 58px;
+      min-height: 34px;
+      border-radius: var(--radius);
+      color: var(--primary);
+      background: transparent;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .topbar-action[hidden] {
+      display: none;
+    }
+
+    .topbar-spacer {
+      width: 58px;
+    }
+
+    .page {
+      display: none;
+      min-height: calc(100svh - 58px);
+      padding: 16px 16px calc(86px + var(--safe-bottom));
+      animation: pageIn 180ms ease-out;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes pageIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-band {
+      margin: -16px -16px 16px;
+      padding: 22px 16px 18px;
+      background:
+        linear-gradient(145deg, rgba(47, 111, 237, 0.12), rgba(23, 129, 109, 0.12)),
+        #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      color: #31566f;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(139, 160, 182, 0.26);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 10px 0 8px;
+      font-size: 25px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 19px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .subtle {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .stack-lg {
+      display: grid;
+      gap: 16px;
+    }
+
+    .section {
+      margin-top: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 20px rgba(24, 34, 51, 0.04);
+    }
+
+    .card.pad {
+      padding: 14px;
+    }
+
+    .notification-card {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      width: 100%;
+      padding: 14px;
+      text-align: left;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 20px rgba(24, 34, 51, 0.04);
+    }
+
+    .notification-card:active,
+    .button:active,
+    .chip:active,
+    .option-button:active {
+      transform: translateY(1px);
+    }
+
+    .notification-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 4px;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .notification-meta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .icon-box {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius);
+      background: var(--blue-soft);
+      border: 1px solid rgba(47, 111, 237, 0.18);
+    }
+
+    .icon-box::before,
+    .icon-box::after {
+      position: absolute;
+      content: "";
+      left: 11px;
+      right: 11px;
+      border-radius: 999px;
+      background: #2f6fed;
+    }
+
+    .icon-box::before {
+      top: 13px;
+      height: 4px;
+      box-shadow: 0 8px 0 #2f6fed;
+    }
+
+    .icon-box::after {
+      bottom: 9px;
+      height: 4px;
+      width: 12px;
+      left: 15px;
+      right: auto;
+      background: #17816d;
+    }
+
+    .icon-box.warn {
+      background: var(--amber-soft);
+      border-color: rgba(182, 104, 19, 0.22);
+    }
+
+    .icon-box.warn::before {
+      background: var(--orange);
+      box-shadow: 0 8px 0 var(--orange);
+    }
+
+    .icon-box.warn::after {
+      background: #8b5c13;
+    }
+
+    .icon-box.done {
+      background: var(--green-soft);
+      border-color: rgba(23, 129, 109, 0.22);
+    }
+
+    .icon-box.done::before {
+      top: 20px;
+      left: 10px;
+      width: 9px;
+      height: 4px;
+      transform: rotate(42deg);
+      background: var(--teal);
+      box-shadow: none;
+    }
+
+    .icon-box.done::after {
+      top: 17px;
+      left: 17px;
+      width: 17px;
+      height: 4px;
+      transform: rotate(-44deg);
+      background: var(--teal);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .badge.blue {
+      color: #2459bc;
+      background: var(--blue-soft);
+    }
+
+    .badge.green {
+      color: #146e5e;
+      background: var(--green-soft);
+    }
+
+    .badge.amber {
+      color: #8b520f;
+      background: var(--amber-soft);
+    }
+
+    .badge.red {
+      color: var(--red);
+      background: #fdebea;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .summary-cell {
+      min-height: 74px;
+      padding: 10px 8px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .summary-cell strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .summary-cell span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .button-row {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      font-weight: 750;
+      font-size: 15px;
+      line-height: 1.3;
+      text-align: center;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+
+    .button.primary {
+      color: #fff;
+      background: var(--primary);
+      box-shadow: 0 10px 22px rgba(47, 111, 237, 0.22);
+    }
+
+    .button.primary:hover {
+      background: var(--primary-deep);
+    }
+
+    .button.secondary {
+      color: var(--primary);
+      background: #fff;
+      border: 1px solid rgba(47, 111, 237, 0.28);
+    }
+
+    .button.ghost {
+      color: #475467;
+      background: transparent;
+      border: 1px solid var(--line);
+    }
+
+    .button.danger {
+      color: var(--red);
+      background: #fff;
+      border: 1px solid rgba(195, 59, 50, 0.28);
+    }
+
+    .plain-link {
+      color: var(--primary);
+      background: transparent;
+      min-height: 42px;
+      font-weight: 700;
+    }
+
+    .guide-list {
+      display: grid;
+      gap: 10px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .guide-list li {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 10px;
+      align-items: start;
+      color: #344054;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .step-dot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--teal);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label,
+    .field-title {
+      font-size: 14px;
+      font-weight: 750;
+      color: #243047;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+
+    .field textarea {
+      min-height: 88px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: rgba(47, 111, 237, 0.7);
+      box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.12);
+    }
+
+    .segmented,
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      min-height: 36px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      color: #344054;
+      background: #fff;
+      border: 1px solid var(--line);
+      font-size: 13px;
+      font-weight: 650;
+      transition: background 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
+    }
+
+    .chip.selected {
+      color: #fff;
+      background: var(--teal);
+      border-color: var(--teal);
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .option-button {
+      min-height: 48px;
+      padding: 11px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      color: #344054;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .option-button.selected {
+      color: #1b5f52;
+      border-color: rgba(23, 129, 109, 0.6);
+      background: var(--green-soft);
+    }
+
+    .wait-panel {
+      display: grid;
+      gap: 14px;
+      padding: 18px 14px;
+      text-align: center;
+    }
+
+    .loader {
+      position: relative;
+      width: 54px;
+      height: 54px;
+      margin: 0 auto;
+      border-radius: 999px;
+      background: conic-gradient(from 0deg, var(--primary), var(--teal), #f2b84b, var(--primary));
+    }
+
+    .loader::after {
+      position: absolute;
+      content: "";
+      inset: 6px;
+      border-radius: inherit;
+      background: #fff;
+    }
+
+    .progress-steps {
+      display: grid;
+      gap: 8px;
+      margin-top: 6px;
+      text-align: left;
+    }
+
+    .progress-step {
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 9px;
+      align-items: center;
+      color: #344054;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .progress-mark {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      border: 1px solid rgba(23, 129, 109, 0.22);
+    }
+
+    .progress-step.current .progress-mark {
+      background: var(--blue-soft);
+      border-color: rgba(47, 111, 237, 0.28);
+    }
+
+    .progress-step.current .progress-mark::after {
+      display: block;
+      width: 8px;
+      height: 8px;
+      margin: 6px;
+      content: "";
+      border-radius: 999px;
+      background: var(--primary);
+    }
+
+    .analysis-card {
+      padding: 14px;
+      background: linear-gradient(180deg, #ffffff, #f8fbff);
+      border: 1px solid rgba(47, 111, 237, 0.2);
+      border-radius: var(--radius);
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .score-item {
+      padding: 10px 8px;
+      border-radius: var(--radius);
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .score-item strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .score-item span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .info-table {
+      display: grid;
+      gap: 9px;
+      margin-top: 8px;
+    }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 10px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid #edf1f6;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .info-row:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .info-row span:first-child {
+      color: var(--muted);
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .task {
+      position: relative;
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .task-day {
+      display: grid;
+      place-items: center;
+      align-self: start;
+      min-height: 54px;
+      border-radius: var(--radius);
+      background: var(--surface-soft);
+      color: #24504a;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.25;
+      text-align: center;
+    }
+
+    .task strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    .task p {
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .calendar-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .weekday {
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .day {
+      aspect-ratio: 1 / 1;
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      border-radius: 7px;
+      background: #f0f3f8;
+      color: #667085;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .day.done {
+      color: #fff;
+      background: var(--teal);
+    }
+
+    .day.now {
+      color: #fff;
+      background: var(--primary);
+      outline: 3px solid rgba(47, 111, 237, 0.15);
+    }
+
+    .day.todo {
+      color: #7a4a11;
+      background: var(--amber-soft);
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      margin-top: 12px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      background: #f0f3f8;
+    }
+
+    .legend-dot.done {
+      background: var(--teal);
+    }
+
+    .legend-dot.now {
+      background: var(--primary);
+    }
+
+    .legend-dot.todo {
+      background: #f3c663;
+    }
+
+    .ratio-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .ratio-row {
+      display: grid;
+      gap: 6px;
+    }
+
+    .ratio-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: #344054;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .ratio-track {
+      height: 9px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #edf1f6;
+    }
+
+    .ratio-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: var(--primary);
+    }
+
+    .ratio-fill.teal {
+      background: var(--teal);
+    }
+
+    .ratio-fill.orange {
+      background: #d88b24;
+    }
+
+    .alert {
+      display: grid;
+      gap: 4px;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid rgba(182, 104, 19, 0.22);
+      background: var(--amber-soft);
+    }
+
+    .alert strong {
+      color: #7c4a10;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .alert p {
+      color: #71551f;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .bottom-tabs {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      z-index: 25;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      width: min(100%, 430px);
+      padding: 8px 12px calc(8px + var(--safe-bottom));
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.94);
+      border-top: 1px solid rgba(223, 229, 238, 0.9);
+      backdrop-filter: blur(18px);
+    }
+
+    .tab {
+      min-height: 46px;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .tab.active {
+      color: var(--primary);
+      background: var(--blue-soft);
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: end;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(16, 24, 40, 0.42);
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-panel {
+      width: min(100%, 398px);
+      max-height: min(86svh, 720px);
+      overflow: auto;
+      padding: 16px;
+      border-radius: 12px 12px 8px 8px;
+      background: #fff;
+      box-shadow: 0 22px 58px rgba(16, 24, 40, 0.22);
+      animation: modalIn 170ms ease-out;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .code-box {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 18px 0 10px;
+    }
+
+    .code-digit {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 52px;
+      border-radius: var(--radius);
+      color: #172033;
+      background: #f3f6fb;
+      border: 1px solid var(--line);
+      font-size: 26px;
+      font-weight: 850;
+      line-height: 1;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(76px + var(--safe-bottom));
+      z-index: 70;
+      display: none;
+      width: min(calc(100% - 32px), 398px);
+      padding: 11px 13px;
+      transform: translateX(-50%);
+      border-radius: var(--radius);
+      color: #fff;
+      background: rgba(23, 32, 51, 0.94);
+      font-size: 13px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .toast.show {
+      display: block;
+      animation: toastIn 220ms ease-out;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translate(-50%, 6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+    }
+
+    .pill-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 28px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: #39515f;
+      background: #edf5f4;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .empty-space {
+      min-height: 12px;
+    }
+
+    @media (min-width: 700px) {
+      body {
+        padding: 24px 0;
+      }
+
+      .app {
+        min-height: calc(100svh - 48px);
+        border-radius: 24px;
+      }
+
+      .bottom-tabs {
+        bottom: 24px;
+        border-radius: 0 0 24px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" id="app">
+    <header class="topbar">
+      <button class="topbar-action" id="backBtn" type="button" hidden>返回</button>
+      <h1 class="topbar-title" id="pageTitle">消息</h1>
+      <div class="topbar-spacer" aria-hidden="true"></div>
+    </header>
+
+    <section class="page active" id="page-notifications" data-title="消息">
+      <div class="hero-band">
+        <span class="eyebrow">小宝的学习安排</span>
+        <h1>家长消息</h1>
+        <p>孩子发起学习规划、需要您确认计划，或计划已经生效，都会同步到这里。</p>
+      </div>
+
+      <div class="stack-lg">
+        <div>
+          <h2>待处理</h2>
+          <div class="stack">
+            <button class="notification-card" type="button" data-go="invite" aria-label="查看孩子发起的学习规划">
+              <span class="icon-box" aria-hidden="true"></span>
+              <span>
+                <span class="notification-title">孩子发起了学习规划 <span class="badge blue">等待参与</span></span>
+                <p>小宝准备做一份 30 天学习安排，正在等您一起看看。</p>
+                <span class="notification-meta">
+                  <span>刚刚</span>
+                  <span>点击查看</span>
+                </span>
+              </span>
+            </button>
+
+            <button class="notification-card" type="button" data-go="review" aria-label="查看待确认的学习安排">
+              <span class="icon-box done" aria-hidden="true"></span>
+              <span>
+                <span class="notification-title">学习安排待确认 <span class="badge amber">请看看</span></span>
+                <p>学习机已经看完试卷，整理了一份计划，请您确认后生效。</p>
+                <span class="notification-meta">
+                  <span>5 分钟前</span>
+                  <span>点击确认</span>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <h2>结果通知</h2>
+          <div class="stack">
+            <button class="notification-card" type="button" data-results="normal" aria-label="查看已生效的学习规划">
+              <span class="icon-box done" aria-hidden="true"></span>
+              <span>
+                <span class="notification-title">学习规划已生成 <span class="badge green">已生效</span></span>
+                <p>每天学什么、复习哪些错题、什么时候休息，都已经排好了。</p>
+                <span class="notification-meta">
+                  <span>昨天 20:10</span>
+                  <span>点击查看详情</span>
+                </span>
+              </span>
+            </button>
+
+            <button class="notification-card" type="button" data-results="self" aria-label="查看孩子自行完成的学习规划">
+              <span class="icon-box warn" aria-hidden="true"></span>
+              <span>
+                <span class="notification-title">孩子已先完成规划 <span class="badge red">请补看</span></span>
+                <p>因为一直没有收到回复，孩子按学习机提醒先完成了本次规划。</p>
+                <span class="notification-meta">
+                  <span>周二 19:42</span>
+                  <span>点击查看详情</span>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" id="page-invite" data-title="规划邀请">
+      <div class="hero-band">
+        <span class="eyebrow">小宝正在学习机前</span>
+        <h1>一起把接下来的学习排清楚</h1>
+        <p>学习机会先看孩子的试卷，再把每天要学的内容排出来。您可以在孩子身边一起确认，也可以不在身边时先留下要求。</p>
+      </div>
+
+      <div class="card pad">
+        <h2>这次会帮孩子理清三件事</h2>
+        <ul class="guide-list">
+          <li><span class="step-dot">1</span><span>先找出最近容易丢分的地方，避免孩子盲目刷题。</span></li>
+          <li><span class="step-dot">2</span><span>把复习、预习和拔高练习排到每天，不让学习断档。</span></li>
+          <li><span class="step-dot">3</span><span>把睡觉时间、补习班和休息要求一起考虑进去。</span></li>
+        </ul>
+      </div>
+
+      <div class="card pad section">
+        <h2>当前规划</h2>
+        <div class="info-table">
+          <div class="info-row"><span>孩子</span><strong>小宝，四年级</strong></div>
+          <div class="info-row"><span>科目</span><strong>数学，下册提前学加错题复盘</strong></div>
+          <div class="info-row"><span>预计周期</span><strong>30 天，每天 45 分钟左右</strong></div>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="button primary" type="button" id="getCodeBtn">获取确认码，参与规划</button>
+        <button class="button secondary" type="button" data-go="remote">我不在孩子身边，远程协助</button>
+      </div>
+    </section>
+
+    <section class="page" id="page-same-wait" data-title="已确认到场">
+      <div class="card wait-panel">
+        <div class="loader" aria-hidden="true"></div>
+        <div>
+          <h1>已经确认到场</h1>
+          <p>请和孩子一起在学习机上完成扫卷和确认。最终学习安排会同步到您的手机里。</p>
+        </div>
+        <div class="progress-steps">
+          <div class="progress-step">
+            <span class="progress-mark" aria-hidden="true"></span>
+            <span>家长已输入确认码</span>
+          </div>
+          <div class="progress-step current">
+            <span class="progress-mark" aria-hidden="true"></span>
+            <span>等待孩子在学习机上扫卷</span>
+          </div>
+          <div class="progress-step">
+            <span class="progress-mark" aria-hidden="true"></span>
+            <span>计划生效后自动同步</span>
+          </div>
+        </div>
+        <button class="button primary" type="button" data-results="normal">查看已生成的学习安排</button>
+      </div>
+    </section>
+
+    <section class="page" id="page-remote" data-title="远程协助">
+      <div class="hero-band">
+        <span class="eyebrow">先把您的要求告诉孩子</span>
+        <h1>不在孩子身边，也能参与安排</h1>
+        <p>您填写的睡觉时间、休息要求和学习重点，会一起交给学习机参考。</p>
+      </div>
+
+      <form class="stack-lg" id="remoteForm">
+        <div class="card pad stack-lg">
+          <div class="field">
+            <label for="bedtime">最晚结束学习时间</label>
+            <input id="bedtime" name="bedtime" type="time" value="21:20" />
+            <span class="subtle">学习安排会尽量避开太晚的时间。</span>
+          </div>
+
+          <div class="field">
+            <span class="field-title">中途休息</span>
+            <div class="segmented" data-choice-group="rest">
+              <button class="chip selected" type="button" data-value="每 40 分钟休息 10 分钟">每 40 分钟休息 10 分钟</button>
+              <button class="chip" type="button" data-value="每 30 分钟休息 5 分钟">每 30 分钟休息 5 分钟</button>
+              <button class="chip" type="button" data-value="做完一项再休息">做完一项再休息</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-title">最近是否有补习班</span>
+            <div class="option-grid" data-choice-group="tutoring">
+              <button class="option-button selected" type="button" data-value="周六上午有数学课">周六上午有</button>
+              <button class="option-button" type="button" data-value="最近没有补习班">最近没有</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="field-title">希望多关注哪里</span>
+            <div class="chip-row" data-multi-group="focus">
+              <button class="chip selected" type="button" data-value="图形题">图形题</button>
+              <button class="chip selected" type="button" data-value="综合应用题">综合应用题</button>
+              <button class="chip" type="button" data-value="计算速度">计算速度</button>
+              <button class="chip" type="button" data-value="预习下册">预习下册</button>
+              <button class="chip" type="button" data-value="拔高挑战">拔高挑战</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="parentNote">还想补充的话</label>
+            <textarea id="parentNote" name="parentNote" placeholder="例如：最近作业比较多，周三晚上少安排一点。">最近想让孩子早点睡，周三晚上作业多，尽量少安排一点。</textarea>
+          </div>
+        </div>
+
+        <button class="button primary" type="submit">提交条件，让孩子上传试卷</button>
+      </form>
+    </section>
+
+    <section class="page" id="page-waiting" data-title="等待分析">
+      <div class="card wait-panel">
+        <div class="loader" aria-hidden="true"></div>
+        <div>
+          <h1>已收到您的建议</h1>
+          <p>现在等孩子在学习机上上传试卷。看完试卷后，会把学习安排发给您确认。</p>
+        </div>
+        <div class="progress-steps">
+          <div class="progress-step">
+            <span class="progress-mark" aria-hidden="true"></span>
+            <span>家长建议已提交</span>
+          </div>
+          <div class="progress-step current">
+            <span class="progress-mark" aria-hidden="true"></span>
+            <span>等待孩子上传试卷</span>
+          </div>
+          <div class="progress-step">
+            <span class="progress-mark" aria-hidden="true"></span>
+            <span>学习安排待确认</span>
+          </div>
+        </div>
+        <button class="button primary" type="button" data-go="review">查看待确认的学习安排</button>
+        <button class="button ghost" type="button" data-go="notifications">回到消息</button>
+      </div>
+    </section>
+
+    <section class="page" id="page-revision-wait" data-title="已提交修改">
+      <div class="card wait-panel">
+        <div class="loader" aria-hidden="true"></div>
+        <div>
+          <h1>修改建议已发出</h1>
+          <p>学习机会按您的建议重新调整，再把新的学习安排发来确认。</p>
+        </div>
+        <div class="progress-steps">
+          <div class="progress-step">
+            <span class="progress-mark" aria-hidden="true"></span>
+            <span>修改建议已提交</span>
+          </div>
+          <div class="progress-step current">
+            <span class="progress-mark" aria-hidden="true"></span>
+            <span>正在重新安排每天任务</span>
+          </div>
+          <div class="progress-step">
+            <span class="progress-mark" aria-hidden="true"></span>
+            <span>新的安排待确认</span>
+          </div>
+        </div>
+        <button class="button primary" type="button" id="viewRevisedBtn">查看调整后的安排</button>
+      </div>
+    </section>
+
+    <section class="page" id="page-review" data-title="确认安排">
+      <div class="analysis-card">
+        <span class="pill-note">试卷已经看完</span>
+        <h1>这份安排需要您确认</h1>
+        <p id="reviewLead">小宝这次正确率 80%，主要丢分在图形和综合应用题。建议先补漏洞，再提前学习下册重点。</p>
+        <div class="score-row">
+          <div class="score-item"><strong>80%</strong><span>整体正确率</span></div>
+          <div class="score-item"><strong>30 天</strong><span>安排周期</span></div>
+          <div class="score-item"><strong>45 分</strong><span>每天时长</span></div>
+        </div>
+      </div>
+
+      <div class="card pad section">
+        <h2>孩子情况</h2>
+        <div class="info-table">
+          <div class="info-row"><span>孩子档案</span><strong>小宝，四年级，数学</strong></div>
+          <div class="info-row"><span>教材地区</span><strong>人教版，上海</strong></div>
+          <div class="info-row"><span>近期目标</span><strong>寒假提前学下册，保持第一梯队</strong></div>
+        </div>
+      </div>
+
+      <div class="card pad section">
+        <h2>本次安排要求</h2>
+        <div class="info-table" id="constraintSummary">
+          <div class="info-row"><span>规划天数</span><strong>30 天</strong></div>
+          <div class="info-row"><span>每天时长</span><strong>约 45 分钟</strong></div>
+          <div class="info-row"><span>休息要求</span><strong>每 40 分钟休息 10 分钟</strong></div>
+          <div class="info-row"><span>补习班</span><strong>周六上午有数学课</strong></div>
+          <div class="info-row"><span>重点关注</span><strong>图形题、综合应用题</strong></div>
+        </div>
+      </div>
+
+      <div class="card pad section">
+        <h2>老师总结</h2>
+        <p id="teacherNote">小宝想在寒假通过 30 天努力，提前多学下册重点内容。图形和综合应用题要重点突破，也可以安排少量拔高题，帮助他保持在第一梯队。</p>
+      </div>
+
+      <div class="card pad section">
+        <h2>学习安排预览</h2>
+        <div class="timeline" id="reviewTimeline">
+          <article class="task">
+            <div class="task-day">第 1-7 天</div>
+            <div>
+              <strong>先补最近错题</strong>
+              <p>每天 20 分钟错题复盘，重点看图形周长、面积和单位换算。</p>
+            </div>
+          </article>
+          <article class="task">
+            <div class="task-day">第 8-18 天</div>
+            <div>
+              <strong>提前学习下册重点</strong>
+              <p>按章节学习小数、三角形和统计图，每两天做一次小测。</p>
+            </div>
+          </article>
+          <article class="task">
+            <div class="task-day">第 19-30 天</div>
+            <div>
+              <strong>综合应用和拔高挑战</strong>
+              <p>把应用题拆步骤练清楚，再安排少量培优题提升思路。</p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="button primary" type="button" id="confirmPlanBtn">确认计划</button>
+        <button class="button secondary" type="button" id="modifyPlanBtn">修改计划</button>
+      </div>
+    </section>
+
+    <section class="page" id="page-results" data-title="学习日历">
+      <div class="stack-lg">
+        <div class="alert" id="selfNotice" hidden>
+          <strong>本次规划因家长未回复，由孩子独立完成，请及时确认</strong>
+          <p>您可以先查看安排，如果不合适，再和孩子一起重新调整。</p>
+        </div>
+
+        <div class="hero-band" style="margin-top: -16px;">
+          <span class="eyebrow" id="resultStatus">规划已生效</span>
+          <h1 id="resultTitle">小宝的 30 天学习安排</h1>
+          <p id="resultDesc">每天学习内容已排好，会根据完成情况继续同步给您。</p>
+          <div class="summary-grid">
+            <div class="summary-cell"><strong>30</strong><span>总天数</span></div>
+            <div class="summary-cell"><strong>45</strong><span>每日分钟</span></div>
+            <div class="summary-cell"><strong>3</strong><span>学习阶段</span></div>
+          </div>
+        </div>
+
+        <div class="card pad">
+          <div class="calendar-head">
+            <div>
+              <h2>学习打卡簿</h2>
+              <p>今天是第 3 天，正在完成图形错题复盘。</p>
+            </div>
+            <span class="badge blue">进行中</span>
+          </div>
+          <div class="calendar-grid" aria-label="学习日历">
+            <span class="weekday">一</span>
+            <span class="weekday">二</span>
+            <span class="weekday">三</span>
+            <span class="weekday">四</span>
+            <span class="weekday">五</span>
+            <span class="weekday">六</span>
+            <span class="weekday">日</span>
+            <span class="day done">1</span>
+            <span class="day done">2</span>
+            <span class="day now">3</span>
+            <span class="day todo">4</span>
+            <span class="day todo">5</span>
+            <span class="day todo">6</span>
+            <span class="day todo">7</span>
+            <span class="day todo">8</span>
+            <span class="day todo">9</span>
+            <span class="day todo">10</span>
+            <span class="day todo">11</span>
+            <span class="day todo">12</span>
+            <span class="day todo">13</span>
+            <span class="day todo">14</span>
+            <span class="day todo">15</span>
+            <span class="day todo">16</span>
+            <span class="day todo">17</span>
+            <span class="day todo">18</span>
+            <span class="day todo">19</span>
+            <span class="day todo">20</span>
+            <span class="day todo">21</span>
+          </div>
+          <div class="legend">
+            <span class="legend-item"><span class="legend-dot done"></span>已完成</span>
+            <span class="legend-item"><span class="legend-dot now"></span>进行中</span>
+            <span class="legend-item"><span class="legend-dot todo"></span>待完成</span>
+          </div>
+        </div>
+
+        <div class="card pad">
+          <h2>内容占比</h2>
+          <p>先稳住错题，再提前学新内容，最后留出培优挑战。</p>
+          <div class="ratio-list">
+            <div class="ratio-row">
+              <div class="ratio-label"><span>复习错题</span><span>40%</span></div>
+              <div class="ratio-track"><div class="ratio-fill" style="width: 40%;"></div></div>
+            </div>
+            <div class="ratio-row">
+              <div class="ratio-label"><span>预习下册</span><span>35%</span></div>
+              <div class="ratio-track"><div class="ratio-fill teal" style="width: 35%;"></div></div>
+            </div>
+            <div class="ratio-row">
+              <div class="ratio-label"><span>培优拓展</span><span>25%</span></div>
+              <div class="ratio-track"><div class="ratio-fill orange" style="width: 25%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card pad">
+          <h2>分阶段安排</h2>
+          <div class="timeline">
+            <article class="task">
+              <div class="task-day">第 1-7 天</div>
+              <div>
+                <strong>把最近错题补扎实</strong>
+                <p>图形题、单位换算和易错计算每天交替练，先把基础分拿稳。</p>
+              </div>
+            </article>
+            <article class="task">
+              <div class="task-day">第 8-18 天</div>
+              <div>
+                <strong>提前学习下册重点</strong>
+                <p>小数、三角形、统计图按章节推进，每两天一次小测。</p>
+              </div>
+            </article>
+            <article class="task">
+              <div class="task-day">第 19-30 天</div>
+              <div>
+                <strong>做综合应用和培优题</strong>
+                <p>应用题先练读题和拆步骤，再加少量挑战题保持思路打开。</p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="button secondary" type="button" data-go="notifications">回到消息</button>
+        </div>
+      </div>
+    </section>
+
+    <nav class="bottom-tabs" aria-label="底部导航">
+      <button class="tab active" type="button" data-tab="notifications">消息</button>
+      <button class="tab" type="button" data-tab="results">学习日历</button>
+    </nav>
+  </main>
+
+  <div class="modal" id="codeModal" role="dialog" aria-modal="true" aria-labelledby="codeTitle">
+    <div class="modal-panel">
+      <h2 id="codeTitle">确认码已生成</h2>
+      <p>请在学习机上输入此验证码确认到场。验证码短时间内有效，请尽快输入。</p>
+      <div class="code-box" id="codeBox" aria-label="确认码"></div>
+      <div class="button-row">
+        <button class="button primary" type="button" id="codeDoneBtn">已在学习机输入</button>
+        <button class="button ghost" type="button" data-close-modal="codeModal">稍后再说</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modifyModal" role="dialog" aria-modal="true" aria-labelledby="modifyTitle">
+    <div class="modal-panel">
+      <h2 id="modifyTitle">想怎么调整</h2>
+      <p>选择一个主要原因，也可以写下具体想法，学习机会重新安排。</p>
+      <div class="section stack">
+        <div class="chip-row" data-choice-group="modifyReason">
+          <button class="chip selected" type="button" data-value="每天少学一点">每天少学一点</button>
+          <button class="chip" type="button" data-value="天数缩短">天数缩短</button>
+          <button class="chip" type="button" data-value="增加休息">增加休息</button>
+          <button class="chip" type="button" data-value="重点换一换">重点换一换</button>
+        </div>
+        <div class="field">
+          <label for="modifyText">补充说明</label>
+          <textarea id="modifyText">希望周三晚上少安排一些，每天控制在 40 分钟左右。</textarea>
+        </div>
+      </div>
+      <div class="button-row">
+        <button class="button primary" type="button" id="submitModifyBtn">提交修改建议</button>
+        <button class="button ghost" type="button" data-close-modal="modifyModal">先不改了</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const appState = {
+      page: "notifications",
+      history: [],
+      resultType: "normal",
+      rest: "每 40 分钟休息 10 分钟",
+      tutoring: "周六上午有数学课",
+      focus: ["图形题", "综合应用题"],
+      bedtime: "21:20",
+      revised: false
+    };
+
+    const pageTitle = document.getElementById("pageTitle");
+    const backBtn = document.getElementById("backBtn");
+    const toast = document.getElementById("toast");
+
+    const pageId = (name) => `page-${name}`;
+
+    function showPage(name, options = {}) {
+      const next = document.getElementById(pageId(name));
+      if (!next) return;
+
+      if (options.push !== false && appState.page !== name) {
+        appState.history.push(appState.page);
+      }
+
+      document.querySelectorAll(".page").forEach((page) => page.classList.remove("active"));
+      next.classList.add("active");
+      appState.page = name;
+      pageTitle.textContent = next.dataset.title || "";
+      backBtn.hidden = appState.history.length === 0 || name === "notifications";
+      if (name === "notifications") appState.history = [];
+      updateTabs(name);
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    function updateTabs(name) {
+      document.querySelectorAll(".tab").forEach((tab) => {
+        const target = tab.dataset.tab;
+        const active = target === name || (target === "results" && name === "results");
+        tab.classList.toggle("active", active);
+      });
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.add("show");
+    }
+
+    function closeModal(id) {
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.remove("show");
+    }
+
+    function generateCode() {
+      const length = Math.random() > 0.5 ? 4 : 6;
+      let code = "";
+      for (let i = 0; i < length; i += 1) {
+        code += Math.floor(Math.random() * 10);
+      }
+      return code;
+    }
+
+    function renderCode(code) {
+      const box = document.getElementById("codeBox");
+      box.innerHTML = "";
+      code.split("").forEach((digit) => {
+        const item = document.createElement("span");
+        item.className = "code-digit";
+        item.textContent = digit;
+        box.appendChild(item);
+      });
+    }
+
+    function collectRemoteForm() {
+      appState.bedtime = document.getElementById("bedtime").value || "21:20";
+      const focus = [...document.querySelectorAll('[data-multi-group="focus"] .chip.selected')].map((item) => item.dataset.value);
+      appState.focus = focus.length ? focus : ["图形题"];
+      updateConstraintSummary();
+    }
+
+    function updateConstraintSummary() {
+      const target = document.getElementById("constraintSummary");
+      const daily = appState.revised ? "约 40 分钟" : "约 45 分钟";
+      const rest = appState.revised ? "周三晚上少安排一些，" + appState.rest : appState.rest;
+      target.innerHTML = `
+        <div class="info-row"><span>规划天数</span><strong>30 天</strong></div>
+        <div class="info-row"><span>每天时长</span><strong>${daily}</strong></div>
+        <div class="info-row"><span>最晚结束</span><strong>${appState.bedtime}</strong></div>
+        <div class="info-row"><span>休息要求</span><strong>${rest}</strong></div>
+        <div class="info-row"><span>补习班</span><strong>${appState.tutoring}</strong></div>
+        <div class="info-row"><span>重点关注</span><strong>${appState.focus.join("、")}</strong></div>
+      `;
+
+      document.getElementById("reviewLead").textContent = appState.revised
+        ? "小宝这次正确率 80%，主要丢分在图形和综合应用题。已按您的建议压缩每天时长，周三安排更轻一些。"
+        : "小宝这次正确率 80%，主要丢分在图形和综合应用题。建议先补漏洞，再提前学习下册重点。";
+
+      document.getElementById("teacherNote").textContent = appState.revised
+        ? "小宝想在寒假提前学下册重点。现在安排会更照顾休息，每天控制在 40 分钟左右，周三只保留轻量复盘，图形题和综合应用题继续作为重点。"
+        : "小宝想在寒假通过 30 天努力，提前多学下册重点内容。图形和综合应用题要重点突破，也可以安排少量拔高题，帮助他保持在第一梯队。";
+    }
+
+    function renderResult(type) {
+      appState.resultType = type;
+      const self = type === "self";
+      document.getElementById("selfNotice").hidden = !self;
+      document.getElementById("resultStatus").textContent = self ? "请家长补看" : "规划已生效";
+      document.getElementById("resultTitle").textContent = self ? "小宝已完成的学习安排" : "小宝的 30 天学习安排";
+      document.getElementById("resultDesc").textContent = self
+        ? "这是孩子先完成的版本，您可以补看每天安排，再决定是否需要一起调整。"
+        : "每天学习内容已排好，会根据完成情况继续同步给您。";
+    }
+
+    document.body.addEventListener("click", (event) => {
+      const go = event.target.closest("[data-go]");
+      if (go) {
+        showPage(go.dataset.go);
+        return;
+      }
+
+      const result = event.target.closest("[data-results]");
+      if (result) {
+        renderResult(result.dataset.results);
+        showPage("results");
+        return;
+      }
+
+      const close = event.target.closest("[data-close-modal]");
+      if (close) {
+        closeModal(close.dataset.closeModal);
+        return;
+      }
+
+      const tab = event.target.closest("[data-tab]");
+      if (tab) {
+        if (tab.dataset.tab === "results") renderResult(appState.resultType);
+        showPage(tab.dataset.tab, { push: tab.dataset.tab !== appState.page });
+      }
+    });
+
+    document.querySelectorAll("[data-choice-group]").forEach((group) => {
+      group.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button) return;
+        group.querySelectorAll("button").forEach((item) => item.classList.remove("selected"));
+        button.classList.add("selected");
+        if (group.dataset.choiceGroup === "rest") appState.rest = button.dataset.value;
+        if (group.dataset.choiceGroup === "tutoring") appState.tutoring = button.dataset.value;
+      });
+    });
+
+    document.querySelectorAll("[data-multi-group]").forEach((group) => {
+      group.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button) return;
+        button.classList.toggle("selected");
+      });
+    });
+
+    document.getElementById("getCodeBtn").addEventListener("click", () => {
+      renderCode(generateCode());
+      openModal("codeModal");
+    });
+
+    document.getElementById("codeDoneBtn").addEventListener("click", () => {
+      closeModal("codeModal");
+      showPage("same-wait");
+      showToast("已确认到场，请继续看学习机。");
+    });
+
+    document.getElementById("remoteForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      collectRemoteForm();
+      showPage("waiting");
+      showToast("已把您的要求发给学习机。");
+    });
+
+    document.getElementById("confirmPlanBtn").addEventListener("click", () => {
+      renderResult("normal");
+      showPage("results");
+      showToast("计划已确认，孩子可以按安排开始学习。");
+    });
+
+    document.getElementById("modifyPlanBtn").addEventListener("click", () => {
+      openModal("modifyModal");
+    });
+
+    document.getElementById("submitModifyBtn").addEventListener("click", () => {
+      appState.revised = true;
+      closeModal("modifyModal");
+      showPage("revision-wait");
+      showToast("修改建议已提交。");
+    });
+
+    document.getElementById("viewRevisedBtn").addEventListener("click", () => {
+      updateConstraintSummary();
+      showPage("review");
+      showToast("已按您的建议重新调整。");
+    });
+
+    backBtn.addEventListener("click", () => {
+      const previous = appState.history.pop() || "notifications";
+      showPage(previous, { push: false });
+    });
+
+    document.querySelectorAll(".modal").forEach((modal) => {
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) modal.classList.remove("show");
+      });
+    });
+
+    updateConstraintSummary();
+  </script>
+</body>
+</html>

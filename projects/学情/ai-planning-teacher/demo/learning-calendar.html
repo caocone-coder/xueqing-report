@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover"/>
+<title>学习日历 · AI 规划老师</title>
+<style>
+:root{
+  --c-warm:#FF8A3D; --c-warm-dark:#E8701E; --c-warm-soft:#FFF1E6;
+  --g-warm:linear-gradient(135deg,#FFA36B 0%,#FF8A3D 60%,#F2661A 100%);
+  --c-brand:#2E7BFF; --c-brand-dark:#1F5FE0; --c-brand-soft:#E8F1FF;
+  --c-ink:#1F2229; --c-ink2:#4A5160; --c-ink3:#7A818F; --c-ink4:#B8BDC6;
+  --c-bg:#FFF8F1; --c-card:#FFFFFF; --c-sub:#FBF4EB; --c-line:#EDE4D6;
+  --c-good:#18C089; --c-good-soft:#E3F8F0;
+  --c-red:#FF5A5A; --c-red-soft:#FFECEC;
+  --sh-card:0 1px 2px rgba(40,25,10,.04),0 8px 20px rgba(40,25,10,.06);
+  --ff:'PingFang SC','Hiragino Sans GB',-apple-system,BlinkMacSystemFont,'Microsoft YaHei',sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;font-family:var(--ff);color:var(--c-ink);}
+body{min-height:100vh;background:#1A1410;display:flex;justify-content:center;align-items:flex-start;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;border:none;background:none;cursor:pointer;padding:0;color:inherit;}
+.app{width:100%;max-width:420px;min-height:100vh;background:var(--c-bg);position:relative;overflow-x:hidden;padding-bottom:80px;}
+@media(min-width:421px){body{padding:24px 0;}.app{min-height:calc(100vh - 48px);border-radius:32px;box-shadow:0 30px 80px rgba(0,0,0,.5);overflow:hidden;}}
+
+.sbar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:15px;font-weight:600;color:#fff;position:relative;z-index:5;}
+.sbar .r{display:flex;gap:6px;align-items:center;}
+.sbar .bat{width:24px;height:12px;border:1.5px solid currentColor;border-radius:3px;position:relative;opacity:.85;}
+.sbar .bat::after{content:'';position:absolute;right:-3px;top:3px;width:2px;height:4px;background:currentColor;border-radius:0 2px 2px 0;}
+.sbar .bat i{position:absolute;left:1px;top:1px;bottom:1px;width:72%;background:currentColor;border-radius:1px;display:block;}
+
+.alert{display:none;background:var(--c-red-soft);padding:14px 20px;border-bottom:3px solid var(--c-red);align-items:center;gap:12px;}
+.alert.show{display:flex;}
+.alert-ic{width:36px;height:36px;border-radius:12px;background:var(--c-red);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.alert-tx{flex:1;}
+.alert-tx h3{font-size:14px;font-weight:600;margin:0 0 2px;color:var(--c-red);}
+.alert-tx p{font-size:12px;margin:0;color:var(--c-ink2);line-height:18px;}
+.alert-btn{padding:6px 14px;border-radius:12px;background:var(--c-red);color:#fff;font-size:12px;font-weight:600;}
+
+.head{background:var(--g-warm);color:#fff;padding:0 0 32px;position:relative;border-radius:0 0 28px 28px;}
+.head::after{content:'';position:absolute;left:24px;bottom:-12px;right:24px;height:12px;background:var(--g-warm);opacity:.25;filter:blur(10px);border-radius:50%;}
+.head-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 4px;}
+.head-back{width:40px;height:40px;border-radius:14px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;}
+.head-back:active{background:rgba(255,255,255,.3);}
+.head-title{padding:14px 22px 0;}
+.head-title h1{font-size:24px;font-weight:700;line-height:32px;margin:0 0 6px;letter-spacing:-.2px;}
+.head-title p{font-size:13px;line-height:20px;margin:0;opacity:.92;}
+
+.today{margin:18px 16px 0;padding:18px;background:rgba(255,255,255,.18);border-radius:20px;backdrop-filter:blur(8px);display:flex;align-items:center;gap:14px;}
+.today-ring{width:64px;height:64px;position:relative;flex-shrink:0;}
+.today-ring svg{width:64px;height:64px;transform:rotate(-90deg);}
+.today-ring .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;}
+.today-tx{flex:1;}
+.today-tx .date{font-size:13px;opacity:.88;margin-bottom:4px;}
+.today-tx h3{font-size:16px;font-weight:600;margin:0 0 4px;}
+.today-tx p{font-size:12px;margin:0;opacity:.88;line-height:18px;}
+
+.content{padding:18px 16px 8px;}
+.card{background:var(--c-card);border-radius:20px;padding:18px;margin-bottom:12px;box-shadow:var(--sh-card);}
+.card h2{font-size:15px;font-weight:600;margin:0 0 14px;}
+
+.cal-head{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:8px;}
+.cal-head span{text-align:center;font-size:11px;color:var(--c-ink3);font-weight:500;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:13px;font-weight:500;position:relative;}
+.cal-cell.empty{visibility:hidden;}
+.cal-cell.done{background:var(--c-warm-soft);color:var(--c-warm-dark);}
+.cal-cell.doing{background:var(--c-brand);color:#fff;box-shadow:0 4px 10px rgba(46,123,255,.3);}
+.cal-cell.doing::after{content:'';position:absolute;inset:-2px;border-radius:12px;border:2px solid var(--c-brand);opacity:.4;}
+.cal-cell.todo{background:#F1F3F7;color:var(--c-ink3);}
+
+.prog{height:12px;background:var(--c-sub);border-radius:8px;overflow:hidden;display:flex;margin-bottom:12px;}
+.prog-seg{height:100%;transition:width .3s;}
+.prog-seg.a{background:var(--c-brand);}
+.prog-seg.b{background:var(--c-warm);}
+.prog-seg.c{background:var(--c-good);}
+.legend{display:flex;gap:16px;font-size:12px;}
+.legend-item{display:flex;align-items:center;gap:6px;}
+.legend-dot{width:10px;height:10px;border-radius:50%;}
+.legend-dot.a{background:var(--c-brand);}
+.legend-dot.b{background:var(--c-warm);}
+.legend-dot.c{background:var(--c-good);}
+
+.phase{padding:16px 0;border-bottom:1px dashed var(--c-line);}
+.phase:last-child{border-bottom:none;}
+.phase-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;cursor:pointer;}
+.phase-head h3{font-size:15px;font-weight:600;margin:0;flex:1;}
+.phase-head .arr{width:24px;height:24px;border-radius:50%;background:var(--c-sub);display:flex;align-items:center;justify-content:center;color:var(--c-ink3);transition:transform .2s;}
+.phase.open .arr{transform:rotate(180deg);}
+.phase-meta{font-size:12px;color:var(--c-ink3);margin-bottom:8px;}
+.phase-body{display:none;padding-left:12px;}
+.phase.open .phase-body{display:block;}
+.phase-day{font-size:13px;padding:8px 12px;background:var(--c-sub);border-radius:10px;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.phase-day .dot{width:6px;height:6px;border-radius:50%;background:var(--c-warm);flex-shrink:0;}
+.phase-day .txt{flex:1;color:var(--c-ink2);}
+
+.tabbar{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:420px;background:#fff;border-top:1px solid var(--c-line);display:flex;padding:6px 0 max(8px,env(safe-area-inset-bottom));z-index:50;}
+.tabbar .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;color:var(--c-ink3);font-size:11px;font-weight:500;}
+.tabbar .tab.on{color:var(--c-warm-dark);}
+
+@keyframes fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.fade{animation:fadein .3s ease;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sbar">
+    <span>9:41</span>
+    <div class="r">
+      <div class="bat"><i></i></div>
+    </div>
+  </div>
+
+  <div class="alert" id="fallbackAlert">
+    <div class="alert-ic">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <div class="alert-tx">
+      <h3>这是孩子自己排的</h3>
+      <p>您抽空看一下，有问题可以调整</p>
+    </div>
+    <button class="alert-btn" onclick="alert('演示版本：调整功能未实现')">我来调调</button>
+  </div>
+
+  <div class="head">
+    <div class="head-bar">
+      <a class="head-back" href="notification-center.html" aria-label="返回">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg>
+      </a>
+      <div style="width:40px;"></div>
+    </div>
+    <div class="head-title">
+      <h1>学习日历</h1>
+      <p>天天的 30 天学习计划</p>
+    </div>
+    <div class="today">
+      <div class="today-ring">
+        <svg viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="28" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="6"/>
+          <circle cx="32" cy="32" r="28" fill="none" stroke="#fff" stroke-width="6" stroke-dasharray="176" stroke-dashoffset="44" stroke-linecap="round"/>
+        </svg>
+        <div class="num">3/5</div>
+      </div>
+      <div class="today-tx">
+        <div class="date">2026 年 5 月 7 日</div>
+        <h3>今天有 5 个任务</h3>
+        <p>已完成 3 个，继续加油</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="content fade">
+    <div class="card">
+      <h2>5 月打卡簿</h2>
+      <div class="cal-head">
+        <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+      </div>
+      <div class="cal-grid">
+        <div class="cal-cell empty"></div>
+        <div class="cal-cell empty"></div>
+        <div class="cal-cell empty"></div>
+        <div class="cal-cell done">1</div>
+        <div class="cal-cell done">2</div>
+        <div class="cal-cell done">3</div>
+        <div class="cal-cell done">4</div>
+        <div class="cal-cell done">5</div>
+        <div class="cal-cell done">6</div>
+        <div class="cal-cell doing">7</div>
+        <div class="cal-cell todo">8</div>
+        <div class="cal-cell todo">9</div>
+        <div class="cal-cell todo">10</div>
+        <div class="cal-cell todo">11</div>
+        <div class="cal-cell todo">12</div>
+        <div class="cal-cell todo">13</div>
+        <div class="cal-cell todo">14</div>
+        <div class="cal-cell todo">15</div>
+        <div class="cal-cell todo">16</div>
+        <div class="cal-cell todo">17</div>
+        <div class="cal-cell todo">18</div>
+        <div class="cal-cell todo">19</div>
+        <div class="cal-cell todo">20</div>
+        <div class="cal-cell todo">21</div>
+        <div class="cal-cell todo">22</div>
+        <div class="cal-cell todo">23</div>
+        <div class="cal-cell todo">24</div>
+        <div class="cal-cell todo">25</div>
+        <div class="cal-cell todo">26</div>
+        <div class="cal-cell todo">27</div>
+        <div class="cal-cell todo">28</div>
+        <div class="cal-cell todo">29</div>
+        <div class="cal-cell todo">30</div>
+        <div class="cal-cell todo">31</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>规划模块占比</h2>
+      <div class="prog">
+        <div class="prog-seg a" style="width:35%;"></div>
+        <div class="prog-seg b" style="width:40%;"></div>
+        <div class="prog-seg c" style="width:25%;"></div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot a"></span><span>复习 35%</span></div>
+        <div class="legend-item"><span class="legend-dot b"></span><span>预习 40%</span></div>
+        <div class="legend-item"><span class="legend-dot c"></span><span>培优 25%</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>分阶段详情</h2>
+      <div class="phase open" onclick="togglePhase(this)">
+        <div class="phase-head">
+          <h3>基础夯实 · 第 1-10 天</h3>
+          <div class="arr">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="phase-meta">目标：把函数定义、图形性质这些基础知识点搞扎实</div>
+        <div class="phase-body">
+          <div class="phase-day"><span class="dot"></span><span class="txt">第 1 天：函数的概念与表示方法</span></div>
+          <div class="phase-day"><span class="dot"></span><span class="txt">第 2 天：一次函数的图像与性质</span></div>
+          <div class="phase-day"><span class="dot"></span><span class="txt">第 3 天：反比例函数基础练习</span></div>
+        </div>
+      </div>
+      <div class="phase" onclick="togglePhase(this)">
+        <div class="phase-head">
+          <h3>重点突破 · 第 11-20 天</h3>
+          <div class="arr">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="phase-meta">目标：把图形证明、应用题解题思路练熟</div>
+        <div class="phase-body">
+          <div class="phase-day"><span class="dot"></span><span class="txt">第 11 天：三角形全等证明专题</span></div>
+          <div class="phase-day"><span class="dot"></span><span class="txt">第 12 天：行程问题应用题</span></div>
+          <div class="phase-day"><span class="dot"></span><span class="txt">第 13 天：工程问题应用题</span></div>
+        </div>
+      </div>
+      <div class="phase" onclick="togglePhase(this)">
+        <div class="phase-head">
+          <h3>培优冲刺 · 第 21-30 天</h3>
+          <div class="arr">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+        <div class="phase-meta">目标：挑战一些难题，保持在第一梯队</div>
+        <div class="phase-body">
+          <div class="phase-day"><span class="dot"></span><span class="txt">第 21 天：函数综合压轴题</span></div>
+          <div class="phase-day"><span class="dot"></span><span class="txt">第 22 天：几何综合证明</span></div>
+          <div class="phase-day"><span class="dot"></span><span class="txt">第 23 天：代数几何综合题</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabbar">
+    <a class="tab" href="notification-center.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span>消息</span>
+    </a>
+    <a class="tab on" href="learning-calendar.html">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10" stroke="#FFF8F1" stroke-width="2"/><line x1="8" y1="3" x2="8" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>计划</span>
+    </a>
+    <button class="tab" onclick="alert('孩子档案 · 演示版本未实现')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>孩子</span>
+    </button>
+    <button class="tab" onclick="alert('我的 · 演示版本未实现')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v2"/></svg>
+      <span>我的</span>
+    </button>
+  </div>
+</div>
+
+<script>
+(function(){
+  var params=new URLSearchParams(window.location.search);
+  if(params.get('from')==='fallback'){
+    document.getElementById('fallbackAlert').classList.add('show');
+  }
+})();
+function togglePhase(el){
+  el.classList.toggle('open');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>导购端 - 督学看板</title>
+    <style>
+        /* CSS rules */
+        :root {
+            --bg-color: #f2f5fc;
+            --primary-color: #4f75ff;
+            --text-main: #333333;
+            --text-sub: #888888;
+            --green: #52b575;
+            --yellow: #ffd75a;
+            --grey: #e6e6e6;
+            --card-bg: #ffffff;
+            --radius: 12px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background: var(--bg-color); color: var(--text-main); font-size: 14px; padding-bottom: 80px; -webkit-font-smoothing: antialiased; }
+        .header { padding: 16px; font-size: 18px; font-weight: bold; color: var(--primary-color); display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Cards */
+        .card { background: var(--card-bg); border-radius: var(--radius); margin: 0 16px 16px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .card-header { font-size: 16px; font-weight: bold; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; position: relative;}
+        .card-header-left { position: absolute; left: 0; display: flex; gap: 4px; background: #eef1f6; border-radius: 16px; padding: 2px; }
+        .tab { padding: 4px 12px; border-radius: 14px; font-size: 12px; color: var(--text-sub); }
+        .tab.active { background: white; color: var(--primary-color); font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card-header-right { position: absolute; right: 0; font-size: 12px; color: var(--text-sub); }
+
+        /* Calendar */
+        .calendar-week { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; color: var(--text-sub); margin-bottom: 8px; }
+        .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; gap: 8px 0; }
+        .day-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .day-circle { width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; font-weight: bold; font-size: 12px; }
+        .day-circle.green { background-color: var(--green); }
+        .day-circle.yellow { background-color: var(--yellow); }
+        .day-circle.grey { background-color: var(--grey); color: transparent; }
+        .day-num { font-size: 12px; color: var(--text-sub); }
+
+        /* App Usage & Plan */
+        .section-title { font-size: 14px; font-weight: bold; margin-bottom: 12px; display: inline-block; padding: 4px 12px; background: #e8f5e9; color: #2e7d32; border-radius: 12px; }
+        .data-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; }
+        .data-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .app-info { display: flex; align-items: center; gap: 12px; }
+        .app-icon { width: 40px; height: 40px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: #999; }
+        .app-name { font-size: 14px; font-weight: bold; }
+        .app-type { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
+        .app-time { font-size: 14px; font-weight: bold; text-align: right; }
+        .app-trend { font-size: 12px; color: var(--text-sub); margin-top: 4px; }
+        .trend-up { color: #f44336; }
+        .trend-down { color: var(--green); }
+
+        .progress-container { margin-top: 8px; }
+        .progress-header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+        .progress-bar { height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary-color); border-radius: 4px; width: 0%; transition: width 0.5s ease-in-out; }
+
+        /* Generator Area */
+        .generator-card { border: 2px solid var(--primary-color); background: #fafbff; padding: 0;}
+        .generator-header { padding: 12px 16px; border-bottom: 1px solid #eef1f6; display: flex; justify-content: space-between; align-items: center; }
+        .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag { padding: 4px 10px; background: white; border: 1px solid #d0d7e5; border-radius: 12px; font-size: 12px; color: #555; }
+        .tag.active { border-color: var(--primary-color); color: var(--primary-color); background: #ebf0ff; }
+        
+        .script-area { padding: 16px; }
+        .script-greeting { width: 100%; border: 1px dashed #ccc; padding: 8px; border-radius: 4px; margin-bottom: 8px; font-size: 14px; resize: none; background: white; }
+        .script-content { width: 100%; border: none; background: #f8f9fa; padding: 12px; border-radius: 8px; font-size: 14px; line-height: 1.6; color: #444; resize: none; pointer-events: none; /* Read only visual */ margin-bottom: 8px; min-height: 120px; }
+        .script-closing { width: 100%; border: 1px dashed #ccc; padding: 8px; border-radius: 4px; font-size: 14px; resize: none; background: white; }
+
+        .btn-generate { width: calc(100% - 32px); margin: 0 16px 16px; padding: 12px; background: var(--primary-color); color: white; border: none; border-radius: 24px; font-size: 16px; font-weight: bold; cursor: pointer; display: block; text-align: center; box-shadow: 0 4px 12px rgba(79,117,255,0.3); }
+        .btn-generate:active { transform: scale(0.98); }
+
+        /* Bottom Fixed Bar */
+        .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: white; border-top: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: center; gap: 16px; padding: 0 16px; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        .btn-bottom { flex: 1; padding: 10px 0; border-radius: 20px; text-align: center; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .btn-primary { background: var(--primary-color); color: white; border: none; }
+        .btn-secondary { background: white; color: var(--primary-color); border: 1px solid var(--primary-color); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <span>导购端</span>
+    </div>
+
+    <!-- Calendar Card -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header-left">
+                <span class="tab">日</span>
+                <span class="tab active">周</span>
+            </div>
+            <span>打卡日历</span>
+            <div class="card-header-right" id="current-month">2026.04</div>
+        </div>
+        <div class="calendar-week">
+            <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+        </div>
+        <div class="calendar-days" id="calendar-days">
+            <!-- JS populated -->
+        </div>
+    </div>
+
+    <!-- App Usage Card -->
+    <div class="card">
+        <div class="section-title" style="background: #e8f4f8; color: #0277bd;">应用使用占比</div>
+        
+        <div class="data-row">
+            <div class="app-info">
+                <div class="app-icon" style="background:#ffebee; color:#f44336;">A</div>
+                <div>
+                    <div class="app-name">学习类应用</div>
+                    <div class="app-type">数学培优 / 英语阅读</div>
+                </div>
+            </div>
+            <div>
+                <div class="app-time">2小时30分钟</div>
+                <div class="app-trend">占比 75% <span class="trend-up">↑ 10%</span></div>
+            </div>
+        </div>
+        
+        <div class="data-row">
+            <div class="app-info">
+                <div class="app-icon" style="background:#e3f2fd; color:#2196f3;">B</div>
+                <div>
+                    <div class="app-name">其他类应用</div>
+                    <div class="app-type">视频 / 游戏</div>
+                </div>
+            </div>
+            <div>
+                <div class="app-time">50分钟</div>
+                <div class="app-trend">占比 25% <span class="trend-down">↓ 5%</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plan Completion Card -->
+    <div class="card">
+        <div class="section-title" style="background: #fff3e0; color: #e65100;">学习计划完成率</div>
+        <div class="progress-container">
+            <div class="progress-header">
+                <span>本周任务：24项</span>
+                <span style="color:var(--primary-color); font-weight:bold;">已完成 18项 (75%)</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="plan-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generator Button -->
+    <button class="btn-generate" onclick="generateScript()">生成督学话术</button>
+
+    <!-- Script Area (Hidden by default) -->
+    <div class="card generator-card" id="script-section" style="display: none;">
+        <div class="generator-header">
+            <span style="font-size: 14px; font-weight: bold; color: var(--primary-color);">AI专属方案</span>
+            <div class="tags">
+                <span class="tag active">基础薄弱期</span>
+                <span class="tag">习惯待养成</span>
+            </div>
+        </div>
+        <div class="script-area">
+            <textarea class="script-greeting" id="greeting" rows="2" placeholder="可编辑：家长您好！我是您的专属导购..."></textarea>
+            
+            <textarea class="script-content" id="core-content" readonly placeholder="核心数据解读，自动生成不可编辑..."></textarea>
+            
+            <textarea class="script-closing" id="closing" rows="2" placeholder="可编辑：祝孩子学习进步！"></textarea>
+        </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="bottom-bar">
+        <button class="btn-bottom btn-secondary" onclick="copyScript()">一键复制</button>
+        <button class="btn-bottom btn-primary" onclick="shareScript()">分享至家长</button>
+    </div>
+
+    <script>
+        // Disable emojis globally in inputs
+        document.addEventListener('input', function(e) {
+            if(e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
+                e.target.value = e.target.value.replace(/[\uD83C-\uDBFF\uDC00-\uDFFF]+/g, '');
+            }
+        });
+
+        // Initialize calendar
+        function initCalendar() {
+            const daysContainer = document.getElementById('calendar-days');
+            const statuses = ['grey', 'grey', 'green', 'yellow', 'green', 'grey', 'grey', 
+                              'grey', 'grey', 'grey', 'grey', 'grey', 'grey', 'grey']; 
+            // Mock 14 days for two rows
+            
+            let html = '';
+            for(let i=1; i<=14; i++) {
+                let status = statuses[i-1];
+                let content = i;
+                if(status === 'green') content = '✓';
+                if(status === 'yellow') content = '!';
+                if(status === 'grey') content = '';
+
+                html += `
+                    <div class="day-item">
+                        <div class="day-circle ${status}">${content}</div>
+                        <div class="day-num">${i}</div>
+                    </div>
+                `;
+            }
+            daysContainer.innerHTML = html;
+        }
+
+        // Animate progress bar
+        setTimeout(() => {
+            document.getElementById('plan-progress').style.width = '75%';
+        }, 300);
+
+        initCalendar();
+
+        // Generate Script Logic
+        function generateScript() {
+            document.getElementById('script-section').style.display = 'block';
+            
+            // Generate standard script without emojis
+            const greeting = "家长您好，我是您的专属督导伴学顾问。";
+            const coreContent = "根据本周的设备使用记录，孩子本周设备使用共计约3小时20分钟。其中学习类应用占比75%，且较上周提升了10%，这是一个非常好的学习习惯。\n\n在打卡方面，本周有部分时间未使用设备，本周学习计划完成率为75%。建议您在周末时间多鼓励孩子使用设备进行伴学打卡，保持良好的学习节奏。";
+            const closing = "如果在使用设备或学习规划上有任何问题，随时联系我。";
+
+            document.getElementById('greeting').value = greeting;
+            document.getElementById('core-content').value = coreContent;
+            document.getElementById('closing').value = closing;
+            
+            // Scroll to the generated section
+            setTimeout(() => {
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 50);
+        }
+
+        function copyScript() {
+            const section = document.getElementById('script-section');
+            if(section.style.display === 'none') {
+                alert('请先生成督学话术');
+                return;
+            }
+            
+            const text = [
+                document.getElementById('greeting').value,
+                document.getElementById('core-content').value,
+                document.getElementById('closing').value
+            ].filter(Boolean).join('\n\n');
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('已成功复制话术内容');
+                }).catch(err => {
+                    fallbackCopyTextToClipboard(text);
+                });
+            } else {
+                fallbackCopyTextToClipboard(text);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? '已成功复制话术内容' : '复制失败，请手动复制';
+                alert(msg);
+            } catch (err) {
+                alert('复制失败，请手动复制');
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function shareScript() {
+            const section = document.getElementById('script-section');
+            if(section.style.display === 'none') {
+                alert('请先生成督学话术');
+                return;
+            }
+            alert('已拉起分享面板，准备分享至家长');
+        }
+    </script>
+</body>
+</html>
